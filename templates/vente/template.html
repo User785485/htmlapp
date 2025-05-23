@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offre Spu00e9ciale pour {{PRENOM}} {{NOM}}</title>
+    <style>
+        /* Styles de base */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fc;
+        }
+        
+        /* En-tu00eate */
+        header {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
+        }
+        
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Contenu principal */
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+        }
+        
+        h2 {
+            color: #4f46e5;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: #4338ca;
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+        }
+        
+        p {
+            margin: 15px 0;
+        }
+        
+        /* Avantages */
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .benefit-card {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .benefit-card h4 {
+            color: #4f46e5;
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+        
+        /* Tu00e9moignages */
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .testimonial-card {
+            border-left: 4px solid #4f46e5;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+            color: #4338ca;
+        }
+        
+        /* FAQ */
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 20px;
+        }
+        
+        .faq-item h4 {
+            color: #4f46e5;
+            margin: 0 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Tarification */
+        .pricing {
+            border: 2px solid #4f46e5;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 40px auto;
+            max-width: 600px;
+            background: white;
+        }
+        
+        .pricing h3 {
+            background: #4f46e5;
+            color: white;
+            margin: -30px -30px 20px;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #6b7280;
+            font-size: 1.4rem;
+        }
+        
+        .current-price {
+            font-size: 2.5rem;
+            color: #4f46e5;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .savings {
+            display: inline-block;
+            background: #ecfdf5;
+            color: #065f46;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .payment-options {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .payment-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .payment-option:hover {
+            border-color: #4f46e5;
+            transform: scale(1.05);
+        }
+        
+        .payment-option h4 {
+            margin: 0 0 5px;
+            color: #4f46e5;
+        }
+        
+        /* Bouton d'action */
+        .cta-button {
+            display: inline-block;
+            background: #4f46e5;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            transition: background 0.2s;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+        
+        .cta-button:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+        }
+        
+        /* Pied de page */
+        footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+        }
+        
+        footer p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .benefits, .testimonials {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Offre Exclusive pour {{PRENOM}}</h1>
+        <p>Spécialement créée pour vous aider à atteindre vos objectifs</p>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Bonjour {{PRENOM}},</h2>
+            <p>Suite à notre rencontre le {{DATE_RENCONTRE}}, j'ai le plaisir de vous proposer cette offre personnalisée pour le produit <strong>{{PRODUIT}}</strong>.</p>
+            <p>Vous m'avez partagé votre objectif de <strong>{{OBJECTIFS}}</strong>, et j'ai créé cette proposition pour vous aider à l'atteindre rapidement et efficacement.</p>
+        </section>
+        
+        <section>
+            <h2>Les bénéfices qui vous attendent</h2>
+            <div class="benefits">
+                <div class="benefit-card">
+                    <h4>Bénéfice 1</h4>
+                    <p>Description détaillée du premier bénéfice que vous obtiendrez.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Bénéfice 2</h4>
+                    <p>Description détaillée du second bénéfice que vous obtiendrez.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Bénéfice 3</h4>
+                    <p>Description détaillée du troisième bénéfice que vous obtiendrez.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Ce que nos clients disent</h2>
+            <div class="testimonials">
+                <div class="testimonial-card">
+                    <p>"Témoignage détaillé d'un client satisfait qui partage son expérience positive et les résultats obtenus."</p>
+                    <div class="testimonial-author">Marie D., 34 ans</div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Second témoignage d'un client satisfait qui raconte comment le produit a changé sa vie positivement."</p>
+                    <div class="testimonial-author">Thomas L., 42 ans</div>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Vos questions fréquentes</h2>
+            <div class="faq">
+                <div class="faq-item">
+                    <h4>Question fréquente 1 ?</h4>
+                    <p>Réponse détaillée à la première question fréquente pour rassurer le client potentiel.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Question fréquente 2 ?</h4>
+                    <p>Réponse détaillée à la deuxième question fréquente pour anticiper les objections.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Question fréquente 3 ?</h4>
+                    <p>Réponse détaillée à la troisième question fréquente pour clarifier les doutes.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Votre offre personnalisée</h2>
+            <div class="pricing">
+                <h3>{{FORMULE_RECOMMANDEE}}</h3>
+                <div class="original-price">Prix normal: {{PRIX_REFERENCE}}</div>
+                <div class="current-price">{{PRIX_UNIQUE}}</div>
+                <div class="savings">Économisez {{ECONOMIE_UNIQUE}}</div>
+                
+                <p>Ou préférez-vous payer en plusieurs fois ?</p>
+                
+                <div class="payment-options">
+                    <div class="payment-option">
+                        <h4>Paiement unique</h4>
+                        <div>{{PRIX_UNIQUE}}</div>
+                    </div>
+                    <div class="payment-option">
+                        <h4>3 mensualités</h4>
+                        <div>{{MENSUALITE_3X}} x 3</div>
+                    </div>
+                    <div class="payment-option">
+                        <h4>6 mensualités</h4>
+                        <div>{{MENSUALITE_6X}} x 6</div>
+                    </div>
+                </div>
+                
+                <p><strong>Seulement {{PLACES_DISPONIBLES}} places disponibles !</strong></p>
+                <p>Le programme commence le {{DATE_DEBUT_PROGRAMME}}</p>
+                
+                <a href="https://wa.me/{{NUMERO_WHATSAPP}}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20l'offre%20pour%20le%20produit%20{{PRODUIT}}" class="cta-button">Réserver ma place maintenant</a>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Cette offre est personnalisée pour {{PRENOM}} {{NOM}}</p>
+        <p>Générée le {{DATE_GENERATION}}</p>
+        <p>Pour toute question, contactez-nous au {{NUMERO_WHATSAPP}}</p>
+    </footer>
+</body>
+</html>

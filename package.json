@@ -1,0 +1,49 @@
+{
+  "name": "html-personalizer-v2",
+  "version": "2.0.0",
+  "description": "Générateur de documents HTML personnalisés avec protection et publication automatique",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "logs": "node scripts/logs-viewer.js",
+    "logs:follow": "node scripts/logs-viewer.js --follow",
+    "monitor": "node scripts/monitor.js",
+    "cleanup": "node scripts/cleanup-logs.js",
+    "test:setup": "node test-setup.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "@supabase/supabase-js": "^2.39.0",
+    "autoprefixer": "^10.4.16",
+    "lucide-react": "^0.300.0",
+    "next": "14.0.4",
+    "papaparse": "^5.4.1",
+    "postcss": "^8.4.32",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/next": "^8.0.7",
+    "@types/node": "^20.10.0",
+    "@types/papaparse": "^5.3.14",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "eslint": "^8.55.0",
+    "eslint-config-next": "14.0.4",
+    "typescript": "^5.3.0"
+  },
+  "optionalDependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.11.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "commander": "^11.1.0",
+    "node-cron": "^3.0.3",
+    "ora": "^5.4.1"
+  }
+}

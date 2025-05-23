@@ -1,0 +1,3 @@
+email,telephone,prenom,nom,produit,prix,offre_speciale,date_rencontre,objectifs,recommandations,etapes_onboarding,conseils_onboarding
+test@example.com,+33123456789,Jean,Dupont,Formation HTML,499€,10% de réduction,2025-05-15,Apprendre HTML en 3 mois,Pratiquer quotidiennement,"1. Installation, 2. Premiers pas, 3. Projet final","Commencer par les bases, Faire des exercices régulièrement"
+info@societe.fr,+33987654321,Marie,Martin,Coaching SEO,999€,Premier mois gratuit,2025-05-10,Améliorer le référencement,Optimiser les meta-tags,"1. Audit, 2. Corrections, 3. Suivi","Mettre à jour régulièrement, Créer du contenu original"

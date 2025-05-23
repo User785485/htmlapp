@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compte-rendu pour {{PRENOM}} {{NOM}}</title>
+    <style>
+        /* Styles de base */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+        
+        /* En-tête */
+        header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Contenu principal */
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+        }
+        
+        h2 {
+            color: #0284c7;
+            margin-top: 0;
+            font-size: 1.6rem;
+            border-bottom: 2px solid #e0f2fe;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #0369a1;
+            font-size: 1.3rem;
+            margin: 25px 0 15px;
+        }
+        
+        p {
+            margin: 15px 0;
+            color: #334155;
+        }
+        
+        /* Liste */
+        ul, ol {
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            color: #334155;
+        }
+        
+        /* Résumé */
+        .summary {
+            background-color: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Actions */
+        .actions {
+            margin-top: 30px;
+        }
+        
+        .action-item {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .action-item-number {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            background: #0ea5e9;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .action-item-content {
+            flex-grow: 1;
+        }
+        
+        .action-item h4 {
+            margin: 0 0 8px;
+            color: #0284c7;
+        }
+        
+        /* Notes */
+        .notes {
+            background: #fffbeb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px dashed #fbbf24;
+        }
+        
+        .notes h3 {
+            color: #b45309;
+            margin-top: 0;
+        }
+        
+        /* Pied de page */
+        footer {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px;
+            font-size: 0.9rem;
+        }
+        
+        footer p {
+            margin: 5px 0;
+            color: #cbd5e1;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            main {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Compte-rendu de notre rencontre</h1>
+        <p>{{PRENOM}} {{NOM}} | {{DATE_RENCONTRE}}</p>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Résumé de notre échange</h2>
+            <p>Bonjour {{PRENOM}},</p>
+            <p>Je vous remercie pour notre échange du {{DATE_RENCONTRE}}. Ce document résume les points principaux que nous avons abordés concernant {{PRODUIT}}.</p>
+            
+            <div class="summary">
+                <p>Vous m'avez partagé votre objectif principal : <strong>{{OBJECTIFS}}</strong>.</p>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Recommandations personnalisées</h2>
+            <p>Suite à notre discussion, voici les recommandations que je vous propose pour atteindre vos objectifs :</p>
+            
+            <div class="recommendations">
+                {{RECOMMANDATIONS_LISTE}}
+            </div>
+            
+            <p>Ces recommandations sont basées sur votre situation spécifique et vos objectifs.</p>
+        </section>
+        
+        <section>
+            <h2>Prochaines étapes</h2>
+            <p>Pour avancer efficacement, je vous suggère de suivre ces étapes :</p>
+            
+            <div class="actions">
+                <div class="action-item">
+                    <div class="action-item-number">1</div>
+                    <div class="action-item-content">
+                        <h4>Étudier la proposition</h4>
+                        <p>Prenez le temps d'examiner l'offre que je vous ai envoyée pour {{PRODUIT}}.</p>
+                    </div>
+                </div>
+                
+                <div class="action-item">
+                    <div class="action-item-number">2</div>
+                    <div class="action-item-content">
+                        <h4>Me contacter pour vos questions</h4>
+                        <p>N'hésitez pas à me contacter au {{TELEPHONE}} si vous avez des questions.</p>
+                    </div>
+                </div>
+                
+                <div class="action-item">
+                    <div class="action-item-number">3</div>
+                    <div class="action-item-content">
+                        <h4>Confirmer votre intérêt</h4>
+                        <p>Si cette offre vous convient, confirmez votre intérêt avant le {{DATE_DEBUT_PROGRAMME}}.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notes">
+                <h3>Notes importantes</h3>
+                <p>L'offre spéciale de {{OFFRE_SPECIALE}} est valable jusqu'au {{DATE_DEBUT_PROGRAMME}}.</p>
+                <p>Le nombre de places disponibles est limité à {{PLACES_DISPONIBLES}}.</p>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Ce compte-rendu est personnalisé pour {{PRENOM}} {{NOM}}</p>
+        <p>Généré le {{DATE_GENERATION}}</p>
+        <p>Pour toute question, contactez-nous au {{NUMERO_WHATSAPP}}</p>
+    </footer>
+</body>
+</html>
