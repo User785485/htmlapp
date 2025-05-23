@@ -1,6 +1,103 @@
 import Papa from 'papaparse';
 import { ClientData, CSVExportRow } from './types';
 
+/**
+ * Parse une chaîne CSV et retourne les données clients
+ */
+export function parseCSVString(csvString: string): Promise<ClientData[]> {
+  return new Promise((resolve, reject) => {
+    Papa.parse(csvString, {
+      header: true,
+      complete: (results) => {
+        if (results.errors.length > 0) {
+          console.error('Erreurs de parsing CSV:', results.errors);
+          reject(new Error('Erreur lors du parsing du CSV'));
+          return;
+        }
+        
+        // Validation et nettoyage des données
+        const clients = results.data
+          .filter((row: any) => row.email && row.email.trim() !== '')
+          .map((row: any) => {
+            return {
+              email: row.email?.trim().toLowerCase() || '',
+              telephone: row.telephone?.trim() || '',
+              prenom: row.prenom?.trim() || '',
+              nom: row.nom?.trim() || '',
+              
+              // Variables pour vente
+              produit: row.produit?.trim() || '',
+              prix: row.prix?.trim() || '',
+              offre_speciale: row.offre_speciale?.trim() || '',
+              
+              // Variables pour compte-rendu
+              date_rencontre: row.date_rencontre?.trim() || '',
+              objectifs: row.objectifs?.trim() || '',
+              recommandations: row.recommandations?.trim() || '',
+              
+              // Variables pour onboarding
+              etapes_onboarding: row.etapes_onboarding?.trim() || '',
+              conseils_onboarding: row.conseils_onboarding?.trim() || '',
+              
+              // Conserver toutes les autres colonnes
+              ...Object.keys(row).reduce((acc: any, key: string) => {
+                if (!['email', 'telephone', 'prenom', 'nom', 'produit', 'prix', 
+                      'offre_speciale', 'date_rencontre', 'objectifs', 'recommandations',
+                      'etapes_onboarding', 'conseils_onboarding'].includes(key)) {
+                  acc[key] = row[key]?.trim() || '';
+                }
+                return acc;
+              }, {})
+            };
+          });
+        
+        resolve(clients);
+      },
+      error: (error: Error) => {
+        reject(error);
+      }
+    });
+  });
+}
+
+/**
+ * Analyse les données des clients pour détecter les doublons et les regrouper
+ */
+export function analyzeClientData(clients: ClientData[]): { 
+  duplicates: { [key: string]: ClientData[] },
+  uniqueCount: number,
+  totalCount: number
+} {
+  const emails = new Map<string, ClientData[]>();
+  
+  // Regrouper par email
+  clients.forEach(client => {
+    const email = client.email.toLowerCase();
+    if (!emails.has(email)) {
+      emails.set(email, []);
+    }
+    emails.get(email)!.push(client);
+  });
+  
+  // Identifier les doublons
+  const duplicates: { [key: string]: ClientData[] } = {};
+  let uniqueCount = 0;
+  
+  emails.forEach((clientsGroup, email) => {
+    if (clientsGroup.length > 1) {
+      duplicates[email] = clientsGroup;
+    } else {
+      uniqueCount++;
+    }
+  });
+  
+  return {
+    duplicates,
+    uniqueCount,
+    totalCount: clients.length
+  };
+}
+
 export class CSVParser {
   /**
    * Parse un fichier CSV et retourne les données clients
@@ -92,9 +189,10 @@ export class CSVParser {
     const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     
-    if (navigator.msSaveBlob) {
-      // IE 10+
-      navigator.msSaveBlob(blob, filename);
+    // Support pour IE 10+
+    const nav = navigator as any;
+    if (nav.msSaveBlob) {
+      nav.msSaveBlob(blob, filename);
     } else {
       link.href = URL.createObjectURL(blob);
       link.download = filename;
