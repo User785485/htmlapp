@@ -101,23 +101,28 @@ export async function POST(request: NextRequest) {
     }
     
     // Publier sur Supabase Storage et servir via API Route
-    console.log('💥💥💥 API generate: SOLUTION D\'URGENCE - FORCER LES URLs vers my-muqabala.fr 💥💥💥');
-    console.log('🔴 LOGS DÉTAILLÉS POUR DÉBOGAGE 🔴');
+    console.log('🔹 API generate: Publication des documents avec configuration standard');
+    console.log('🔹 API generate: Utilisation de SITE_BASE_URL pour les URLs');
     console.log('Process env:', { 
       SITE_BASE_URL: process.env.SITE_BASE_URL,
-      NODE_ENV: process.env.NODE_ENV,
-      VERCEL_ENV: process.env.VERCEL_ENV,
-      VERCEL_URL: process.env.VERCEL_URL
+      NODE_ENV: process.env.NODE_ENV
     });
+
+    // Validation de l'environnement
+    if (!process.env.SITE_BASE_URL) {
+      console.warn('⚠️ ATTENTION: SITE_BASE_URL n\'est pas défini. Les URLs générées utiliseront la valeur par défaut.');
+    } else {
+      console.log(`✅ SITE_BASE_URL correctement configuré: ${process.env.SITE_BASE_URL}`);
+    }
     
     let publishedUrls: Record<DocumentType, string> = {} as Record<DocumentType, string>;
     try {
       // Utiliser Supabase pour stocker les documents
-      console.log('🔴 DIAGNOSTIC: Initialisation de SupabaseStoragePublisher');
+      console.log('🔹 API generate: Initialisation de SupabaseStoragePublisher');
       const publisher = new SupabaseStoragePublisher();
-      console.log('🔴 DIAGNOSTIC: SupabaseStoragePublisher initialisé avec succès');
-      console.log('🌟🌟🌟 DIAGNOSTIC - FORCAGE des URLs vers my-muqabala.fr');
-      console.log('🔴 Documents générés disponibles:', Object.keys(generatedDocuments));
+      console.log('🔹 API generate: SupabaseStoragePublisher initialisé avec succès');
+      console.log('🔹 API generate: Utilisation de la configuration standard pour les URLs');
+      console.log('🔹 API generate: Documents générés disponibles:', Object.keys(generatedDocuments));
       
       // Publier chaque document avec Supabase
       console.log('🔴 DÉBUT DE LA BOUCLE DE PUBLICATION DES DOCUMENTS');

@@ -20,8 +20,14 @@ export class SupabaseStoragePublisher {
     this.bucketName = 'documents';
     
     // URL de base pour les documents (API route)
-    this.baseUrl = process.env.SITE_BASE_URL || 'https://www.my-muqabala.fr';
-    console.log('\ud83d\udd17 URL de base configur\u00e9e:', this.baseUrl);
+    const configuredBaseUrl = process.env.SITE_BASE_URL;
+    if (!configuredBaseUrl) {
+      console.warn('⚠️ ATTENTION: SITE_BASE_URL n\'est pas configuré. Utilisation de la valeur par défaut.');
+      this.baseUrl = 'https://www.my-muqabala.fr';
+    } else {
+      this.baseUrl = configuredBaseUrl;
+    }
+    console.log(`🔧 SupabaseStoragePublisher: URL de base configurée: ${this.baseUrl}`);
     
     // Initialiser le client Supabase avec la clé de service pour avoir les permissions d'upload
     this.supabase = createClient(supabaseUrl, supabaseServiceKey);
