@@ -100,6 +100,17 @@ export class DocumentGenerator {
         html = html.replace(regex, value || '');
       });
       
+      // Détecter les variables non remplacées (IMPORTANT pour le débogage)
+      const unreplacedVariables = html.match(/{{[^}]+}}/g);
+      if (unreplacedVariables && unreplacedVariables.length > 0) {
+        console.error('⚠️ Variables non remplacées:', unreplacedVariables);
+        logger.error('DOCUMENT_GENERATOR', 'unreplaced_variables', 'Variables non remplacées détectées', {
+          client_email: client.email,
+          document_type: type,
+          unreplaced: unreplacedVariables,
+        });
+      }
+      
       logger.debug('DOCUMENT_GENERATOR', 'variables_replaced', 'Variables remplacées', {
         client_email: client.email,
         document_type: type,
@@ -138,6 +149,7 @@ export class DocumentGenerator {
     client: ClientData, 
     type: DocumentType
   ): Record<string, string> {
+    // Variables de base toujours présentes
     const baseVariables = {
       PRENOM: client.prenom,
       NOM: client.nom,
@@ -146,36 +158,22 @@ export class DocumentGenerator {
       DATE_GENERATION: new Date().toLocaleDateString('fr-FR'),
     };
     
-    switch (type) {
-      case 'vente':
-        return {
-          ...baseVariables,
-          PRODUIT: client.produit || '',
-          PRIX: client.prix || '',
-          OFFRE_SPECIALE: client.offre_speciale || '',
-          // Ajouter d'autres variables spécifiques à la vente
-        };
-        
-      case 'compte-rendu':
-        return {
-          ...baseVariables,
-          DATE_RENCONTRE: client.date_rencontre || '',
-          OBJECTIFS: client.objectifs || '',
-          RECOMMANDATIONS: client.recommandations || '',
-          // Ajouter d'autres variables spécifiques au compte-rendu
-        };
-        
-      case 'onboarding':
-        return {
-          ...baseVariables,
-          ETAPES: client.etapes_onboarding || '',
-          CONSEILS: client.conseils_onboarding || '',
-          // Ajouter d'autres variables spécifiques à l'onboarding
-        };
-        
-      default:
-        return baseVariables;
-    }
+    // Pour TOUS les types de documents, on prend TOUTES les variables du CSV
+    // Cela permet une flexibilité maximale
+    const allVariables = {
+      ...baseVariables,
+      
+      // On parcourt TOUTES les propriétés du client
+      // et on les convertit en variables de template
+      ...Object.entries(client).reduce((acc, [key, value]) => {
+        // Convertir la clé en majuscules pour matcher les templates
+        const templateKey = key.toUpperCase();
+        acc[templateKey] = String(value || '');
+        return acc;
+      }, {} as Record<string, string>)
+    };
+    
+    return allVariables;
   }
   
   /**

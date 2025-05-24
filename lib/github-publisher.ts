@@ -10,8 +10,22 @@ export class GitHubPublisher {
   private baseUrl: string;
   
   constructor() {
+    // Vérification du token GitHub
+    const githubToken = process.env.GITHUB_TOKEN;
+    if (!githubToken) {
+      console.error('⚠️ ERREUR CRITIQUE: Token GitHub manquant!');
+      logger.error('GITHUB_PUBLISHER', 'missing_token', 'Token GitHub manquant', {
+        error: 'GITHUB_TOKEN nest pas défini dans les variables denvironnement'
+      });
+    } else if (githubToken.includes('votre_nouveau_token_github')) {
+      console.error('⚠️ ERREUR CRITIQUE: Token GitHub est toujours la valeur par défaut!');
+      logger.error('GITHUB_PUBLISHER', 'default_token', 'Token GitHub est la valeur par défaut', {
+        error: 'GITHUB_TOKEN contient la valeur placeholder votre_nouveau_token_github'
+      });
+    }
+    
     this.octokit = new Octokit({
-      auth: process.env.GITHUB_TOKEN,
+      auth: githubToken,
     });
     
     this.owner = process.env.GITHUB_OWNER || 'User785485';
@@ -25,6 +39,8 @@ export class GitHubPublisher {
       repo: this.repo,
       branch: this.branch,
       baseUrl: this.baseUrl,
+      has_token: !!githubToken,
+      token_length: githubToken ? githubToken.length : 0
     });
   }
   
