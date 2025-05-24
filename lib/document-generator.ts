@@ -235,7 +235,7 @@ export class DocumentGenerator {
       // INJECTION DU SCRIPT ANTI-BARRE DE DEBUG
       // ========================================
 
-      // Script de suppression agressive de la barre de debug
+      // SOLUTION ULTRA-RADICALE : Script de suppression de la barre verte
       const antiDebugScript = `
 <script>
 (function() {
@@ -243,15 +243,22 @@ export class DocumentGenerator {
     function killDebugBar() {
         let removedCount = 0;
         
+        // Sélecteurs hyper-agressifs pour cibler toute barre verte potentielle
         const selectors = [
+            // Par couleur
             'div[style*="#28a745"]',
             'div[style*="rgb(40, 167, 69)"]',
-            'div[style*="position: fixed"][style*="#28a745"]',
-            'div[style*="position:fixed"][style*="#28a745"]',
-            '.debug-bar',
-            '#debug-bar',
-            '[class*="debug"]',
-            'div[style*="z-index: 9999"][style*="position: fixed"]'
+            'div[style*="green"]',
+            // Par position
+            'div[style*="position: fixed"]',
+            'div[style*="position:fixed"]',
+            // Par classe/id
+            '.debug-bar', '#debug-bar',
+            '[class*="debug"]', '[id*="debug"]',
+            // Combinaisons spécifiques
+            'div[style*="z-index: 9999"]',
+            'div[style*="top: 0"][style*="position: fixed"]',
+            'div[style*="top:0"][style*="position:fixed"]'
         ];
         
         selectors.forEach(selector => {
