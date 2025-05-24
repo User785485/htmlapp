@@ -103,12 +103,25 @@ export class CSVParser {
    * Parse un fichier CSV et retourne les données clients
    */
   static async parseCSV(file: File): Promise<ClientData[]> {
+    console.log('Début du parsing CSV...', { filename: file.name, size: file.size, type: file.type });
     return new Promise((resolve, reject) => {
       Papa.parse(file, {
         header: true,
+        skipEmptyLines: true,
+        error: (error) => {
+          console.error('Erreur Papa.parse:', error);
+          reject(error);
+        },
         complete: (results) => {
+          console.log('Résultats du parsing:', { 
+            rowCount: results.data.length,
+            errorCount: results.errors.length,
+            sampleRow: results.data.length > 0 ? results.data[0] : null,
+            meta: results.meta
+          });
+          
           if (results.errors.length > 0) {
-            console.error('Erreurs de parsing CSV:', results.errors);
+            console.error('Erreurs détaillées de parsing CSV:', JSON.stringify(results.errors));
             reject(new Error('Erreur lors du parsing du CSV'));
             return;
           }
@@ -183,30 +196,10 @@ export class CSVParser {
   }
   
   /**
-   * Télécharge un fichier CSV
-   */
-  static downloadCSV(content: string, filename: string = 'export.csv'): void {
-    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    
-    // Support pour IE 10+
-    const nav = navigator as any;
-    if (nav.msSaveBlob) {
-      nav.msSaveBlob(blob, filename);
-    } else {
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-  
-  /**
-   * Valide la structure du CSV
+   * Valide la structure du CSV et renvoie les erreurs
    */
   static validateCSVStructure(data: any[]): { valid: boolean; errors: string[] } {
+    console.log('Validating CSV structure...');
     const errors: string[] = [];
     const requiredColumns = ['email', 'telephone', 'prenom'];
     
