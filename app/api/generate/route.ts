@@ -102,9 +102,17 @@ export async function POST(request: NextRequest) {
     
     // Publier sur Supabase Storage et servir via API Route
     console.log('💥💥💥 API generate: NOUVELLE MÉTHODE - Publication sur Supabase Storage + API Route 💥💥💥');
+    console.log('💥💥💥 DIAGNOSTIC - Verification de la classe utilisée pour la publication');
     let publishedUrls;
     try {
       const publisher = new SupabaseStoragePublisher();
+      console.log('🌟🌟🌟 DIAGNOSTIC - Classe utilisée: SupabaseStoragePublisher');
+      console.log('🌟🌟🌟 DIAGNOSTIC - Configuration:
+', {
+        baseUrl: process.env.SITE_BASE_URL || 'Non défini',
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || 'Non défini',
+        serviceKeyDefined: !!process.env.SUPABASE_SERVICE_KEY
+      });
       console.log('API generate: Tentative de publication des documents sur Supabase Storage', { 
         email: client.email,
         documentCount: Object.keys(generatedDocuments).length
