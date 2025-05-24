@@ -123,52 +123,82 @@ export async function POST(request: NextRequest) {
     
     console.log('API generate: Préparation des données sécurisées pour Supabase');
     
-    // Structure de données sécurisante, en évitant les colonnes qui posent problème
-    console.log('API generate: Vérification des colonnes disponibles dans Supabase');
+    // Structure de données adaptée au format de la table existante
+    console.log('API generate: Préparation des insertions dans Supabase selon structure existante');
     
-    // Créer l'objet de base sans les champs problématiques
-    const supabaseData: any = {
+    // Les données du client sont stockées une seule fois
+    const clientBaseData = {
       client_email: client.email,
-      // Ne pas inclure client_phone si la colonne n'existe pas dans Supabase
-      // client_phone: client.telephone,  // Commenté pour éviter l'erreur de colonne manquante
+      client_phone: client.telephone, // Colonne existante d'après la structure fournie
       client_name: `${client.prenom} ${client.nom}`,
-      raw_data: client
+      metadata: JSON.stringify(client) // Utiliser metadata plutôt que raw_data
     };
     
-    // Ajouter les URLs et dates de génération seulement pour les colonnes qui existent
-    // Document de vente (ces colonnes existent certainement d'après les logs)
+    // Tableau pour stocker les opérations d'insertion/mise à jour
+    const upsertOperations = [];
+    
+    // Préparer une insertion pour chaque type de document publié
+    // Utiliser la structure générique: document_type, filename, url
+    
+    console.log('API generate: Préparation des insertions pour chaque type de document');
+    
+    // Document de vente
     if (publishedUrls.vente) {
-      supabaseData.vente_url = publishedUrls.vente;
-      supabaseData.vente_generated_at = now;
-      console.log('API generate: Ajout des données de vente');
+      const venteData = {
+        ...clientBaseData,
+        document_type: 'vente',
+        filename: generatedDocuments.vente.filename,
+        url: publishedUrls.vente,
+        vente_generated_at: now // Cette colonne existe dans la structure
+      };
+      upsertOperations.push(venteData);
+      console.log('API generate: Document de vente prêt pour insertion');
     }
     
-    // Compte-rendu (ces colonnes semblent manquantes d'après l'erreur)
-    // Ajouter uniquement l'URL sans la date de génération pour éviter l'erreur
+    // Document compte-rendu
     if (publishedUrls['compte-rendu']) {
-      supabaseData.compte_rendu_url = publishedUrls['compte-rendu'];
-      // Ne pas ajouter compte_rendu_generated_at car la colonne n'existe pas
-      console.log('API generate: Ajout de l\'URL compte-rendu (sans date de génération)');
+      const compteRenduData = {
+        ...clientBaseData,
+        document_type: 'compte-rendu',
+        filename: generatedDocuments['compte-rendu'].filename,
+        url: publishedUrls['compte-rendu'],
+        compte_rendu_generated_at: now // Cette colonne existe dans la structure
+      };
+      upsertOperations.push(compteRenduData);
+      console.log('API generate: Document compte-rendu prêt pour insertion');
     }
     
-    // Onboarding (ces colonnes pourraient aussi manquer)
-    // Ajouter uniquement l'URL sans la date de génération pour éviter l'erreur
+    // Document onboarding
     if (publishedUrls.onboarding) {
-      supabaseData.onboarding_url = publishedUrls.onboarding;
-      // Ne pas ajouter onboarding_generated_at car la colonne pourrait ne pas exister
-      console.log('API generate: Ajout de l\'URL onboarding (sans date de génération)');
+      const onboardingData = {
+        ...clientBaseData,
+        document_type: 'onboarding',
+        filename: generatedDocuments.onboarding.filename,
+        url: publishedUrls.onboarding,
+        onboarding_generated_at: now // Cette colonne existe dans la structure
+      };
+      upsertOperations.push(onboardingData);
+      console.log('API generate: Document onboarding prêt pour insertion');
     }
     
     console.log('API generate: Données Supabase préparées', { 
-      email: supabaseData.client_email,
-      docs: Object.keys(publishedUrls).length
+      email: clientBaseData.client_email,
+      documentCount: upsertOperations.length
     });
     
-    // Sauvegarder dans Supabase
+    // Sauvegarder dans Supabase - plusieurs insertions, une par document
     console.log('API generate: Sauvegarde des données dans Supabase');
     try {
-      await SupabaseService.upsertClient(supabaseData);
-      console.log('API generate: Sauvegarde Supabase réussie');
+      // Utiliser une méthode modifiée pour insérer plusieurs documents
+      if (upsertOperations.length > 0) {
+        for (const docData of upsertOperations) {
+          console.log(`API generate: Insertion du document ${docData.document_type}`);
+          await SupabaseService.upsertDocument(docData);
+        }
+        console.log('API generate: Sauvegarde Supabase réussie pour tous les documents');
+      } else {
+        console.warn('API generate: Aucun document à sauvegarder');
+      }
     } catch (saveError) {
       console.error('API generate: Erreur lors de la sauvegarde dans Supabase', saveError);
       throw saveError;

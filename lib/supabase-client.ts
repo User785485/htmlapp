@@ -103,7 +103,8 @@ export class SupabaseService {
   }
   
   /**
-   * Crée ou met à jour un document client
+   * Crée ou met à jour un document client (ancienne structure)
+   * @deprecated Utiliser upsertDocument pour la nouvelle structure
    */
   static async upsertClient(document: GeneratedDocument): Promise<GeneratedDocument> {
     const startTime = Date.now();
@@ -139,6 +140,82 @@ export class SupabaseService {
       const duration = Date.now() - startTime;
       logger.logSupabase('upsert', 'generated_documents', false, {
         client_email: document.client_email,
+        error: error instanceof Error ? error.message : error,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Crée ou met à jour un document dans la structure générique avec document_type
+   */
+  static async upsertDocument(document: any): Promise<any> {
+    const startTime = Date.now();
+    const documentType = document.document_type || 'unknown';
+    
+    try {
+      console.log(`SupabaseService: Insertion du document ${documentType} pour ${document.client_email}`);
+      
+      // Vérifier si le document existe déjà pour pouvoir le mettre à jour
+      const { data: existingDocs, error: checkError } = await supabaseAdmin
+        .from('generated_documents')
+        .select('id')
+        .eq('client_email', document.client_email)
+        .eq('document_type', documentType);
+      
+      if (checkError) {
+        console.error('SupabaseService: Erreur lors de la vérification du document', checkError);
+        throw checkError;
+      }
+      
+      let result;
+      
+      // Si le document existe, le mettre à jour, sinon l'insérer
+      if (existingDocs && existingDocs.length > 0) {
+        console.log(`SupabaseService: Mise à jour du document existant ${documentType} pour ${document.client_email}`);
+        
+        const { data, error } = await supabaseAdmin
+          .from('generated_documents')
+          .update(document)
+          .eq('id', existingDocs[0].id)
+          .select()
+          .single();
+          
+        if (error) {
+          throw error;
+        }
+        
+        result = data;
+      } else {
+        console.log(`SupabaseService: Création d'un nouveau document ${documentType} pour ${document.client_email}`);
+        
+        const { data, error } = await supabaseAdmin
+          .from('generated_documents')
+          .insert(document)
+          .select()
+          .single();
+          
+        if (error) {
+          throw error;
+        }
+        
+        result = data;
+      }
+      
+      const duration = Date.now() - startTime;
+      logger.logSupabase('upsert_document', 'generated_documents', true, {
+        client_email: document.client_email,
+        document_type: documentType,
+        duration_ms: duration,
+      });
+      
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.logSupabase('upsert_document', 'generated_documents', false, {
+        client_email: document.client_email,
+        document_type: documentType,
         error: error instanceof Error ? error.message : error,
         duration_ms: duration,
       });
