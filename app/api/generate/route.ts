@@ -123,82 +123,55 @@ export async function POST(request: NextRequest) {
     
     console.log('API generate: Préparation des données sécurisées pour Supabase');
     
-    // Structure de données adaptée au format de la table existante
-    console.log('API generate: Préparation des insertions dans Supabase selon structure existante');
+    // Structure de données pour Supabase - Toutes les colonnes existent maintenant dans la table
+    console.log('API generate: Préparation des données pour Supabase avec toutes les colonnes');
     
-    // Les données du client sont stockées une seule fois
-    const clientBaseData = {
+    // Structure de données pour l'upsert (insertion ou mise à jour)
+    const supabaseData = {
       client_email: client.email,
-      client_phone: client.telephone, // Colonne existante d'après la structure fournie
+      client_phone: client.telephone,  // Cette colonne existe maintenant
       client_name: `${client.prenom} ${client.nom}`,
-      metadata: JSON.stringify(client) // Utiliser metadata plutôt que raw_data
+      raw_data: client,  // Stockage des données brutes du client
+      
+      // Ajouter toutes les URLs et dates de génération
+      ...(publishedUrls.vente && {
+        vente_url: publishedUrls.vente,
+        vente_generated_at: now
+      }),
+      
+      ...(publishedUrls['compte-rendu'] && {
+        compte_rendu_url: publishedUrls['compte-rendu'],
+        compte_rendu_generated_at: now
+      }),
+      
+      ...(publishedUrls.onboarding && {
+        onboarding_url: publishedUrls.onboarding,
+        onboarding_generated_at: now
+      })
     };
     
-    // Tableau pour stocker les opérations d'insertion/mise à jour
-    const upsertOperations = [];
-    
-    // Préparer une insertion pour chaque type de document publié
-    // Utiliser la structure générique: document_type, filename, url
-    
-    console.log('API generate: Préparation des insertions pour chaque type de document');
-    
-    // Document de vente
-    if (publishedUrls.vente) {
-      const venteData = {
-        ...clientBaseData,
-        document_type: 'vente',
-        filename: generatedDocuments.vente.filename,
-        url: publishedUrls.vente,
-        vente_generated_at: now // Cette colonne existe dans la structure
-      };
-      upsertOperations.push(venteData);
-      console.log('API generate: Document de vente prêt pour insertion');
-    }
-    
-    // Document compte-rendu
-    if (publishedUrls['compte-rendu']) {
-      const compteRenduData = {
-        ...clientBaseData,
-        document_type: 'compte-rendu',
-        filename: generatedDocuments['compte-rendu'].filename,
-        url: publishedUrls['compte-rendu'],
-        compte_rendu_generated_at: now // Cette colonne existe dans la structure
-      };
-      upsertOperations.push(compteRenduData);
-      console.log('API generate: Document compte-rendu prêt pour insertion');
-    }
-    
-    // Document onboarding
-    if (publishedUrls.onboarding) {
-      const onboardingData = {
-        ...clientBaseData,
-        document_type: 'onboarding',
-        filename: generatedDocuments.onboarding.filename,
-        url: publishedUrls.onboarding,
-        onboarding_generated_at: now // Cette colonne existe dans la structure
-      };
-      upsertOperations.push(onboardingData);
-      console.log('API generate: Document onboarding prêt pour insertion');
-    }
-    
-    console.log('API generate: Données Supabase préparées', { 
-      email: clientBaseData.client_email,
-      documentCount: upsertOperations.length
+    // Logger les données préparées pour vérification
+    console.log('API generate: Détails des données préparées', {
+      email: supabaseData.client_email,
+      hasVente: !!publishedUrls.vente,
+      hasCompteRendu: !!publishedUrls['compte-rendu'],
+      hasOnboarding: !!publishedUrls.onboarding,
+      donnéesStocku00e9es: Object.keys(supabaseData).length
     });
     
-    // Sauvegarder dans Supabase - plusieurs insertions, une par document
+    // Sauvegarder dans Supabase avec la méthode originale
     console.log('API generate: Sauvegarde des données dans Supabase');
     try {
-      // Utiliser une méthode modifiée pour insérer plusieurs documents
-      if (upsertOperations.length > 0) {
-        for (const docData of upsertOperations) {
-          console.log(`API generate: Insertion du document ${docData.document_type}`);
-          await SupabaseService.upsertDocument(docData);
-        }
-        console.log('API generate: Sauvegarde Supabase réussie pour tous les documents');
-      } else {
-        console.warn('API generate: Aucun document à sauvegarder');
-      }
+      await SupabaseService.upsertClient(supabaseData);
+      console.log('API generate: Sauvegarde Supabase réussie');
+      
+      // Loguer les détails de la sauvegarde pour débogage
+      console.log('API generate: Détails des données sauvegardées', {
+        email: supabaseData.client_email,
+        venteUrl: supabaseData.vente_url,
+        compteRenduUrl: supabaseData.compte_rendu_url,
+        onboardingUrl: supabaseData.onboarding_url
+      });
     } catch (saveError) {
       console.error('API generate: Erreur lors de la sauvegarde dans Supabase', saveError);
       throw saveError;

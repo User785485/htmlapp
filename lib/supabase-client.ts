@@ -103,11 +103,16 @@ export class SupabaseService {
   }
   
   /**
-   * Crée ou met à jour un document client (ancienne structure)
-   * @deprecated Utiliser upsertDocument pour la nouvelle structure
+   * Crée ou met à jour un document client 
+   * Utilise la structure avec colonnes spécifiques (vente_url, compte_rendu_url, etc.)
    */
   static async upsertClient(document: GeneratedDocument): Promise<GeneratedDocument> {
     const startTime = Date.now();
+    
+    console.log('SupabaseService: Début upsertClient', {
+      email: document.client_email,
+      champs: Object.keys(document)
+    });
     
     try {
       // Utiliser la fonction compatUpsert avec un cast de type pour contourner les vérifications TypeScript
@@ -127,6 +132,15 @@ export class SupabaseService {
       }
       
       const duration = Date.now() - startTime;
+      console.log('SupabaseService: upsertClient réussi', {
+        client_email: document.client_email,
+        has_vente: !!document.vente_url,
+        has_compte_rendu: !!document.compte_rendu_url,
+        has_onboarding: !!document.onboarding_url,
+        duration_ms: duration
+      });
+      
+      // Utiliser le logger pour conserver les logs
       logger.logSupabase('upsert', 'generated_documents', true, {
         client_email: document.client_email,
         has_vente: !!document.vente_url,
