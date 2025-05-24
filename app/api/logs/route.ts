@@ -1,176 +1,193 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withApiLogging } from '@/lib/api-wrapper';
-import { logger } from '@/lib/logger';
-import { supabaseAdmin } from '@/lib/supabase-client';
+import { createClient } from '@supabase/supabase-js';
 
-interface LogFilter {
-  level?: string;
-  component?: string;
-  startDate?: string;
-  endDate?: string;
-  clientEmail?: string;
-  limit?: number;
-  offset?: number;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+// Helper pour formater la date
+function formatDate(date: Date): string {
+  return date.toLocaleString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
 }
 
-export const GET = withApiLogging('API_LOGS', async (request, context) => {
+// Helper pour formater la durée
+function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+  if (ms < 3600000) return `${Math.floor(ms / 60000)}m ${Math.floor((ms % 60000) / 1000)}s`;
+  return `${Math.floor(ms / 3600000)}h ${Math.floor((ms % 3600000) / 60000)}m`;
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const filter = searchParams.get('filter');
+  const level = searchParams.get('level');
+  const limit = parseInt(searchParams.get('limit') || '100');
+  const stats = searchParams.get('stats') === 'true';
+
   try {
-    // Parser les paramètres de requête
-    const { searchParams } = new URL(request.url);
-    const filter: LogFilter = {
-      level: searchParams.get('level') || undefined,
-      component: searchParams.get('component') || undefined,
-      startDate: searchParams.get('startDate') || undefined,
-      endDate: searchParams.get('endDate') || undefined,
-      clientEmail: searchParams.get('clientEmail') || undefined,
-      limit: parseInt(searchParams.get('limit') || '100'),
-      offset: parseInt(searchParams.get('offset') || '0'),
-    };
+    // Si on demande les stats
+    if (stats) {
+      const { data, error } = await supabase
+        .from('application_logs')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(1000);
 
-    logger.info('API_LOGS', 'fetch_logs', 'Récupération des logs', {
-      filter,
-      request_id: context.requestId,
-    });
+      if (error) throw error;
 
-    // Construire la requête Supabase
-    let query = supabaseAdmin
-      .from('application_logs')
-      .select('*')
-      .order('timestamp', { ascending: false });
+      const logs = data || [];
+      
+      // Calculer les statistiques
+      const totalLogs = logs.length;
+      const errorCount = logs.filter(log => log.level === 'error').length;
+      const warningCount = logs.filter(log => log.level === 'warning').length;
+      const successCount = logs.filter(log => log.level === 'success').length;
+      const infoCount = logs.filter(log => log.level === 'info').length;
 
-    // Appliquer les filtres
-    if (filter.level) {
-      query = query.eq('level', filter.level);
-    }
-    if (filter.component) {
-      query = query.eq('component', filter.component);
-    }
-    if (filter.clientEmail) {
-      query = query.eq('client_email', filter.clientEmail);
-    }
-    if (filter.startDate) {
-      query = query.gte('timestamp', filter.startDate);
-    }
-    if (filter.endDate) {
-      query = query.lte('timestamp', filter.endDate);
-    }
+      // Statistiques par action
+      const actionStats: Record<string, { count: number, avgDuration: number, errors: number }> = {};
+      
+      logs.forEach(log => {
+        if (log.action) {
+          if (!actionStats[log.action]) {
+            actionStats[log.action] = { count: 0, avgDuration: 0, errors: 0 };
+          }
+          actionStats[log.action].count++;
+          if (log.duration) {
+            actionStats[log.action].avgDuration += log.duration;
+          }
+          if (log.level === 'error') {
+            actionStats[log.action].errors++;
+          }
+        }
+      });
 
-    // Pagination
-    query = query.range(filter.offset!, filter.offset! + filter.limit! - 1);
+      // Calculer les moyennes
+      Object.keys(actionStats).forEach(action => {
+        if (actionStats[action].avgDuration > 0) {
+          actionStats[action].avgDuration = Math.round(
+            actionStats[action].avgDuration / actionStats[action].count
+          );
+        }
+      });
 
-    // Exécuter la requête
-    const { data: logs, error, count } = await query;
+      // Tendances sur 24h
+      const now = new Date();
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const logsLast24h = logs.filter(log => 
+        new Date(log.timestamp) > yesterday
+      ).length;
 
-    if (error) {
-      throw error;
-    }
-
-    // Récupérer les statistiques
-    const statsQuery = supabaseAdmin
-      .from('application_logs')
-      .select('level', { count: 'exact' });
-
-    // Appliquer les mêmes filtres pour les stats
-    if (filter.component) {
-      statsQuery.eq('component', filter.component);
-    }
-    if (filter.clientEmail) {
-      statsQuery.eq('client_email', filter.clientEmail);
-    }
-    if (filter.startDate) {
-      statsQuery.gte('timestamp', filter.startDate);
-    }
-    if (filter.endDate) {
-      statsQuery.lte('timestamp', filter.endDate);
-    }
-
-    const { data: levelStats } = await statsQuery;
-
-    // Compter par niveau
-    const stats = {
-      total: count || 0,
-      byLevel: {
-        debug: 0,
-        info: 0,
-        warn: 0,
-        error: 0,
-        fatal: 0,
-      },
-    };
-
-    // Calculer les stats par niveau (méthode alternative)
-    if (logs) {
-      logs.forEach((log: any) => {
-        if (stats.byLevel[log.level as keyof typeof stats.byLevel] !== undefined) {
-          stats.byLevel[log.level as keyof typeof stats.byLevel]++;
+      return NextResponse.json({
+        success: true,
+        stats: {
+          total: totalLogs,
+          levels: {
+            error: errorCount,
+            warning: warningCount,
+            success: successCount,
+            info: infoCount
+          },
+          actions: actionStats,
+          last24h: logsLast24h,
+          timestamp: new Date().toISOString()
         }
       });
     }
 
+    // Construction de la requête
+    let query = supabase
+      .from('application_logs')
+      .select('*');
+
+    // Filtres
+    if (filter) {
+      query = query.or(`action.ilike.%${filter}%,message.ilike.%${filter}%,details.ilike.%${filter}%`);
+    }
+
+    if (level && level !== 'all') {
+      query = query.eq('level', level);
+    }
+
+    // Tri et limite
+    query = query
+      .order('timestamp', { ascending: false })
+      .limit(limit);
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    // Formater les logs pour l'affichage
+    const formattedLogs = (data || []).map(log => ({
+      ...log,
+      formattedDate: formatDate(new Date(log.timestamp)),
+      formattedDuration: log.duration ? formatDuration(log.duration) : null
+    }));
+
     return NextResponse.json({
-      logs: logs || [],
-      stats,
-      pagination: {
-        limit: filter.limit,
-        offset: filter.offset,
-        total: count || 0,
-      },
+      success: true,
+      logs: formattedLogs,
+      count: formattedLogs.length
     });
 
   } catch (error) {
-    logger.error('API_LOGS', 'fetch_error', 'Erreur lors de la récupération des logs', {
-      error: error instanceof Error ? error.message : error,
-      request_id: context.requestId,
-    });
-    throw error;
+    console.error('Erreur lors de la récupération des logs:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Erreur inconnue' 
+      },
+      { status: 500 }
+    );
   }
-});
+}
 
-// Route pour supprimer les anciens logs
-export const DELETE = withApiLogging('API_LOGS', async (request, context) => {
+// Endpoint pour supprimer les anciens logs
+export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const days = parseInt(searchParams.get('days') || '30');
+
   try {
-    const { days } = await request.json();
-    
-    if (!days || days < 1) {
-      throw new Error('Le nombre de jours doit être supérieur à 0');
-    }
-
-    logger.warn('API_LOGS', 'delete_old_logs', `Suppression des logs de plus de ${days} jours`, {
-      days,
-      request_id: context.requestId,
-    });
-
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
-    const { error, count } = await supabaseAdmin
+    // Supprimer les logs plus anciens que la date limite
+    const { data, error } = await supabase
       .from('application_logs')
       .delete()
       .lt('timestamp', cutoffDate.toISOString())
-      .select('*', { count: 'exact', head: true });
+      .select('*');
 
     if (error) {
       throw error;
     }
 
-    logger.info('API_LOGS', 'logs_deleted', `${count} logs supprimés`, {
-      days,
-      count,
-      cutoff_date: cutoffDate.toISOString(),
-      request_id: context.requestId,
-    });
+    const deletedCount = data ? data.length : 0;
 
     return NextResponse.json({
       success: true,
-      deleted: count,
-      message: `${count} logs supprimés (plus de ${days} jours)`,
+      message: `${deletedCount} logs supprimés (plus anciens que ${days} jours)`,
+      deletedCount
     });
 
   } catch (error) {
-    logger.error('API_LOGS', 'delete_error', 'Erreur lors de la suppression des logs', {
-      error: error instanceof Error ? error.message : error,
-      request_id: context.requestId,
-    });
-    throw error;
+    console.error('Erreur lors de la suppression des logs:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Erreur inconnue' 
+      },
+      { status: 500 }
+    );
   }
-});
+}
