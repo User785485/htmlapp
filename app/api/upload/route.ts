@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { parseCSVString, validateAndNormalizeData } from '@/lib/csv-parser';
+import { parseCSVString } from '@/lib/csv-parser';
 import { ClientData } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
