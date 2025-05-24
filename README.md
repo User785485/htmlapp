@@ -1,6 +1,8 @@
 # HTML Personalizer V2
 
-## Mise u00e0 jour du 24 mai 2025
+## Mise u00e0 jour du 24 mai 2025 - 20:47
+
+> **IMPORTANT** : Déploiement urgent pour suppression complète de la barre de débogage verte
 
 ### Amu00e9liorations apportu00e9es
 
