@@ -50,8 +50,18 @@ export class GitHubPublisher {
     this.owner = process.env.GITHUB_OWNER || 'User785485';
     this.repo = process.env.GITHUB_REPO || 'soulful-connections-new';
     this.branch = process.env.GITHUB_BRANCH || 'main';
-    this.baseUrl = process.env.SITE_BASE_URL || 
-      `https://${this.owner}.github.io/${this.repo}`;
+    
+    // Configuration de l'URL de base pour GitHub Pages
+    if (process.env.SITE_BASE_URL) {
+      this.baseUrl = process.env.SITE_BASE_URL;
+      console.log(`🔍 URL de base définie par variable d'environnement: ${this.baseUrl}`);
+    } else {
+      // Par défaut, utiliser l'URL standard de GitHub Pages
+      this.baseUrl = `https://${this.owner}.github.io/${this.repo}`;
+      console.log(`🔍 URL de base générée automatiquement: ${this.baseUrl}`);
+      console.log(`🔍 IMPORTANT: Vérifiez que GitHub Pages est activé dans les paramètres du dépôt!`);
+      console.log(`🔍 URL pour activer: https://github.com/${this.owner}/${this.repo}/settings/pages`);
+    }
       
     logger.debug('GITHUB_PUBLISHER', 'init', 'GitHub Publisher initialisé', {
       owner: this.owner,

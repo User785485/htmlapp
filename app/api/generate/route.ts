@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ClientData, GenerationResult, DocumentType } from '@/lib/types';
 import { SupabaseService } from '@/lib/supabase-client';
 import { DocumentGenerator } from '@/lib/document-generator';
-import { GitHubPublisher } from '@/lib/github-publisher';
+import { VercelPublisher } from '@/lib/vercel-publisher';
+// import { GitHubPublisher } from '@/lib/github-publisher'; // Ancienne méthode de publication
 
 // Initialiser les services
 let templatesLoaded = false;
@@ -98,12 +99,12 @@ export async function POST(request: NextRequest) {
       throw genError;
     }
     
-    // Publier sur GitHub
-    console.log('API generate: Initialisation de la publication GitHub');
+    // Publier sur Vercel (fichiers statiques)
+    console.log('API generate: Initialisation de la publication sur Vercel');
     let publishedUrls;
     try {
-      const publisher = new GitHubPublisher();
-      console.log('API generate: Tentative de publication des documents sur GitHub', { 
+      const publisher = new VercelPublisher();
+      console.log('API generate: Tentative de publication des documents sur Vercel', { 
         email: client.email,
         documentCount: Object.keys(generatedDocuments).length
       });
@@ -111,10 +112,10 @@ export async function POST(request: NextRequest) {
         client.email,
         generatedDocuments as Record<DocumentType, { content: string; filename: string }>
       );
-      console.log('API generate: Publication GitHub réussie', publishedUrls);
-    } catch (githubError) {
-      console.error('API generate: Erreur lors de la publication sur GitHub', githubError);
-      throw githubError;
+      console.log('API generate: Publication Vercel réussie', publishedUrls);
+    } catch (publishError) {
+      console.error('API generate: Erreur lors de la publication sur Vercel', publishError);
+      throw publishError;
     }
     
     // Préparer les données pour Supabase
