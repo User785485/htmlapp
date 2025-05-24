@@ -361,6 +361,40 @@ export class DocumentGenerator {
       console.info = originalConsole.info;
       console.debug = originalConsole.debug;
       
+      // LOGS DE DIAGNOSTIC POUR BARRE DE DÉBOGAGE
+      console.log(`🔍 Début de la recherche de barre de débogage dans le HTML généré...`);
+      console.log(`Document final généré (premiers 500 caractères): ${finalHtml.substring(0, 500).replace(/\n/g, '').replace(/\s+/g, ' ')}`);
+      
+      // Recherche d'indices de barre de débogage
+      const hasGreenColor = finalHtml.includes('#28a745');
+      const hasFixedPosition = finalHtml.includes('position: fixed') || finalHtml.includes('position:fixed');
+      const hasDebugText = finalHtml.includes('Variables:') || finalHtml.includes('Encodage:') || finalHtml.includes('Non remplacées:');
+      
+      console.log(`Vérification présence #28a745 (vert): ${hasGreenColor ? '⚠️ PRÉSENTE' : '✅ ABSENTE'}`);
+      console.log(`Vérification présence position: fixed: ${hasFixedPosition ? '⚠️ PRÉSENTE' : '✅ ABSENTE'}`);
+      console.log(`Vérification présence texte debug: ${hasDebugText ? '⚠️ PRÉSENT' : '✅ ABSENT'}`);
+      
+      // Script de diagnostic pour inspection côté client
+      const clientInspectionScript = `
+<script>
+  console.log("🔍 Analyse du DOM pour détecter la barre de débogage");
+  document.addEventListener('DOMContentLoaded', () => {
+    const debugElements = document.querySelectorAll('div[style*=\"#28a745\"], div[style*=\"position: fixed\"]');
+    console.log("💡 Éléments potentiels de débogage trouvés: " + debugElements.length);
+    debugElements.forEach(el => console.log("Source HTML:", el.outerHTML));
+  });
+</script>`;
+      
+      // Ajouter le script de diagnostic avant le script anti-barre de débogage
+      if (finalHtml.includes('</body>')) {
+        finalHtml = finalHtml.replace('</body>', `${clientInspectionScript}
+</body>`);
+      } else {
+        finalHtml += clientInspectionScript;
+      }
+      
+      console.log(`🔍 Script de diagnostic côté client ajouté au document`);
+      
       // Log final de succès (maintenant que console.log est restauré)
       const duration = Date.now() - startTime;
       console.log(`✅ Document ${type} généré silencieusement pour ${client.prenom} ${client.nom} (${finalHtml.length} caractères) en ${duration}ms`);
