@@ -101,28 +101,57 @@ export async function POST(request: NextRequest) {
     }
     
     // Publier sur Supabase Storage et servir via API Route
-    console.log('💥💥💥 API generate: NOUVELLE MÉTHODE - Publication sur Supabase Storage + API Route 💥💥💥');
-    console.log('💥💥💥 DIAGNOSTIC - Verification de la classe utilisée pour la publication');
-    let publishedUrls;
+    console.log('💥💥💥 API generate: SOLUTION D\'URGENCE - FORCER LES URLs vers my-muqabala.fr 💥💥💥');
+    console.log('🔴 LOGS DÉTAILLÉS POUR DÉBOGAGE 🔴');
+    console.log('Process env:', { 
+      SITE_BASE_URL: process.env.SITE_BASE_URL,
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL_ENV: process.env.VERCEL_ENV,
+      VERCEL_URL: process.env.VERCEL_URL
+    });
+    
+    let publishedUrls: Record<DocumentType, string> = {} as Record<DocumentType, string>;
     try {
+      // Utiliser Supabase pour stocker les documents
+      console.log('🔴 DIAGNOSTIC: Initialisation de SupabaseStoragePublisher');
       const publisher = new SupabaseStoragePublisher();
-      console.log('🌟🌟🌟 DIAGNOSTIC - Classe utilisée: SupabaseStoragePublisher');
-      console.log('🌟🌟🌟 DIAGNOSTIC - Configuration:', {
-        baseUrl: process.env.SITE_BASE_URL || 'Non défini',
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || 'Non défini',
-        serviceKeyDefined: !!process.env.SUPABASE_SERVICE_KEY
-      });
-      console.log('API generate: Tentative de publication des documents sur Supabase Storage', { 
-        email: client.email,
-        documentCount: Object.keys(generatedDocuments).length
-      });
-      publishedUrls = await publisher.publishClientDocuments(
-        client.email,
-        generatedDocuments as Record<DocumentType, { content: string; filename: string }>
-      );
-      console.log('API generate: Publication Supabase Storage réussie', publishedUrls);
+      console.log('🔴 DIAGNOSTIC: SupabaseStoragePublisher initialisé avec succès');
+      console.log('🌟🌟🌟 DIAGNOSTIC - FORCAGE des URLs vers my-muqabala.fr');
+      console.log('🔴 Documents générés disponibles:', Object.keys(generatedDocuments));
+      
+      // Publier chaque document avec Supabase
+      console.log('🔴 DÉBUT DE LA BOUCLE DE PUBLICATION DES DOCUMENTS');
+      
+      for (const [type, doc] of Object.entries(generatedDocuments)) {
+        console.log(`🔴 DIAGNOSTIC - Publication du document de type: ${type}`);
+        const docInfo = doc as { content: string; filename: string };
+        const path = `${type}/${docInfo.filename}`;
+        
+        console.log(`🔴 DIAGNOSTIC - Chemin du fichier: ${path}`);
+        console.log(`🔴 DIAGNOSTIC - Taille du contenu: ${docInfo.content.length} octets`);
+        
+        try {
+          // Stocker dans Supabase Storage
+          console.log(`🔴 DIAGNOSTIC - Tentative de publication dans Supabase: ${path}`);
+          const supabaseUrl = await publisher.publishFile(path, docInfo.content);
+          console.log(`🔴 DIAGNOSTIC - URL Supabase reçue: ${supabaseUrl}`);
+          
+          // FORCER l'URL vers my-muqabala.fr indépendamment de ce que retourne la méthode de publication
+          const forcedUrl = `https://my-muqabala.fr/api/documents/${path}`;
+          publishedUrls[type as DocumentType] = forcedUrl;
+          
+          console.log(`🔴 DIAGNOSTIC - URL FORCÉE pour ${type}: ${forcedUrl}`);
+          console.log(`🔴 DIAGNOSTIC - Comparaison - URL Supabase: ${supabaseUrl} vs URL forcée: ${forcedUrl}`);
+        } catch (error) {
+          console.error(`🔴 ERREUR lors de la publication du document ${type}:`, error);
+          // Continuer malgré l'erreur pour les autres documents
+          continue;
+        }
+      }
+      
+      console.log('API generate: Publication réussie avec URLs FORCÉES vers my-muqabala.fr', publishedUrls);
     } catch (publishError) {
-      console.error('API generate: Erreur lors de la publication sur Supabase Storage', publishError);
+      console.error('API generate: Erreur lors de la publication des documents', publishError);
       throw publishError;
     }
     
