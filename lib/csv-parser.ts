@@ -132,9 +132,6 @@ export class CSVParser {
             .map((row: any) => this.cleanClientData(row));
           
           resolve(clients);
-        },
-        error: (error) => {
-          reject(error);
         }
       });
     });
