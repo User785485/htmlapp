@@ -239,4 +239,25 @@ export class CSVParser {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
+
+  /**
+   * Télécharge un fichier CSV
+   */
+  static downloadCSV(content: string, filename: string = 'export.csv'): void {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    // Support pour IE 10+
+    const nav = navigator as any;
+    if (nav.msSaveBlob) {
+      nav.msSaveBlob(blob, filename);
+    } else {
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
 }
