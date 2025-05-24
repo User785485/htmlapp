@@ -73,3 +73,4 @@ export interface CSVExportRow {
   lien_compte_rendu: string;
   lien_page_vente: string;
   lien_onboarding: string;
+}
