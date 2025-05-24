@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { GeneratedDocument } from './types';
 import { logger } from './logger';
+import { extendSupabaseClient, SelectOptions, compatSelect } from './supabase-compat';
 
 // Utiliser les variables d'environnement ou des valeurs de secours pour le développement
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://prbidefjogdrqwjeenxm.supabase.co';
@@ -12,6 +13,51 @@ console.log('Supabase URL:', supabaseUrl);
 console.log('Supabase Anon Key:', supabaseAnonKey ? 'Défini' : 'Non défini');
 console.log('Supabase Service Key:', supabaseServiceKey ? 'Défini' : 'Non défini');
 
+// Patch pour la méthode select de Supabase
+// Ceci permet de contourner les différences de signature entre les versions
+interface ExtendedGlobalThis {
+  supaPatchApplied?: boolean;
+}
+
+if (!(globalThis as ExtendedGlobalThis).supaPatchApplied) {
+  // Patch la méthode select globalement pour le monkeypatch
+  const originalSelect = Object.getPrototypeOf(createClient(supabaseUrl, supabaseAnonKey).from('test')).select;
+  
+  if (originalSelect) {
+    Object.defineProperty(Object.getPrototypeOf(createClient(supabaseUrl, supabaseAnonKey).from('test')), 'select', {
+      value: function(columns: string, options?: SelectOptions) {
+        try {
+          // Essayer d'abord avec les deux paramètres (nouvelle version)
+          if (options) {
+            return originalSelect.call(this, columns, options);
+          } else {
+            return originalSelect.call(this, columns);
+          }
+        } catch (e) {
+          // Fall back à la version compatible
+          logger.debug('SUPABASE', 'version_fallback', 'Utilisation du fallback pour select', { error: e instanceof Error ? e.message : String(e) });
+          
+          // Appeler select avec un seul paramètre
+          let result = originalSelect.call(this, columns);
+          
+          // Appliquer manuellement les options
+          if (options) {
+            if (options.count) {
+              result = result.count(options.count);
+            }
+            if (options.head) {
+              result = result.limit(1);
+            }
+          }
+          
+          return result;
+        }
+      }
+    });
+  }
+  
+  (globalThis as ExtendedGlobalThis).supaPatchApplied = true;
+}
 
 // Client public pour le côté client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
