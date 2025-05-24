@@ -19,14 +19,12 @@ export class SupabaseStoragePublisher {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByYmlkZWZqb3FkcnF3amVlbnhtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAzNjc0MSwiZXhwIjoyMDYzNjEyNzQxfQ.K-f19FXAPH-z2qfRGMS2zOUmsVJ-iya6l0xfEwlVf44';
     this.bucketName = 'documents';
     
-    // URL de base pour les documents (API route)
-    const configuredBaseUrl = process.env.SITE_BASE_URL;
-    if (!configuredBaseUrl) {
-      console.warn('⚠️ ATTENTION: SITE_BASE_URL n\'est pas configuré. Utilisation de la valeur par défaut.');
-      this.baseUrl = 'https://www.my-muqabala.fr';
-    } else {
-      this.baseUrl = configuredBaseUrl;
-    }
+    // FORCER l'utilisation de my-muqabala.fr sans possibilité de fallback
+    console.log('🔒 FORÇAGE du domaine: https://www.my-muqabala.fr');
+    this.baseUrl = 'https://www.my-muqabala.fr';
+    
+    // Ignorer complètement la variable d'environnement pour éviter tout problème
+    // Ceci est une solution temporaire jusqu'à ce que le déploiement soit stable
     console.log(`🔧 SupabaseStoragePublisher: URL de base configurée: ${this.baseUrl}`);
     
     // Initialiser le client Supabase avec la clé de service pour avoir les permissions d'upload

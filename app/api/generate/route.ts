@@ -100,20 +100,18 @@ export async function POST(request: NextRequest) {
       throw genError;
     }
     
-    // Publier sur Supabase Storage et servir via API Route
-    console.log('🔹 API generate: Publication des documents avec configuration standard');
-    console.log('🔹 API generate: Utilisation de SITE_BASE_URL pour les URLs');
-    console.log('Process env:', { 
+    // FORCER l'utilisation de my-muqabala.fr pour les URLs générées
+    console.log('🔒 API generate: FORÇAGE de l\'URL sur my-muqabala.fr');
+    console.log('🔒 API generate: IGNORANT complètement la variable SITE_BASE_URL pour éviter tout bug');
+    
+    // Définir manuellement process.env.SITE_BASE_URL pour garantir la cohérence
+    process.env.SITE_BASE_URL = 'https://www.my-muqabala.fr';
+    
+    console.log('✅ URL forcée pour la génération: https://www.my-muqabala.fr');
+    console.log('Process env modifié:', { 
       SITE_BASE_URL: process.env.SITE_BASE_URL,
       NODE_ENV: process.env.NODE_ENV
     });
-
-    // Validation de l'environnement
-    if (!process.env.SITE_BASE_URL) {
-      console.warn('⚠️ ATTENTION: SITE_BASE_URL n\'est pas défini. Les URLs générées utiliseront la valeur par défaut.');
-    } else {
-      console.log(`✅ SITE_BASE_URL correctement configuré: ${process.env.SITE_BASE_URL}`);
-    }
     
     let publishedUrls: Record<DocumentType, string> = {} as Record<DocumentType, string>;
     try {

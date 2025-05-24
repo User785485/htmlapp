@@ -8,6 +8,7 @@
       }
     },
     "env": {
-      "ACCESS_CODE": "7744"
+      "ACCESS_CODE": "7744",
+      "SITE_BASE_URL": "https://www.my-muqabala.fr"
     }
   }
