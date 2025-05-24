@@ -158,22 +158,46 @@ export class DocumentGenerator {
       DATE_GENERATION: new Date().toLocaleDateString('fr-FR'),
     };
     
-    // Pour TOUS les types de documents, on prend TOUTES les variables du CSV
-    // Cela permet une flexibilité maximale
-    const allVariables = {
-      ...baseVariables,
-      
-      // On parcourt TOUTES les propriétés du client
-      // et on les convertit en variables de template
-      ...Object.entries(client).reduce((acc, [key, value]) => {
-        // Convertir la clé en majuscules pour matcher les templates
-        const templateKey = key.toUpperCase();
-        acc[templateKey] = String(value || '');
-        return acc;
-      }, {} as Record<string, string>)
-    };
+    const variables: Record<string, string> = { ...baseVariables };
     
-    return allVariables;
+    // Méthode 1: Utiliser les préfixes selon le type de document
+    const prefix = type === 'compte-rendu' ? 'cr_' : type === 'vente' ? 'vente_' : 'onb_';
+    
+    // Récupérer TOUTES les colonnes qui commencent par le bon préfixe
+    Object.entries(client).forEach(([key, value]) => {
+      if (key.startsWith(prefix)) {
+        // Enlever le préfixe et mettre en majuscules
+        const varName = key.replace(prefix, '').toUpperCase();
+        variables[varName] = String(value || '');
+      }
+    });
+    
+    // Méthode 2: Compatibilité avec anciens noms de variables (pour les CSV sans préfixes)
+    if (type === 'vente') {
+      // Mappings pour la page de vente
+      if (client.produit && !variables['PRODUIT']) variables['PRODUIT'] = client.produit;
+      if (client.prix && !variables['PRIX']) variables['PRIX'] = client.prix;
+      if (client.offre_speciale && !variables['OFFRE_SPECIALE']) variables['OFFRE_SPECIALE'] = client.offre_speciale;
+    } else if (type === 'compte-rendu') {
+      // Mappings pour le compte-rendu
+      if (client.date_rencontre && !variables['DATE_RENCONTRE']) variables['DATE_RENCONTRE'] = client.date_rencontre;
+      if (client.objectifs && !variables['OBJECTIFS']) variables['OBJECTIFS'] = client.objectifs;
+      if (client.recommandations && !variables['RECOMMANDATIONS']) variables['RECOMMANDATIONS'] = client.recommandations;
+    } else if (type === 'onboarding') {
+      // Mappings pour l'onboarding
+      if (client.etapes_onboarding && !variables['ETAPES']) variables['ETAPES'] = client.etapes_onboarding;
+      if (client.conseils_onboarding && !variables['CONSEILS']) variables['CONSEILS'] = client.conseils_onboarding;
+    }
+    
+    // Log des variables disponibles pour debug
+    logger.debug('DOCUMENT_GENERATOR', 'variables_prepared', `Variables préparées pour ${type}`, {
+      client_email: client.email,
+      document_type: type,
+      variables_count: Object.keys(variables).length,
+      variables: Object.keys(variables)
+    });
+    
+    return variables;
   }
   
   /**
