@@ -123,26 +123,41 @@ export async function POST(request: NextRequest) {
     
     console.log('API generate: Préparation des données sécurisées pour Supabase');
     
-    // Structure de données sécurisante, sans client_phone qui pose problème
-    const supabaseData = {
+    // Structure de données sécurisante, en évitant les colonnes qui posent problème
+    console.log('API generate: Vérification des colonnes disponibles dans Supabase');
+    
+    // Créer l'objet de base sans les champs problématiques
+    const supabaseData: any = {
       client_email: client.email,
       // Ne pas inclure client_phone si la colonne n'existe pas dans Supabase
       // client_phone: client.telephone,  // Commenté pour éviter l'erreur de colonne manquante
       client_name: `${client.prenom} ${client.nom}`,
-      raw_data: client,
-      ...(publishedUrls.vente && {
-        vente_url: publishedUrls.vente,
-        vente_generated_at: now
-      }),
-      ...(publishedUrls['compte-rendu'] && {
-        compte_rendu_url: publishedUrls['compte-rendu'],
-        compte_rendu_generated_at: now
-      }),
-      ...(publishedUrls.onboarding && {
-        onboarding_url: publishedUrls.onboarding,
-        onboarding_generated_at: now
-      })
+      raw_data: client
     };
+    
+    // Ajouter les URLs et dates de génération seulement pour les colonnes qui existent
+    // Document de vente (ces colonnes existent certainement d'après les logs)
+    if (publishedUrls.vente) {
+      supabaseData.vente_url = publishedUrls.vente;
+      supabaseData.vente_generated_at = now;
+      console.log('API generate: Ajout des données de vente');
+    }
+    
+    // Compte-rendu (ces colonnes semblent manquantes d'après l'erreur)
+    // Ajouter uniquement l'URL sans la date de génération pour éviter l'erreur
+    if (publishedUrls['compte-rendu']) {
+      supabaseData.compte_rendu_url = publishedUrls['compte-rendu'];
+      // Ne pas ajouter compte_rendu_generated_at car la colonne n'existe pas
+      console.log('API generate: Ajout de l\'URL compte-rendu (sans date de génération)');
+    }
+    
+    // Onboarding (ces colonnes pourraient aussi manquer)
+    // Ajouter uniquement l'URL sans la date de génération pour éviter l'erreur
+    if (publishedUrls.onboarding) {
+      supabaseData.onboarding_url = publishedUrls.onboarding;
+      // Ne pas ajouter onboarding_generated_at car la colonne pourrait ne pas exister
+      console.log('API generate: Ajout de l\'URL onboarding (sans date de génération)');
+    }
     
     console.log('API generate: Données Supabase préparées', { 
       email: supabaseData.client_email,
