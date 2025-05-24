@@ -107,8 +107,7 @@ export async function POST(request: NextRequest) {
     try {
       const publisher = new SupabaseStoragePublisher();
       console.log('🌟🌟🌟 DIAGNOSTIC - Classe utilisée: SupabaseStoragePublisher');
-      console.log('🌟🌟🌟 DIAGNOSTIC - Configuration:
-', {
+      console.log('🌟🌟🌟 DIAGNOSTIC - Configuration:', {
         baseUrl: process.env.SITE_BASE_URL || 'Non défini',
         supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || 'Non défini',
         serviceKeyDefined: !!process.env.SUPABASE_SERVICE_KEY
