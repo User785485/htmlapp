@@ -6,15 +6,9 @@
  */
 
 import { SupabaseClient } from '@supabase/supabase-js';
-import { PostgrestQueryBuilder } from '@supabase/postgrest-js';
 
-// Étendre le type PostgrestQueryBuilder pour inclure nos méthodes compatibles
-declare module '@supabase/postgrest-js' {
-  interface PostgrestQueryBuilder<Schema, Relation, RelationName, Relationships, T, J> {
-    compatSelect: (columns: string, options?: SelectOptions) => PostgrestQueryBuilder<Schema, Relation, RelationName, Relationships, T, J>;
-    compatUpsert: (documents: any | any[], options?: UpsertOptions) => PostgrestQueryBuilder<Schema, Relation, RelationName, Relationships, T, J>;
-  }
-}
+// Note: Nous évitons d'étendre les types directement pour éviter les conflits de déclaration
+// Les fonctions compatSelect et compatUpsert sont utilisées avec des casts de type quand nécessaire
 
 /**
  * Options de sélection pour les requêtes Supabase
@@ -131,26 +125,13 @@ export function compatUpsert(query: any, documents: any | any[], options?: Upser
 
 /**
  * Extension pour les clients Supabase
+ * 
+ * Note: Cette fonction ne modifie plus les objets de requête pour éviter les problèmes de typage.
+ * Au lieu de cela, utilisez directement les fonctions compatSelect et compatUpsert
+ * en passant l'objet de requête comme premier argument.
  */
 export const extendSupabaseClient = (client: SupabaseClient) => {
-  const originalFrom = client.from.bind(client);
-  
-  // Surcharge de la méthode from pour ajouter nos méthodes de compatibilité
-  client.from = (table: string) => {
-    const query = originalFrom(table);
-    
-    // Ajouter une méthode compatSelect
-    (query as any).compatSelect = (columns: string, options?: SelectOptions) => {
-      return compatSelect(query, columns, options);
-    };
-    
-    // Ajouter une méthode compatUpsert
-    (query as any).compatUpsert = (documents: any | any[], options?: UpsertOptions) => {
-      return compatUpsert(query, documents, options);
-    };
-    
-    return query;
-  };
-  
+  // Cette fonction est maintenant un simple passthrough
+  // Elle est conservée pour maintenir la compatibilité avec le code existant
   return client;
 };
