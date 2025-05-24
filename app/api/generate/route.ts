@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ClientData, GenerationResult, DocumentType } from '@/lib/types';
 import { SupabaseService } from '@/lib/supabase-client';
 import { DocumentGenerator } from '@/lib/document-generator';
-import { VercelPublisher } from '@/lib/vercel-publisher';
+import { SupabaseStoragePublisher } from '@/lib/supabase-storage-publisher';
+// import { VercelPublisher } from '@/lib/vercel-publisher'; // Méthode précédente de publication
 // import { GitHubPublisher } from '@/lib/github-publisher'; // Ancienne méthode de publication
 
 // Initialiser les services
@@ -99,12 +100,12 @@ export async function POST(request: NextRequest) {
       throw genError;
     }
     
-    // Publier sur Vercel (fichiers statiques)
-    console.log('💥💥💥 API generate: NOUVELLE MÉTHODE - Publication sur Vercel (fichiers statiques) 💥💥💥');
+    // Publier sur Supabase Storage et servir via API Route
+    console.log('💥💥💥 API generate: NOUVELLE MÉTHODE - Publication sur Supabase Storage + API Route 💥💥💥');
     let publishedUrls;
     try {
-      const publisher = new VercelPublisher();
-      console.log('API generate: Tentative de publication des documents sur Vercel', { 
+      const publisher = new SupabaseStoragePublisher();
+      console.log('API generate: Tentative de publication des documents sur Supabase Storage', { 
         email: client.email,
         documentCount: Object.keys(generatedDocuments).length
       });
@@ -112,9 +113,9 @@ export async function POST(request: NextRequest) {
         client.email,
         generatedDocuments as Record<DocumentType, { content: string; filename: string }>
       );
-      console.log('API generate: Publication Vercel réussie', publishedUrls);
+      console.log('API generate: Publication Supabase Storage réussie', publishedUrls);
     } catch (publishError) {
-      console.error('API generate: Erreur lors de la publication sur Vercel', publishError);
+      console.error('API generate: Erreur lors de la publication sur Supabase Storage', publishError);
       throw publishError;
     }
     
