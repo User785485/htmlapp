@@ -6,6 +6,7 @@ export interface ApiContext {
   startTime: number;
   method: string;
   path: string;
+  body?: any; // Ajout du body au contexte
 }
 
 export type ApiHandler = (
@@ -30,28 +31,18 @@ export function withApiLogging(
     const method = request.method;
     const path = request.nextUrl.pathname;
     
-    const context: ApiContext = {
-      requestId,
-      startTime,
-      method,
-      path,
-    };
+    let body = null;
     
     try {
       // Logger la requête entrante
-      let body = null;
       const contentType = request.headers.get('content-type');
+      
+      // Cloner la requête pour pouvoir lire le body sans le consommer
+      const clonedRequest = request.clone();
       
       if (contentType?.includes('application/json')) {
         try {
-          const text = await request.text();
-          body = JSON.parse(text);
-          // Recréer la requête avec le body lu
-          request = new NextRequest(request.url, {
-            method: request.method,
-            headers: request.headers,
-            body: text,
-          });
+          body = await clonedRequest.json();
         } catch (e) {
           logger.warn(component, 'parse_body', 'Impossible de parser le body JSON', {
             error: e,
@@ -62,7 +53,15 @@ export function withApiLogging(
       
       logger.logApiRequest(method, path, body, Object.fromEntries(request.headers), requestId);
       
-      // Appeler le handler principal
+      const context: ApiContext = {
+        requestId,
+        startTime,
+        method,
+        path,
+        body, // Passer le body dans le contexte
+      };
+      
+      // Appeler le handler principal avec la requête originale
       const response = await handler(request, context);
       
       // Logger la réponse
