@@ -132,17 +132,22 @@ export function withApiLogging(
 }
 
 /**
+ * Type pour les règles de validation
+ */
+type ValidationRule = {
+  required?: boolean;
+  type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  validator?: (value: any) => boolean;
+  message?: string;
+};
+
+/**
  * Wrapper pour valider les données de requête
  */
 export async function validateRequestBody<T>(
   request: NextRequest,
   schema: {
-    [K in keyof T]: {
-      required?: boolean;
-      type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
-      validator?: (value: any) => boolean;
-      message?: string;
-    };
+    [K in keyof T]: ValidationRule;
   }
 ): Promise<T> {
   try {
@@ -152,31 +157,33 @@ export async function validateRequestBody<T>(
     
     // Vérifier chaque champ selon le schéma
     for (const [field, rules] of Object.entries(schema)) {
+      // Cast explicite de rules en ValidationRule pour que TypeScript puisse l'utiliser
+      const rule = rules as ValidationRule;
       const value = body[field];
       
       // Vérifier si requis
-      if (rules.required && (value === undefined || value === null)) {
+      if (rule.required && (value === undefined || value === null)) {
         errors.push(`Le champ '${field}' est requis`);
         continue;
       }
       
-      // Si pas requis et absent, passer
-      if (!rules.required && (value === undefined || value === null)) {
+      // Si pas de valeur et pas requis, on continue
+      if (value === undefined || value === null) {
         continue;
       }
       
       // Vérifier le type
-      if (rules.type) {
+      if (rule.type) {
         const actualType = Array.isArray(value) ? 'array' : typeof value;
-        if (actualType !== rules.type) {
-          errors.push(`Le champ '${field}' doit être de type ${rules.type}`);
+        if (actualType !== rule.type) {
+          errors.push(`Le champ '${field}' doit être de type ${rule.type}, mais est de type ${actualType}`);
           continue;
         }
       }
       
-      // Validation personnalisée
-      if (rules.validator && !rules.validator(value)) {
-        errors.push(rules.message || `Le champ '${field}' est invalide`);
+      // Vérifier avec validateur personnalisé
+      if (rule.validator && !rule.validator(value)) {
+        errors.push(rule.message || `Le champ '${field}' est invalide`);
         continue;
       }
       
