@@ -177,6 +177,33 @@ export class CSVParser {
    * Génère un CSV d'export avec les liens
    */
   static generateExportCSV(rows: CSVExportRow[]): string {
+    console.log(`CSVParser: Génération CSV pour ${rows.length} lignes`);
+    
+    if (rows.length === 0) {
+      console.warn('CSVParser: ATTENTION! Génération d\'un CSV vide');
+      return '';
+    }
+    
+    // Vérifier le contenu des données
+    console.log('CSVParser: Première ligne à exporter:', rows[0]);
+    
+    // Vérifier si on a des données vides ou manquantes
+    const emailsVides = rows.filter(r => !r.email).length;
+    const telephoneVides = rows.filter(r => !r.telephone).length;
+    const donneesVides = rows.filter(r => !r.donnees_completes || r.donnees_completes === '{}').length;
+    const liensCRVides = rows.filter(r => !r.lien_compte_rendu).length;
+    const liensVenteVides = rows.filter(r => !r.lien_page_vente).length;
+    const liensOnboardingVides = rows.filter(r => !r.lien_onboarding).length;
+    
+    console.log('CSVParser: Statistiques des données manquantes:', {
+      emailsVides, 
+      telephoneVides, 
+      donneesVides,
+      liensCRVides,
+      liensVenteVides,
+      liensOnboardingVides
+    });
+    
     const csv = Papa.unparse(rows, {
       header: true,
       columns: [
@@ -188,6 +215,13 @@ export class CSVParser {
         'lien_onboarding'
       ]
     });
+    
+    console.log(`CSVParser: CSV généré (${csv.length} caractères)`);
+    if (csv.length < 100) {
+      console.log('CSVParser: Contenu CSV complet (très court):', csv);
+    } else {
+      console.log('CSVParser: Début du CSV généré:', csv.substring(0, 100) + '...');
+    }
     
     return csv;
   }
@@ -241,20 +275,48 @@ export class CSVParser {
    * Télécharge un fichier CSV
    */
   static downloadCSV(content: string, filename: string = 'export.csv'): void {
-    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    console.log(`CSVParser: Début du téléchargement CSV '${filename}'`);
+    console.log(`CSVParser: Taille du contenu CSV: ${content.length} caractères`);
     
-    // Support pour IE 10+
-    const nav = navigator as any;
-    if (nav.msSaveBlob) {
-      nav.msSaveBlob(blob, filename);
-    } else {
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    if (!content || content.length === 0) {
+      console.error('CSVParser: ERREUR - Tentative de téléchargement d\'un CSV vide');
+      alert('Erreur: Le CSV est vide, impossible de télécharger un fichier vide.');
+      return;
+    }
+    
+    // Vérifier si le CSV contient des données valides (au moins un header et une ligne)
+    const lignes = content.split('\n');
+    console.log(`CSVParser: Le CSV contient ${lignes.length} lignes`);
+    
+    if (lignes.length < 2) {
+      console.warn('CSVParser: ATTENTION - Le CSV ne contient que le header, pas de données');
+    }
+    
+    try {
+      const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+      console.log(`CSVParser: Blob créé avec succès, taille: ${blob.size} octets`);
+      
+      const link = document.createElement('a');
+      
+      // Support pour IE 10+
+      const nav = navigator as any;
+      if (nav.msSaveBlob) {
+        console.log('CSVParser: Utilisation de msSaveBlob pour IE');
+        nav.msSaveBlob(blob, filename);
+      } else {
+        console.log('CSVParser: Utilisation de URL.createObjectURL pour les navigateurs modernes');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      
+      console.log(`CSVParser: Téléchargement CSV '${filename}' terminé avec succès`);
+    } catch (error) {
+      console.error('CSVParser: ERREUR lors du téléchargement CSV:', error);
+      alert(`Erreur lors du téléchargement: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     }
   }
 }

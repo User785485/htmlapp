@@ -1,0 +1,106 @@
+# HTML Personalizer V2 - Vue d'ensemble des fichiers système
+
+## 1. Fichiers CSV
+
+### test_csv_format.csv
+Format minimal requis pour le système :
+```
+email,telephone,prenom,nom
+test@example.com,+33123456789,Jean,Dupont
+info@societe.fr,+33987654321,Marie,Martin
+```
+
+### test_csv_complet.csv
+Format complet avec toutes les variables :
+```
+email,telephone,prenom,nom,produit,prix,offre_speciale,date_rencontre,objectifs,recommandations,etapes_onboarding,conseils_onboarding
+test@example.com,+33123456789,Jean,Dupont,Formation HTML,499€,10% de réduction,2025-05-15,Apprendre HTML en 3 mois,Pratiquer quotidiennement,"1. Installation, 2. Premiers pas, 3. Projet final","Commencer par les bases, Faire des exercices régulièrement"
+info@societe.fr,+33987654321,Marie,Martin,Coaching SEO,999€,Premier mois gratuit,2025-05-10,Améliorer le référencement,Optimiser les meta-tags,"1. Audit, 2. Corrections, 3. Suivi","Mettre à jour régulièrement, Créer du contenu original"
+```
+
+## 2. Fichiers du système de parsing CSV
+
+### lib/csv-parser.ts
+Parse les fichiers CSV et gère la validation des données.
+
+### lib/types.ts
+Définit les interfaces ClientData et CSVExportRow utilisées pour le parsing.
+
+## 3. Fichiers de génération de documents
+
+### lib/document-generator.ts
+Génère les documents HTML personnalisés à partir des templates et des données client.
+
+### templates/protection.html
+Template HTML pour la protection par mot de passe des documents.
+
+### templates/vente/template.html
+### templates/compte-rendu/template.html
+### templates/onboarding/template.html
+Templates HTML pour les différents types de documents générés.
+
+## 4. Fichiers de publication GitHub
+
+### lib/github-publisher.ts
+Publie les documents générés sur GitHub Pages avec protection par mot de passe.
+
+## 5. Fichiers de base de données (Supabase)
+
+### lib/supabase-client.ts
+Gère la connexion à Supabase et les opérations sur la base de données.
+
+### lib/supabase-compat.ts
+Fournit une couche de compatibilité pour différentes versions de l'API Supabase.
+
+## 6. API Routes
+
+### app/api/generate/route.ts
+Endpoint principal qui gère la génération des documents personnalisés.
+
+### app/api/upload/route.ts
+Endpoint pour l'upload des fichiers CSV.
+
+### app/api/logs/route.ts
+Endpoint pour la gestion des logs d'application.
+
+### app/api/export/route.ts
+Endpoint pour l'export des résultats au format CSV.
+
+## 7. Composants d'interface utilisateur
+
+### components/Dashboard.tsx
+Composant principal qui orchestre l'upload, la validation et la génération.
+
+### components/UploadZone.tsx
+Gère l'interface de glisser-déposer pour les fichiers CSV.
+
+### components/ProgressBar.tsx
+Affiche la progression de la génération des documents.
+
+### components/ResultsTable.tsx
+Affiche les résultats de la génération avec les liens vers les documents.
+
+## 8. Variables d'environnement requises
+
+```
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://prbidefjoqdrqwjeenxm.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<clé_anon>
+SUPABASE_SERVICE_KEY=<clé_service>
+
+# GitHub
+GITHUB_TOKEN=<token_github>
+GITHUB_OWNER=User785485
+GITHUB_REPO=soulful-connections-new
+GITHUB_BRANCH=main
+
+# Application
+ACCESS_CODE=7744
+SITE_BASE_URL=https://User785485.github.io/soulful-connections-new
+```
+
+## 9. Problèmes actuels
+
+- Erreur 500 lors de l'appel à l'API /api/generate
+- Problème potentiel avec la publication GitHub ou la génération de documents
+- Nécessite des logs détaillés pour identifier le problème exact

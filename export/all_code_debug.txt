@@ -1,0 +1,2921 @@
+# HTML Personalizer V2 - DUMP COMPLET DU CODE 
+# Genere le 24/05/2025 a  3:28:09,06 
+ 
+## FICHIERS CSV 
+ 
+### test_csv_format.csv 
+```csv 
+email,telephone,prenom,nom
+test@example.com,+33123456789,Jean,Dupont
+info@societe.fr,+33987654321,Marie,Martin
+``` 
+ 
+### test_csv_complet.csv 
+```csv 
+email,telephone,prenom,nom,produit,prix,offre_speciale,date_rencontre,objectifs,recommandations,etapes_onboarding,conseils_onboarding
+test@example.com,+33123456789,Jean,Dupont,Formation HTML,499€,10% de réduction,2025-05-15,Apprendre HTML en 3 mois,Pratiquer quotidiennement,"1. Installation, 2. Premiers pas, 3. Projet final","Commencer par les bases, Faire des exercices régulièrement"
+info@societe.fr,+33987654321,Marie,Martin,Coaching SEO,999€,Premier mois gratuit,2025-05-10,Améliorer le référencement,Optimiser les meta-tags,"1. Audit, 2. Corrections, 3. Suivi","Mettre à jour régulièrement, Créer du contenu original"
+``` 
+ 
+## FICHIERS PRINCIPAUX 
+ 
+### lib/csv-parser.ts 
+```typescript 
+import Papa from 'papaparse';
+import { ClientData, CSVExportRow } from './types';
+
+/**
+ * Parse une chaîne CSV et retourne les données clients
+ */
+export function parseCSVString(csvString: string): Promise<ClientData[]> {
+  return new Promise((resolve, reject) => {
+    Papa.parse(csvString, {
+      header: true,
+      complete: (results) => {
+        if (results.errors.length > 0) {
+          console.error('Erreurs de parsing CSV:', results.errors);
+          reject(new Error('Erreur lors du parsing du CSV'));
+          return;
+        }
+        
+        // Validation et nettoyage des données
+        const clients = results.data
+          .filter((row: any) => row.email && row.email.trim() !== '')
+          .map((row: any) => {
+            return {
+              email: row.email?.trim().toLowerCase() || '',
+              telephone: row.telephone?.trim() || '',
+              prenom: row.prenom?.trim() || '',
+              nom: row.nom?.trim() || '',
+              
+              // Variables pour vente
+              produit: row.produit?.trim() || '',
+              prix: row.prix?.trim() || '',
+              offre_speciale: row.offre_speciale?.trim() || '',
+              
+              // Variables pour compte-rendu
+              date_rencontre: row.date_rencontre?.trim() || '',
+              objectifs: row.objectifs?.trim() || '',
+              recommandations: row.recommandations?.trim() || '',
+              
+              // Variables pour onboarding
+              etapes_onboarding: row.etapes_onboarding?.trim() || '',
+              conseils_onboarding: row.conseils_onboarding?.trim() || '',
+              
+              // Conserver toutes les autres colonnes
+              ...Object.keys(row).reduce((acc: any, key: string) => {
+                if (!['email', 'telephone', 'prenom', 'nom', 'produit', 'prix', 
+                      'offre_speciale', 'date_rencontre', 'objectifs', 'recommandations',
+                      'etapes_onboarding', 'conseils_onboarding'].includes(key)) {
+                  acc[key] = row[key]?.trim() || '';
+                }
+                return acc;
+              }, {})
+            };
+          });
+        
+        resolve(clients);
+      },
+      error: (error: Error) => {
+        reject(error);
+      }
+    });
+  });
+}
+
+/**
+ * Analyse les données des clients pour détecter les doublons et les regrouper
+ */
+export function analyzeClientData(clients: ClientData[]): { 
+  duplicates: { [key: string]: ClientData[] },
+  uniqueCount: number,
+  totalCount: number
+} {
+  const emails = new Map<string, ClientData[]>();
+  
+  // Regrouper par email
+  clients.forEach(client => {
+    const email = client.email.toLowerCase();
+    if (!emails.has(email)) {
+      emails.set(email, []);
+    }
+    emails.get(email)!.push(client);
+  });
+  
+  // Identifier les doublons
+  const duplicates: { [key: string]: ClientData[] } = {};
+  let uniqueCount = 0;
+  
+  emails.forEach((clientsGroup, email) => {
+    if (clientsGroup.length > 1) {
+      duplicates[email] = clientsGroup;
+    } else {
+      uniqueCount++;
+    }
+  });
+  
+  return {
+    duplicates,
+    uniqueCount,
+    totalCount: clients.length
+  };
+}
+
+export class CSVParser {
+  /**
+   * Parse un fichier CSV et retourne les données clients
+   */
+  static async parseCSV(file: File): Promise<ClientData[]> {
+    console.log('Début du parsing CSV...', { filename: file.name, size: file.size, type: file.type });
+    return new Promise((resolve, reject) => {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        error: (error) => {
+          console.error('Erreur Papa.parse:', error);
+          reject(error);
+        },
+        complete: (results) => {
+          console.log('Résultats du parsing:', { 
+            rowCount: results.data.length,
+            errorCount: results.errors.length,
+            sampleRow: results.data.length > 0 ? results.data[0] : null,
+            meta: results.meta
+          });
+          
+          if (results.errors.length > 0) {
+            console.error('Erreurs détaillées de parsing CSV:', JSON.stringify(results.errors));
+            reject(new Error('Erreur lors du parsing du CSV'));
+            return;
+          }
+          
+          // Validation et nettoyage des données
+          const clients = results.data
+            .filter((row: any) => row.email && row.email.trim() !== '')
+            .map((row: any) => this.cleanClientData(row));
+          
+          resolve(clients);
+        }
+      });
+    });
+  }
+  
+  /**
+   * Nettoie }lide les données d'un client
+   */
+  private static cleanClientData(row: any): ClientData {
+    return {
+      email: row.email?.trim().toLowerCase() || '',
+      telephone: row.telephone?.trim() || '',
+      prenom: row.prenom?.trim() || '',
+      nom: row.nom?.trim() || '',
+      
+      // Variables pour vente
+      produit: row.produit?.trim() || '',
+      prix: row.prix?.trim() || '',
+      offre_speciale: row.offre_speciale?.trim() || '',
+      
+      // Variables pour compte-rendu
+      date_rencontre: row.date_rencontre?.trim() || '',
+      objectifs: row.objectifs?.trim() || '',
+      recommandations: row.recommandations?.trim() || '',
+      
+      // Variables pour onboarding
+      etapes_onboarding: row.etapes_onboarding?.trim() || '',
+      conseils_onboarding: row.conseils_onboarding?.trim() || '',
+      
+      // Conserver toutes les autres colonnes
+      ...Object.keys(row).reduce((acc: any, key: string) => {
+        if (!['email', 'telephone', 'prenom', 'nom', 'produit', 'prix', 
+              'offre_speciale', 'date_rencontre', 'objectifs', 'recommandations',
+              'etapes_onboarding', 'conseils_onboarding'].includes(key)) {
+          acc[key] = row[key]?.trim() || '';
+        }
+        return acc;
+      }, {})
+    };
+  }
+  
+  /**
+   * Génère un CSV d'export avec les liens
+   */
+  static generateExportCSV(rows: CSVExportRow[]): string {
+    const csv = Papa.unparse(rows, {
+      header: true,
+      columns: [
+        'email',
+        'telephone', 
+        'donnees_completes',
+        'lien_compte_rendu',
+        'lien_page_vente',
+        'lien_onboarding'
+      ]
+    });
+    
+    return csv;
+  }
+  
+  /**
+   * Valide la structure du CSV et renvoie les erreurs
+   */
+  static validateCSVStructure(data: any[]): { valid: boolean; errors: string[] } {
+    console.log('Validating CSV structure...');
+    const errors: string[] = [];
+    const requiredColumns = ['email', 'telephone', 'prenom'];
+    
+    if (data.length === 0) {
+      errors.push('Le fichier CSV est vide');
+      return { valid: false, errors };
+    }
+    
+    // Vérifier les colonnes requises
+    const firstRow = data[0];
+    const missingColumns = requiredColumns.filter(col => !(col in firstRow));
+    
+    if (missingColumns.length > 0) {
+      errors.push(`Colonnes manquantes: ${missingColumns.join(', ')}`);
+    }
+    
+    // Vérifier les emails valides
+    const invalidEmails = data
+      .map((row, index) => ({ row, index }))
+      .filter(({ row }) => !this.isValidEmail(row.email))
+      .map(({ index }) => index + 2); // +2 car ligne 1 = headers
+    
+    if (invalidEmails.length > 0) {
+      errors.push(`Emails invalides aux lignes: ${invalidEmails.join(', ')}`);
+    }
+    
+    return {
+      valid: errors.length === 0,
+      errors
+    };
+  }
+  
+  /**
+   * Valide un email
+   */
+  private static isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  /**
+   * Télécharge un fichier CSV
+   */
+  static downloadCSV(content: string, filename: string = 'export.csv'): void {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    // Support pour IE 10+
+    const nav = navigator as any;
+    if (nav.msSaveBlob) {
+      nav.msSaveBlob(blob, filename);
+    } else {
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+}``` 
+ 
+### lib/document-generator.ts 
+```typescript 
+import { ClientData, DocumentType } from './types';
+import { logger } from './logger';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+
+export class DocumentGenerator {
+  private static protectionTemplate: string | null = null;
+  private static templates: Map<DocumentType, string> = new Map();
+  
+  /**
+   * Charge tous les templates au démarrage
+   */
+  static async loadTemplates(): Promise<void> {
+    const startTime = Date.now();
+    
+    try {
+      logger.info('DOCUMENT_GENERATOR', 'load_templates_start', 'Début du chargement des templates');
+      
+      // Charger le template de protection
+      const protectionPath = path.join(process.cwd(), 'templates', 'protection.html');
+      this.protectionTemplate = await fs.readFile(protectionPath, 'utf-8');
+      logger.debug('DOCUMENT_GENERATOR', 'load_protection_template', 'Template de protection chargé', {
+        path: protectionPath,
+        size: this.protectionTemplate.length,
+      });
+      
+      // Charger les templates de documents
+      const templateTypes: DocumentType[] = ['vente', 'compte-rendu', 'onboarding'];
+      
+      for (const type of templateTypes) {
+        const templatePath = path.join(process.cwd(), 'templates', type, 'template.html');
+        try {
+          const template = await fs.readFile(templatePath, 'utf-8');
+          this.templates.set(type, template);
+          
+          logger.debug('DOCUMENT_GENERATOR', 'load_template', `Template ${type} chargé`, {
+            type,
+            path: templatePath,
+            size: template.length,
+          });
+        } catch (error) {
+          logger.error('DOCUMENT_GENERATOR', 'load_template_error', `Erreur chargement template ${type}`, {
+            type,
+            path: templatePath,
+            error: error instanceof Error ? error.message : error,
+          });
+          throw error;
+        }
+      }
+      
+      const duration = Date.now() - startTime;
+      logger.info('DOCUMENT_GENERATOR', 'load_templates_success', 'Templates chargés avec succès', {
+        count: this.templates.size,
+        duration_ms: duration,
+      });
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.error('DOCUMENT_GENERATOR', 'load_templates_error', 'Erreur lors du chargement des templates', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Génère un document HTML personnalisé
+   */
+  static generateDocument(
+    client: ClientData, 
+    type: DocumentType
+  ): string {
+    const startTime = Date.now();
+    
+    try {
+      logger.debug('DOCUMENT_GENERATOR', 'generate_start', `Génération document ${type}`, {
+        client_email: client.email,
+        document_type: type,
+      });
+      
+      const template = this.templates.get(type);
+      if (!template) {
+        throw new Error(`Template non trouvé pour le type: ${type}`);
+      }
+      
+      // Préparer les variables selon le type de document
+      const variables = this.prepareVariables(client, type);
+      
+      // Remplacer les variables dans le template
+      let html = template;
+      let replacementCount = 0;
+      
+      Object.entries(variables).forEach(([key, value]) => {
+        const regex = new RegExp(`{{${key}}}`, 'g');
+        const matches = html.match(regex);
+        if (matches) {
+          replacementCount += matches.length;
+        }
+        html = html.replace(regex, value || '');
+      });
+      
+      logger.debug('DOCUMENT_GENERATOR', 'variables_replaced', 'Variables remplacées', {
+        client_email: client.email,
+        document_type: type,
+        variables_count: Object.keys(variables).length,
+        replacements_count: replacementCount,
+      });
+      
+      // Ajouter la protection par mot de passe
+      const protectedHtml = this.addPasswordProtection(html, client.prenom);
+      
+      const duration = Date.now() - startTime;
+      logger.info('DOCUMENT_GENERATOR', 'generate_success', `Document ${type} généré`, {
+        client_email: client.email,
+        document_type: type,
+        duration_ms: duration,
+        final_size: protectedHtml.length,
+      });
+      
+      return protectedHtml;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.error('DOCUMENT_GENERATOR', 'generate_error', `Erreur génération ${type}`, {
+        client_email: client.email,
+        document_type: type,
+        error: error instanceof Error ? error.message : error,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Prépare les variables selon le type de document
+   */
+  private static prepareVariables(
+    client: ClientData, 
+    type: DocumentType
+  ): Record<string, string> {
+    const baseVariables = {
+      PRENOM: client.prenom,
+      NOM: client.nom,
+      EMAIL: client.email,
+      TELEPHONE: client.telephone,
+      DATE_GENERATION: new Date().toLocaleDateString('fr-FR'),
+    };
+    
+    switch (type) {
+      case 'vente':
+        return {
+          ...baseVariables,
+          PRODUIT: client.produit || '',
+          PRIX: client.prix || '',
+          OFFRE_SPECIALE: client.offre_speciale || '',
+          // Ajouter d'autres variables spécifiques à la vente
+        };
+        
+      case 'compte-rendu':
+        return {
+          ...baseVariables,
+          DATE_RENCONTRE: client.date_rencontre || '',
+          OBJECTIFS: client.objectifs || '',
+          RECOMMANDATIONS: client.recommandations || '',
+          // Ajouter d'autres variables spécifiques au compte-rendu
+        };
+        
+      case 'onboarding':
+        return {
+          ...baseVariables,
+          ETAPES: client.etapes_onboarding || '',
+          CONSEILS: client.conseils_onboarding || '',
+          // Ajouter d'autres variables spécifiques à l'onboarding
+        };
+        
+      default:
+        return baseVariables;
+    }
+  }
+  
+  /**
+   * Ajoute la protection par mot de passe
+   */
+  private static addPasswordProtection(content: string, clientName: string): string {
+    if (!this.protectionTemplate) {
+      throw new Error('Template de protection non chargé');
+    }
+    
+    // Encoder le contenu en base64 pour éviter les problèmes d'échappement
+    const encodedContent = Buffer.from(content).toString('base64');
+    
+    // Remplacer les variables dans le template de protection
+    let protectedHtml = this.protectionTemplate;
+    protectedHtml = protectedHtml.replace(/{{CLIENT_NAME}}/g, clientName);
+    protectedHtml = protectedHtml.replace(/{{ACCESS_CODE}}/g, process.env.ACCESS_CODE || '7744');
+    protectedHtml = protectedHtml.replace(/{{ENCODED_CONTENT}}/g, encodedContent);
+    
+    return protectedHtml;
+  }
+  
+  /**
+   * Génère un nom de fichier unique
+   */
+  static generateFileName(client: ClientData, type: DocumentType): string {
+    const prenom = client.prenom.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const timestamp = Date.now();
+    return `${prenom}_${type}_${timestamp}.html`;
+  }
+  
+  /**
+   * Génère tous les documents pour un client
+   */
+  static async generateAllDocuments(
+    client: ClientData
+  ): Promise<Record<DocumentType, { content: string; filename: string }>> {
+    const startTime = Date.now();
+    
+    logger.info('DOCUMENT_GENERATOR', 'generate_all_start', 'Génération de tous les documents', {
+      client_email: client.email,
+      client_name: `${client.prenom} ${client.nom}`,
+    });
+    
+    const documents: Record<string, { content: string; filename: string }> = {};
+    const types: DocumentType[] = ['vente', 'compte-rendu', 'onboarding'];
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const type of types) {
+      try {
+        const content = this.generateDocument(client, type);
+        const filename = this.generateFileName(client, type);
+        documents[type] = { content, filename };
+        successCount++;
+        
+        logger.debug('DOCUMENT_GENERATOR', 'document_generated', `Document ${type} généré`, {
+          client_email: client.email,
+          type,
+          filename,
+          content_size: content.length,
+        });
+      } catch (error) {
+        errorCount++;
+        logger.error('DOCUMENT_GENERATOR', 'generate_document_error', `Erreur génération ${type}`, {
+          client_email: client.email,
+          type,
+          error: error instanceof Error ? error.message : error,
+        });
+        throw error;
+      }
+    }
+    
+    const duration = Date.now() - startTime;
+    logger.info('DOCUMENT_GENERATOR', 'generate_all_complete', 'Génération terminée', {
+      client_email: client.email,
+      success_count: successCount,
+      error_count: errorCount,
+      duration_ms: duration,
+    });
+    
+    return documents as Record<DocumentType, { content: string; filename: string }>;
+  }
+}``` 
+ 
+### lib/github-publisher.ts 
+```typescript 
+import { Octokit } from '@octokit/rest';
+import { DocumentType } from './types';
+import { logger } from './logger';
+
+export class GitHubPublisher {
+  private octokit: Octokit;
+  private owner: string;
+  private repo: string;
+  private branch: string;
+  private baseUrl: string;
+  
+  constructor() {
+    this.octokit = new Octokit({
+      auth: process.env.GITHUB_TOKEN,
+    });
+    
+    this.owner = process.env.GITHUB_OWNER || 'User785485';
+    this.repo = process.env.GITHUB_REPO || 'soulful-connections-new';
+    this.branch = process.env.GITHUB_BRANCH || 'main';
+    this.baseUrl = process.env.SITE_BASE_URL || 
+      `https://${this.owner}.github.io/${this.repo}`;
+      
+    logger.debug('GITHUB_PUBLISHER', 'init', 'GitHub Publisher initialisé', {
+      owner: this.owner,
+      repo: this.repo,
+      branch: this.branch,
+      baseUrl: this.baseUrl,
+    });
+  }
+  
+  /**
+   * Publie un fichier sur GitHub
+   */
+  async publishFile(
+    path: string, 
+    content: string, 
+    message: string
+  ): Promise<string> {
+    const startTime = Date.now();
+    
+    try {
+      logger.debug('GITHUB_PUBLISHER', 'publish_file_start', `Publication de ${path}`, {
+        path,
+        content_size: content.length,
+        message,
+      });
+      
+      // Vérifier si le fichier existe déjà
+      let sha: string | undefined;
+      try {
+        const { data } = await this.octokit.repos.getContent({
+          owner: this.owner,
+          repo: this.repo,
+          path,
+        });
+        
+        if ('sha' in data) {
+          sha = data.sha;
+          logger.debug('GITHUB_PUBLISHER', 'file_exists', 'Fichier existant trouvé', {
+            path,
+            sha,
+          });
+        }
+      } catch (error: any) {
+        // Le fichier n'existe pas, c'est OK
+        if (error.status !== 404) {
+          throw error;
+        }
+        logger.debug('GITHUB_PUBLISHER', 'file_not_exists', 'Nouveau fichier', { path });
+      }
+      
+      // Créer ou mettre à jour le fichier
+      const { data } = await this.octokit.repos.createOrUpdateFileContents({
+        owner: this.owner,
+        repo: this.repo,
+        path,
+        message,
+        content: Buffer.from(content).toString('base64'),
+        branch: this.branch,
+        sha, // Si le fichier existe, on doit fournir le SHA
+      });
+      
+      // Retourner l'URL publique
+      const publicUrl = `${this.baseUrl}/${path}`;
+      
+      const duration = Date.now() - startTime;
+      logger.logGitHub('publish_file', path, true, {
+        sha: data.content?.sha,
+        size: content.length,
+        duration_ms: duration,
+        url: publicUrl,
+      });
+      
+      return publicUrl;
+      
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      logger.logGitHub('publish_file', path, false, {
+        error: error.message,
+        status: error.status,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Publie tous les documents d'un client
+   */
+  async publishClientDocuments(
+    clientEmail: string,
+    documents: Record<DocumentType, { content: string; filename: string }>
+  ): Promise<Record<DocumentType, string>> {
+    const startTime = Date.now();
+    
+    logger.info('GITHUB_PUBLISHER', 'publish_client_start', 'Publication des documents client', {
+      client_email: clientEmail,
+      documents_count: Object.keys(documents).length,
+    });
+    
+    const urls: Record<string, string> = {};
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const [type, doc] of Object.entries(documents)) {
+      const path = `protected-pages/${type}/${doc.filename}`;
+      const message = `Ajout document ${type} pour ${clientEmail}`;
+      
+      try {
+        const url = await this.publishFile(path, doc.content, message);
+        urls[type] = url;
+        successCount++;
+        
+        logger.info('GITHUB_PUBLISHER', 'document_published', `Document ${type} publié`, {
+          client_email: clientEmail,
+          type,
+          path,
+          url,
+        });
+      } catch (error) {
+        errorCount++;
+        logger.error('GITHUB_PUBLISHER', 'publish_document_error', `Erreur publication ${type}`, {
+          client_email: clientEmail,
+          type,
+          path,
+          error: error instanceof Error ? error.message : error,
+        });
+        throw error;
+      }
+    }
+    
+    const duration = Date.now() - startTime;
+    logger.info('GITHUB_PUBLISHER', 'publish_client_complete', 'Publication client terminée', {
+      client_email: clientEmail,
+      success_count: successCount,
+      error_count: errorCount,
+      duration_ms: duration,
+    });
+    
+    return urls as Record<DocumentType, string>;
+  }
+  
+  /**
+   * Met à jour la page d'index
+   */
+  async updateIndexPage(stats: {
+    totalClients: number;
+    totalDocuments: number;
+    lastUpdate: string;
+  }): Promise<void> {
+    const startTime = Date.now();
+    
+    try {
+      logger.info('GITHUB_PUBLISHER', 'update_index_start', 'Mise à jour page index', { stats });
+      
+      const indexContent = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pages Protégées - Soulful Connections</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .info p {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .lock-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lock-icon" style="text-align: center;">🔒</div>
+        <h1>Pages Protégées</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">${stats.totalClients}</div>
+                <div class="stat-label">Clients</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">${stats.totalDocuments}</div>
+                <div class="stat-label">Documents</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">7744</div>
+                <div class="stat-label">Code d'accès</div>
+            </div>
+        </div>
+        
+        <div class="info">
+            <p>
+                <strong>Accès protégé</strong><br>
+                Toutes les pages nécessitent un code d'accès pour être consultées.<br>
+                Dernière mise à jour : ${stats.lastUpdate}
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+      `;
+      
+      await this.publishFile(
+        'protected-pages/index.html',
+        indexContent,
+        'Mise à jour page d\'index'
+      );
+      
+      const duration = Date.now() - startTime;
+      logger.info('GITHUB_PUBLISHER', 'update_index_success', 'Page index mise à jour', {
+        duration_ms: duration,
+      });
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.error('GITHUB_PUBLISHER', 'update_index_error', 'Erreur mise à jour index', {
+        error: error instanceof Error ? error.message : error,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Vérifie la connexion GitHub
+   */
+  async testConnection(): Promise<boolean> {
+    const startTime = Date.now();
+    
+    try {
+      logger.debug('GITHUB_PUBLISHER', 'test_connection_start', 'Test de connexion GitHub');
+      
+      const { data } = await this.octokit.repos.get({
+        owner: this.owner,
+        repo: this.repo,
+      });
+      
+      const duration = Date.now() - startTime;
+      logger.info('GITHUB_PUBLISHER', 'test_connection_success', 'Connexion GitHub OK', {
+        repo_name: data.name,
+        repo_id: data.id,
+        default_branch: data.default_branch,
+        duration_ms: duration,
+      });
+      
+      return true;
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      logger.error('GITHUB_PUBLISHER', 'test_connection_error', 'Erreur connexion GitHub', {
+        error: error.message,
+        status: error.status,
+        duration_ms: duration,
+      });
+      return false;
+    }
+  }
+}``` 
+ 
+### lib/supabase-client.ts 
+```typescript 
+import { createClient } from '@supabase/supabase-js';
+import { GeneratedDocument } from './types';
+import { logger } from './logger';
+import { extendSupabaseClient, SelectOptions, compatSelect, compatUpsert, UpsertOptions } from './supabase-compat';
+
+// Utiliser les variables d'environnement ou des valeurs de secours pour le développement
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://prbidefjoqdrqwjeenxm.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByYmlkZWZqb3FkcnF3amVlbnhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMzY3NDEsImV4cCI6MjA2MzYxMjc0MX0.FaiiU8DTqnBVkNjG2L3wkE0MCsKnit_CNdGMmP0oRME';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByYmlkZWZqb3FkcnF3amVlbnhtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAzNjc0MSwiZXhwIjoyMDYzNjEyNzQxfQ.K-f19FXAPH-z2qfRGMS2zOUmsVJ-iya6l0xfEwlVf44';
+
+// Log pour débogage
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Anon Key:', supabaseAnonKey ? 'Défini' : 'Non défini');
+console.log('Supabase Service Key:', supabaseServiceKey ? 'Défini' : 'Non défini');
+
+// Patch pour la méthode select de Supabase
+// Ceci permet de contourner les différences de signature entre les versions
+interface ExtendedGlobalThis {
+  supaPatchApplied?: boolean;
+}
+
+if (!(globalThis as ExtendedGlobalThis).supaPatchApplied) {
+  // Patch la méthode select globalement pour le monkeypatch
+  const originalSelect = Object.getPrototypeOf(createClient(supabaseUrl, supabaseAnonKey).from('test')).select;
+  
+  if (originalSelect) {
+    Object.defineProperty(Object.getPrototypeOf(createClient(supabaseUrl, supabaseAnonKey).from('test')), 'select', {
+      value: function(columns: string, options?: SelectOptions) {
+        try {
+          // Essayer d'abord avec les deux paramètres (nouvelle version)
+          if (options) {
+            return originalSelect.call(this, columns, options);
+          } else {
+            return originalSelect.call(this, columns);
+          }
+        } catch (e) {
+          // Fall back à la version compatible
+          logger.debug('SUPABASE', 'version_fallback', 'Utilisation du fallback pour select', { error: e instanceof Error ? e.message : String(e) });
+          
+          // Appeler select avec un seul paramètre
+          let result = originalSelect.call(this, columns);
+          
+          // Appliquer manuellement les options
+          if (options) {
+            if (options.count) {
+              result = result.count(options.count);
+            }
+            if (options.head) {
+              result = result.limit(1);
+            }
+          }
+          
+          return result;
+        }
+      }
+    });
+  }
+  
+  (globalThis as ExtendedGlobalThis).supaPatchApplied = true;
+}
+
+// Client public pour le côté client
+export const supabase = extendSupabaseClient(createClient(supabaseUrl, supabaseAnonKey));
+
+// Client service pour le côté serveur (avec tous les droits)
+export const supabaseAdmin = extendSupabaseClient(createClient(supabaseUrl, supabaseServiceKey));
+
+export class SupabaseService {
+  /**
+   * Vérifie si un client existe déjà dans la base
+   */
+  static async checkClientExists(email: string): Promise<GeneratedDocument | null> {
+    const startTime = Date.now();
+    
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('generated_documents')
+        .select('*')
+        .eq('client_email', email)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        throw error;
+      }
+      
+      const duration = Date.now() - startTime;
+      logger.logSupabase('check_exists', 'generated_documents', true, {
+        client_email: email,
+        found: !!data,
+        duration_ms: duration,
+      });
+      
+      return data;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.logSupabase('check_exists', 'generated_documents', false, {
+        client_email: email,
+        error: error instanceof Error ? error.message : error,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Crée ou met à jour un document client
+   */
+  static async upsertClient(document: GeneratedDocument): Promise<GeneratedDocument> {
+    const startTime = Date.now();
+    
+    try {
+      // Utiliser la fonction compatUpsert avec un cast de type pour contourner les vérifications TypeScript
+      const { data, error } = await compatUpsert(
+        supabaseAdmin.from('generated_documents') as any,
+        document,
+        {
+          onConflict: 'client_email',
+          returning: 'representation'
+        }
+      )
+        .select()
+        .single();
+      
+      if (error) {
+        throw error;
+      }
+      
+      const duration = Date.now() - startTime;
+      logger.logSupabase('upsert', 'generated_documents', true, {
+        client_email: document.client_email,
+        has_vente: !!document.vente_url,
+        has_compte_rendu: !!document.compte_rendu_url,
+        has_onboarding: !!document.onboarding_url,
+        duration_ms: duration,
+      });
+      
+      return data;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.logSupabase('upsert', 'generated_documents', false, {
+        client_email: document.client_email,
+        error: error instanceof Error ? error.message : error,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Met à jour les URLs d'un client existant
+   */
+  static async updateClientUrls(
+    email: string, 
+    updates: Partial<GeneratedDocument>
+  ): Promise<void> {
+    const startTime = Date.now();
+    
+    try {
+      const { error } = await supabaseAdmin
+        .from('generated_documents')
+        .update(updates)
+        .eq('client_email', email);
+      
+      if (error) {
+        throw error;
+      }
+      
+      const duration = Date.now() - startTime;
+      logger.logSupabase('update_urls', 'generated_documents', true, {
+        client_email: email,
+        fields_updated: Object.keys(updates),
+        has_vente: 'vente_url' in updates,
+        has_compte_rendu: 'compte_rendu_url' in updates,
+        has_onboarding: 'onboarding_url' in updates,
+        duration_ms: duration,
+      });
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.logSupabase('update_urls', 'generated_documents', false, {
+        client_email: email,
+        error: error instanceof Error ? error.message : error,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Récupère tous les documents générés
+   */
+  static async getAllDocuments(): Promise<GeneratedDocument[]> {
+    const startTime = Date.now();
+    
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('generated_documents')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        throw error;
+      }
+      
+      const duration = Date.now() - startTime;
+      logger.logSupabase('get_all', 'generated_documents', true, {
+        count: data?.length || 0,
+        duration_ms: duration,
+      });
+      
+      return data || [];
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.logSupabase('get_all', 'generated_documents', false, {
+        error: error instanceof Error ? error.message : error,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+  
+  /**
+   * Récupère les statistiques
+   */
+  static async getStats() {
+    const startTime = Date.now();
+    
+    try {
+      const { count: totalClients } = await supabaseAdmin
+        .from('generated_documents')
+        .select('*', { count: 'exact', head: true });
+      
+      const { count: withVente } = await supabaseAdmin
+        .from('generated_documents')
+        .select('*', { count: 'exact', head: true })
+        .not('vente_url', 'is', null);
+      
+      const { count: withCR } = await supabaseAdmin
+        .from('generated_documents')
+        .select('*', { count: 'exact', head: true })
+        .not('compte_rendu_url', 'is', null);
+      
+      const { count: withOnboarding } = await supabaseAdmin
+        .from('generated_documents')
+        .select('*', { count: 'exact', head: true })
+        .not('onboarding_url', 'is', null);
+      
+      const stats = {
+        totalClients: totalClients || 0,
+        documentsGenerated: {
+          vente: withVente || 0,
+          compteRendu: withCR || 0,
+          onboarding: withOnboarding || 0
+        }
+      };
+      
+      const duration = Date.now() - startTime;
+      logger.logSupabase('get_stats', 'generated_documents', true, {
+        total_clients: totalClients || 0,
+        with_vente: withVente || 0,
+        with_compte_rendu: withCR || 0,
+        with_onboarding: withOnboarding || 0,
+        duration_ms: duration,
+      });
+      
+      return stats;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.logSupabase('get_stats', 'generated_documents', false, {
+        error: error instanceof Error ? error.message : error,
+        duration_ms: duration,
+      });
+      throw error;
+    }
+  }
+}``` 
+ 
+### app/api/generate/route.ts 
+```typescript 
+import { NextRequest, NextResponse } from 'next/server';
+import { ClientData, GenerationResult, DocumentType } from '@/lib/types';
+import { SupabaseService } from '@/lib/supabase-client';
+import { DocumentGenerator } from '@/lib/document-generator';
+import { GitHubPublisher } from '@/lib/github-publisher';
+
+// Initialiser les services
+let templatesLoaded = false;
+
+export async function POST(request: NextRequest) {
+  console.log('API generate: Début de la requête');
+  try {
+    const { client }: { client: ClientData } = await request.json();
+    console.log('API generate: Données client reçues', { email: client.email, prenom: client.prenom, nom: client.nom });
+    
+    // Charger les templates si ce n'est pas déjà fait
+    if (!templatesLoaded) {
+      console.log('API generate: Chargement des templates');
+      try {
+        await DocumentGenerator.loadTemplates();
+        templatesLoaded = true;
+        console.log('API generate: Templates chargés avec succès');
+      } catch (templateError) {
+        console.error('API generate: Erreur lors du chargement des templates', templateError);
+        throw templateError;
+      }
+    }
+    
+    // Vérifier si le client existe déjà
+    console.log('API generate: Vérification si le client existe dans Supabase', { email: client.email });
+    let existingClient;
+    try {
+      existingClient = await SupabaseService.checkClientExists(client.email);
+      console.log('API generate: Résultat de la vérification client', { exists: !!existingClient });
+    } catch (supabaseError) {
+      console.error('API generate: Erreur lors de la vérification du client dans Supabase', supabaseError);
+      throw supabaseError;
+    }
+    
+    const result: GenerationResult = {
+      client_email: client.email,
+      success: true,
+      documents: {}
+    };
+    
+    // Si le client existe, récupérer les URLs existantes
+    if (existingClient) {
+      console.log(`Client ${client.email} existe déjà`);
+      
+      if (existingClient.vente_url) {
+        result.documents.vente = {
+          url: existingClient.vente_url,
+          generated: false
+        };
+      }
+      
+      if (existingClient.compte_rendu_url) {
+        result.documents['compte-rendu'] = {
+          url: existingClient.compte_rendu_url,
+          generated: false
+        };
+      }
+      
+      if (existingClient.onboarding_url) {
+        result.documents.onboarding = {
+          url: existingClient.onboarding_url,
+          generated: false
+        };
+      }
+      
+      // Si tous les documents existent déjà, retourner le résultat
+      if (existingClient.vente_url && existingClient.compte_rendu_url && existingClient.onboarding_url) {
+        return NextResponse.json(result);
+      }
+    }
+    
+    // Générer les documents manquants
+    console.log('API generate: Détermination des documents à générer');
+    const documentsToGenerate: DocumentType[] = [];
+    if (!existingClient?.vente_url) documentsToGenerate.push('vente');
+    if (!existingClient?.compte_rendu_url) documentsToGenerate.push('compte-rendu');
+    if (!existingClient?.onboarding_url) documentsToGenerate.push('onboarding');
+    
+    console.log('API generate: Documents à générer', documentsToGenerate);
+    
+    const generatedDocuments: Record<string, { content: string; filename: string }> = {};
+    
+    try {
+      for (const type of documentsToGenerate) {
+        console.log(`API generate: Génération du document de type ${type}`);
+        const content = DocumentGenerator.generateDocument(client, type);
+        const filename = DocumentGenerator.generateFileName(client, type);
+        generatedDocuments[type] = { content, filename };
+        console.log(`API generate: Document ${type} généré avec succès`, { filename });
+      }
+    } catch (genError) {
+      console.error('API generate: Erreur lors de la génération des documents', genError);
+      throw genError;
+    }
+    
+    // Publier sur GitHub
+    console.log('API generate: Initialisation de la publication GitHub');
+    let publishedUrls;
+    try {
+      const publisher = new GitHubPublisher();
+      console.log('API generate: Tentative de publication des documents sur GitHub', { 
+        email: client.email,
+        documentCount: Object.keys(generatedDocuments).length
+      });
+      publishedUrls = await publisher.publishClientDocuments(
+        client.email,
+        generatedDocuments as Record<DocumentType, { content: string; filename: string }>
+      );
+      console.log('API generate: Publication GitHub réussie', publishedUrls);
+    } catch (githubError) {
+      console.error('API generate: Erreur lors de la publication sur GitHub', githubError);
+      throw githubError;
+    }
+    
+    // Préparer les données pour Supabase
+    console.log('API generate: Préparation des données pour Supabase');
+    const now = new Date();
+    const supabaseData = {
+      client_email: client.email,
+      client_phone: client.telephone,
+      client_name: `${client.prenom} ${client.nom}`,
+      raw_data: client,
+      ...(publishedUrls.vente && {
+        vente_url: publishedUrls.vente,
+        vente_generated_at: now
+      }),
+      ...(publishedUrls['compte-rendu'] && {
+        compte_rendu_url: publishedUrls['compte-rendu'],
+        compte_rendu_generated_at: now
+      }),
+      ...(publishedUrls.onboarding && {
+        onboarding_url: publishedUrls.onboarding,
+        onboarding_generated_at: now
+      })
+    };
+    
+    // Sauvegarder dans Supabase
+    console.log('API generate: Sauvegarde des données dans Supabase');
+    try {
+      await SupabaseService.upsertClient(supabaseData);
+      console.log('API generate: Sauvegarde Supabase réussie');
+    } catch (saveError) {
+      console.error('API generate: Erreur lors de la sauvegarde dans Supabase', saveError);
+      throw saveError;
+    }
+    
+    // Préparer le résultat
+    for (const [type, url] of Object.entries(publishedUrls)) {
+      result.documents[type as DocumentType] = {
+        url,
+        generated: true
+      };
+    }
+    
+    // Ajouter les URLs existantes au résultat
+    if (existingClient) {
+      if (existingClient.vente_url && !result.documents.vente) {
+        result.documents.vente = {
+          url: existingClient.vente_url,
+          generated: false
+        };
+      }
+      if (existingClient.compte_rendu_url && !result.documents['compte-rendu']) {
+        result.documents['compte-rendu'] = {
+          url: existingClient.compte_rendu_url,
+          generated: false
+        };
+      }
+      if (existingClient.onboarding_url && !result.documents.onboarding) {
+        result.documents.onboarding = {
+          url: existingClient.onboarding_url,
+          generated: false
+        };
+      }
+    }
+    
+    return NextResponse.json(result);
+    
+  } catch (error) {
+    console.error('API generate: Erreur principale:', error);
+    let errorMessage = 'Erreur inconnue';
+    
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      console.error('API generate: Stack trace:', error.stack);
+    }
+    
+    // Si l'erreur vient d'une réponse ou contient un message détaillé
+    if (typeof error === 'object' && error !== null) {
+      console.error('API generate: Détails de l\'erreur:', JSON.stringify(error));
+    }
+    
+    return NextResponse.json(
+      {
+        client_email: '',
+        success: false,
+        documents: {},
+        error: errorMessage
+      },
+      { status: 500 }
+    );
+  }
+}``` 
+ 
+### components/Dashboard.tsx 
+```typescript 
+'use client';
+
+import React, { useState } from 'react';
+import { FileText, Users, CheckCircle, AlertCircle } from 'lucide-react';
+import UploadZone from './UploadZone';
+import ProgressBar from './ProgressBar';
+import ResultsTable from './ResultsTable';
+import { ClientData, ProcessingStatus, GenerationResult, CSVExportRow } from '@/lib/types';
+import { CSVParser } from '@/lib/csv-parser';
+
+export default function Dashboard() {
+  const [file, setFile] = useState<File | null>(null);
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>({
+    total: 0,
+    processed: 0,
+    success: 0,
+    errors: 0,
+    status: 'idle'
+  });
+  const [results, setResults] = useState<GenerationResult[]>([]);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+  const handleFileUpload = async (uploadedFile: File) => {
+    setFile(uploadedFile);
+    setValidationErrors([]);
+    
+    try {
+      // Parser le CSV
+      const parsedClients = await CSVParser.parseCSV(uploadedFile);
+      
+      // Valider la structure
+      const validation = CSVParser.validateCSVStructure(parsedClients);
+      if (!validation.valid) {
+        setValidationErrors(validation.errors);
+        return;
+      }
+      
+      setClients(parsedClients);
+    } catch (error) {
+      console.error('Erreur parsing CSV:', error);
+      setValidationErrors(['Erreur lors de la lecture du fichier CSV']);
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (clients.length === 0) return;
+
+    setProcessingStatus({
+      total: clients.length,
+      processed: 0,
+      success: 0,
+      errors: 0,
+      status: 'processing'
+    });
+
+    const newResults: GenerationResult[] = [];
+
+    // Traiter par batch
+    const batchSize = 10;
+    for (let i = 0; i < clients.length; i += batchSize) {
+      const batch = clients.slice(i, i + batchSize);
+      
+      // Traiter le batch en parallèle
+      const batchPromises = batch.map(async (client) => {
+        setProcessingStatus(prev => ({
+          ...prev,
+          currentClient: client.email
+        }));
+
+        try {
+          const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client })
+          });
+
+          const result = await response.json();
+          
+          if (result.success) {
+            setProcessingStatus(prev => ({
+              ...prev,
+              processed: prev.processed + 1,
+              success: prev.success + 1
+            }));
+          } else {
+            setProcessingStatus(prev => ({
+              ...prev,
+              processed: prev.processed + 1,
+              errors: prev.errors + 1
+            }));
+          }
+
+          newResults.push(result);
+        } catch (error) {
+          console.error(`Erreur pour ${client.email}:`, error);
+          setProcessingStatus(prev => ({
+            ...prev,
+            processed: prev.processed + 1,
+            errors: prev.errors + 1
+          }));
+          
+          newResults.push({
+            client_email: client.email,
+            success: false,
+            documents: {},
+            error: 'Erreur de traitement'
+          });
+        }
+      });
+
+      await Promise.all(batchPromises);
+    }
+
+    setResults(newResults);
+    setProcessingStatus(prev => ({
+      ...prev,
+      status: 'completed',
+      currentClient: undefined
+    }));
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      const response = await fetch('/api/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ results })
+      });
+
+      const { csv } = await response.json();
+      const timestamp = new Date().toISOString().split('T')[0];
+      CSVParser.downloadCSV(csv, `export_${timestamp}.csv`);
+    } catch (error) {
+      console.error('Erreur export CSV:', error);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-width-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            HTML Personalizer V2
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Générez et publiez des documents personnalisés avec protection par mot de passe
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {/* Zone d'upload */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              1. Importer le fichier CSV
+            </h2>
+            <UploadZone 
+              onFileUpload={handleFileUpload}
+              isProcessing={processingStatus.status === 'processing'}
+            />
+          </div>
+
+          {/* Erreurs de validation */}
+          {validationErrors.length > 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-start space-x-2">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-red-800">
+                    Erreurs de validation
+                  </p>
+                  <ul className="mt-2 text-sm text-red-600 list-disc list-inside">
+                    {validationErrors.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Résumé du fichier */}
+          {clients.length > 0 && validationErrors.length === 0 && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                2. Résumé du fichier
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
+                  <Users className="w-8 h-8 text-blue-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-gray-800">{clients.length}</p>
+                    <p className="text-sm text-gray-600">Clients à traiter</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
+                  <FileText className="w-8 h-8 text-green-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-gray-800">{clients.length * 3}</p>
+                    <p className="text-sm text-gray-600">Documents à générer</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg">
+                  <CheckCircle className="w-8 h-8 text-purple-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-gray-800">Prêt</p>
+                    <p className="text-sm text-gray-600">À lancer</p>
+                  </div>
+                </div>
+              </div>
+              
+              <button
+                onClick={handleGenerate}
+                disabled={processingStatus.status === 'processing'}
+                className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {processingStatus.status === 'processing' ? 'Traitement en cours...' : 'Lancer la génération'}
+              </button>
+            </div>
+          )}
+
+          {/* Barre de progression */}
+          {processingStatus.status !== 'idle' && (
+            <ProgressBar status={processingStatus} />
+          )}
+
+          {/* Tableau des résultats */}
+          {results.length > 0 && (
+            <ResultsTable 
+              results={results}
+              onDownloadCSV={handleDownloadCSV}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}``` 
+ 
+## TEMPLATES HTML 
+ 
+### templates/protection.html 
+```html 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Protégé - {{CLIENT_NAME}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+        
+        .login-container:hover {
+            transform: translateY(-5px);
+        }
+        
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .client-name {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f8f8;
+        }
+        
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            padding: 10px;
+            background: #fee;
+            border-radius: 8px;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 15px;
+            color: #666;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #protected-content {
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-visible {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="login-form">
+        <div class="lock-icon">🔒</div>
+        <h1>Accès Protégé</h1>
+        <p class="client-name">Page personnalisée pour {{CLIENT_NAME}}</p>
+        
+        <form onsubmit="checkPassword(event)">
+            <div class="form-group">
+                <label for="password">Code d'accès</label>
+                <input type="password" id="password" placeholder="Entrez le code d'accès" required autofocus>
+            </div>
+            <button type="submit">Accéder à la page</button>
+        </form>
+        
+        <div class="error-message" id="error-message">
+            Code d'accès incorrect. Veuillez réessayer.
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            Vérification en cours...
+        </div>
+    </div>
+    
+    <div id="protected-content"></div>
+    
+    <script>
+        // Code d'accès
+        const correctCode = '{{ACCESS_CODE}}';
+        
+        // Contenu encodé en base64
+        const encodedContent = '{{ENCODED_CONTENT}}';
+        
+        function checkPassword(event) {
+            event.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+            const loading = document.getElementById('loading');
+            const loginForm = document.getElementById('login-form');
+            const protectedContent = document.getElementById('protected-content');
+            
+            // Afficher le chargement
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            // Simuler une vérification (pour l'UX)
+            setTimeout(() => {
+                loading.style.display = 'none';
+                
+                if (password === correctCode) {
+                    // Accès autorisé
+                    loginForm.style.display = 'none';
+                    
+                    // Décoder et afficher le contenu
+                    const decodedContent = atob(encodedContent);
+                    protectedContent.innerHTML = decodedContent;
+                    protectedContent.style.display = 'block';
+                    protectedContent.classList.add('content-visible');
+                    
+                    // Sauvegarder dans sessionStorage
+                    sessionStorage.setItem('soulful_access_' + window.location.pathname, 'granted');
+                } else {
+                    // Accès refusé
+                    errorMessage.style.display = 'block';
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                }
+            }, 500);
+        }
+        
+        // Vérifier si l'utilisateur a déjà accès
+        window.onload = function() {
+            if (sessionStorage.getItem('soulful_access_' + window.location.pathname) === 'granted') {
+                document.getElementById('login-form').style.display = 'none';
+                const protectedContent = document.getElementById('protected-content');
+                const decodedContent = atob(encodedContent);
+                protectedContent.innerHTML = decodedContent;
+                protectedContent.style.display = 'block';
+            }
+        };
+    </script>
+</body>
+</html>``` 
+ 
+### templates/vente/template.html 
+```html 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offre Spu00e9ciale pour {{PRENOM}} {{NOM}}</title>
+    <style>
+        /* Styles de base */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fc;
+        }
+        
+        /* En-tu00eate */
+        header {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
+        }
+        
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Contenu principal */
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+        }
+        
+        h2 {
+            color: #4f46e5;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: #4338ca;
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+        }
+        
+        p {
+            margin: 15px 0;
+        }
+        
+        /* Avantages */
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .benefit-card {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .benefit-card h4 {
+            color: #4f46e5;
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+        
+        /* Tu00e9moignages */
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .testimonial-card {
+            border-left: 4px solid #4f46e5;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+            color: #4338ca;
+        }
+        
+        /* FAQ */
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 20px;
+        }
+        
+        .faq-item h4 {
+            color: #4f46e5;
+            margin: 0 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Tarification */
+        .pricing {
+            border: 2px solid #4f46e5;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 40px auto;
+            max-width: 600px;
+            background: white;
+        }
+        
+        .pricing h3 {
+            background: #4f46e5;
+            color: white;
+            margin: -30px -30px 20px;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #6b7280;
+            font-size: 1.4rem;
+        }
+        
+        .current-price {
+            font-size: 2.5rem;
+            color: #4f46e5;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .savings {
+            display: inline-block;
+            background: #ecfdf5;
+            color: #065f46;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .payment-options {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .payment-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .payment-option:hover {
+            border-color: #4f46e5;
+            transform: scale(1.05);
+        }
+        
+        .payment-option h4 {
+            margin: 0 0 5px;
+            color: #4f46e5;
+        }
+        
+        /* Bouton d'action */
+        .cta-button {
+            display: inline-block;
+            background: #4f46e5;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            transition: background 0.2s;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+        
+        .cta-button:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+        }
+        
+        /* Pied de page */
+        footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+        }
+        
+        footer p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .benefits, .testimonials {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Offre Exclusive pour {{PRENOM}}</h1>
+        <p>Spécialement créée pour vous aider à atteindre vos objectifs</p>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Bonjour {{PRENOM}},</h2>
+            <p>Suite à notre rencontre le {{DATE_RENCONTRE}}, j'ai le plaisir de vous proposer cette offre personnalisée pour le produit <strong>{{PRODUIT}}</strong>.</p>
+            <p>Vous m'avez partagé votre objectif de <strong>{{OBJECTIFS}}</strong>, et j'ai créé cette proposition pour vous aider à l'atteindre rapidement et efficacement.</p>
+        </section>
+        
+        <section>
+            <h2>Les bénéfices qui vous attendent</h2>
+            <div class="benefits">
+                <div class="benefit-card">
+                    <h4>Bénéfice 1</h4>
+                    <p>Description détaillée du premier bénéfice que vous obtiendrez.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Bénéfice 2</h4>
+                    <p>Description détaillée du second bénéfice que vous obtiendrez.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Bénéfice 3</h4>
+                    <p>Description détaillée du troisième bénéfice que vous obtiendrez.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Ce que nos clients disent</h2>
+            <div class="testimonials">
+                <div class="testimonial-card">
+                    <p>"Témoignage détaillé d'un client satisfait qui partage son expérience positive et les résultats obtenus."</p>
+                    <div class="testimonial-author">Marie D., 34 ans</div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Second témoignage d'un client satisfait qui raconte comment le produit a changé sa vie positivement."</p>
+                    <div class="testimonial-author">Thomas L., 42 ans</div>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Vos questions fréquentes</h2>
+            <div class="faq">
+                <div class="faq-item">
+                    <h4>Question fréquente 1 ?</h4>
+                    <p>Réponse détaillée à la première question fréquente pour rassurer le client potentiel.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Question fréquente 2 ?</h4>
+                    <p>Réponse détaillée à la deuxième question fréquente pour anticiper les objections.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Question fréquente 3 ?</h4>
+                    <p>Réponse détaillée à la troisième question fréquente pour clarifier les doutes.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Votre offre personnalisée</h2>
+            <div class="pricing">
+                <h3>{{FORMULE_RECOMMANDEE}}</h3>
+                <div class="original-price">Prix normal: {{PRIX_REFERENCE}}</div>
+                <div class="current-price">{{PRIX_UNIQUE}}</div>
+                <div class="savings">Économisez {{ECONOMIE_UNIQUE}}</div>
+                
+                <p>Ou préférez-vous payer en plusieurs fois ?</p>
+                
+                <div class="payment-options">
+                    <div class="payment-option">
+                        <h4>Paiement unique</h4>
+                        <div>{{PRIX_UNIQUE}}</div>
+                    </div>
+                    <div class="payment-option">
+                        <h4>3 mensualités</h4>
+                        <div>{{MENSUALITE_3X}} x 3</div>
+                    </div>
+                    <div class="payment-option">
+                        <h4>6 mensualités</h4>
+                        <div>{{MENSUALITE_6X}} x 6</div>
+                    </div>
+                </div>
+                
+                <p><strong>Seulement {{PLACES_DISPONIBLES}} places disponibles !</strong></p>
+                <p>Le programme commence le {{DATE_DEBUT_PROGRAMME}}</p>
+                
+                <a href="https://wa.me/{{NUMERO_WHATSAPP}}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20l'offre%20pour%20le%20produit%20{{PRODUIT}}" class="cta-button">Réserver ma place maintenant</a>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Cette offre est personnalisée pour {{PRENOM}} {{NOM}}</p>
+        <p>Générée le {{DATE_GENERATION}}</p>
+        <p>Pour toute question, contactez-nous au {{NUMERO_WHATSAPP}}</p>
+    </footer>
+</body>
+</html>
+``` 
+ 
+### templates/compte-rendu/template.html 
+```html 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compte-rendu pour {{PRENOM}} {{NOM}}</title>
+    <style>
+        /* Styles de base */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+        
+        /* En-tête */
+        header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Contenu principal */
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+        }
+        
+        h2 {
+            color: #0284c7;
+            margin-top: 0;
+            font-size: 1.6rem;
+            border-bottom: 2px solid #e0f2fe;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #0369a1;
+            font-size: 1.3rem;
+            margin: 25px 0 15px;
+        }
+        
+        p {
+            margin: 15px 0;
+            color: #334155;
+        }
+        
+        /* Liste */
+        ul, ol {
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            color: #334155;
+        }
+        
+        /* Résumé */
+        .summary {
+            background-color: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Actions */
+        .actions {
+            margin-top: 30px;
+        }
+        
+        .action-item {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .action-item-number {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            background: #0ea5e9;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .action-item-content {
+            flex-grow: 1;
+        }
+        
+        .action-item h4 {
+            margin: 0 0 8px;
+            color: #0284c7;
+        }
+        
+        /* Notes */
+        .notes {
+            background: #fffbeb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px dashed #fbbf24;
+        }
+        
+        .notes h3 {
+            color: #b45309;
+            margin-top: 0;
+        }
+        
+        /* Pied de page */
+        footer {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px;
+            font-size: 0.9rem;
+        }
+        
+        footer p {
+            margin: 5px 0;
+            color: #cbd5e1;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            main {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Compte-rendu de notre rencontre</h1>
+        <p>{{PRENOM}} {{NOM}} | {{DATE_RENCONTRE}}</p>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Résumé de notre échange</h2>
+            <p>Bonjour {{PRENOM}},</p>
+            <p>Je vous remercie pour notre échange du {{DATE_RENCONTRE}}. Ce document résume les points principaux que nous avons abordés concernant {{PRODUIT}}.</p>
+            
+            <div class="summary">
+                <p>Vous m'avez partagé votre objectif principal : <strong>{{OBJECTIFS}}</strong>.</p>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Recommandations personnalisées</h2>
+            <p>Suite à notre discussion, voici les recommandations que je vous propose pour atteindre vos objectifs :</p>
+            
+            <div class="recommendations">
+                {{RECOMMANDATIONS_LISTE}}
+            </div>
+            
+            <p>Ces recommandations sont basées sur votre situation spécifique et vos objectifs.</p>
+        </section>
+        
+        <section>
+            <h2>Prochaines étapes</h2>
+            <p>Pour avancer efficacement, je vous suggère de suivre ces étapes :</p>
+            
+            <div class="actions">
+                <div class="action-item">
+                    <div class="action-item-number">1</div>
+                    <div class="action-item-content">
+                        <h4>Étudier la proposition</h4>
+                        <p>Prenez le temps d'examiner l'offre que je vous ai envoyée pour {{PRODUIT}}.</p>
+                    </div>
+                </div>
+                
+                <div class="action-item">
+                    <div class="action-item-number">2</div>
+                    <div class="action-item-content">
+                        <h4>Me contacter pour vos questions</h4>
+                        <p>N'hésitez pas à me contacter au {{TELEPHONE}} si vous avez des questions.</p>
+                    </div>
+                </div>
+                
+                <div class="action-item">
+                    <div class="action-item-number">3</div>
+                    <div class="action-item-content">
+                        <h4>Confirmer votre intérêt</h4>
+                        <p>Si cette offre vous convient, confirmez votre intérêt avant le {{DATE_DEBUT_PROGRAMME}}.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notes">
+                <h3>Notes importantes</h3>
+                <p>L'offre spéciale de {{OFFRE_SPECIALE}} est valable jusqu'au {{DATE_DEBUT_PROGRAMME}}.</p>
+                <p>Le nombre de places disponibles est limité à {{PLACES_DISPONIBLES}}.</p>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Ce compte-rendu est personnalisé pour {{PRENOM}} {{NOM}}</p>
+        <p>Généré le {{DATE_GENERATION}}</p>
+        <p>Pour toute question, contactez-nous au {{NUMERO_WHATSAPP}}</p>
+    </footer>
+</body>
+</html>
+``` 
+ 
+### templates/onboarding/template.html 
+```html 
+test
+``` 
+ 
+## FICHIERS DE LOGS 
+ 
+### lib/logger.ts 
+```typescript 
+import { supabaseAdmin } from './supabase-client';
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+
+export interface LogEntry {
+  id?: string;
+  timestamp: string;
+  level: LogLevel;
+  component: string;
+  action: string;
+  message: string;
+  details?: any;
+  error_stack?: string;
+  user_email?: string;
+  client_email?: string;
+  request_id?: string;
+  session_id?: string;
+  ip_address?: string;
+  user_agent?: string;
+  duration_ms?: number;
+  status_code?: number;
+  environment: string;
+}
+
+class Logger {
+  private static instance: Logger;
+  private buffer: LogEntry[] = [];
+  private flushInterval: NodeJS.Timeout | null = null;
+  private sessionId: string;
+  private requestCounter = 0;
+
+  private constructor() {
+    this.sessionId = this.generateSessionId();
+    this.startFlushInterval();
+    this.setupGlobalErrorHandlers();
+  }
+
+  static getInstance(): Logger {
+    if (!Logger.instance) {
+      Logger.instance = new Logger();
+    }
+    return Logger.instance;
+  }
+
+  private generateSessionId(): string {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  generateRequestId(): string {
+    this.requestCounter++;
+    return `req_${this.sessionId}_${this.requestCounter}_${Date.now()}`;
+  }
+
+  private setupGlobalErrorHandlers() {
+    // Capturer les erreurs non gérées côté serveur
+    if (typeof window === 'undefined') {
+      process.on('uncaughtException', (error) => {
+        this.fatal('SYSTEM', 'uncaughtException', 'Erreur non gérée détectée', {
+          error: error.message,
+          stack: error.stack,
+        });
+      });
+
+      process.on('unhandledRejection', (reason, promise) => {
+        this.fatal('SYSTEM', 'unhandledRejection', 'Promise rejetée non gérée', {
+          reason,
+          promise: promise.toString(),
+        });
+      });
+    } else {
+      // Capturer les erreurs côté client
+      window.addEventListener('error', (event) => {
+        this.error('CLIENT', 'windowError', 'Erreur JavaScript non gérée', {
+          message: event.message,
+          filename: event.filename,
+          lineno: event.lineno,
+          colno: event.colno,
+          error: event.error?.stack,
+        });
+      });
+
+      window.addEventListener('unhandledrejection', (event) => {
+        this.error('CLIENT', 'unhandledRejection', 'Promise rejetée non gérée', {
+          reason: event.reason,
+        });
+      });
+    }
+  }
+
+  private async log(
+    level: LogLevel,
+    component: string,
+    action: string,
+    message: string,
+    details?: any
+  ): Promise<void> {
+    const entry: LogEntry = {
+      timestamp: new Date().toISOString(),
+      level,
+      component,
+      action,
+      message,
+      details: details ? this.sanitizeDetails(details) : undefined,
+      error_stack: details?.stack || details?.error?.stack,
+      environment: process.env.NODE_ENV || 'development',
+      session_id: this.sessionId,
+    };
+
+    // Ajouter les infos de contexte si disponibles
+    if (typeof window !== 'undefined') {
+      entry.user_agent = navigator.userAgent;
+    }
+
+    // Log dans la console en développement
+    if (process.env.NODE_ENV === 'development') {
+      this.consoleLog(entry);
+    }
+
+    // Ajouter au buffer
+    this.buffer.push(entry);
+
+    // Flush immédiatement pour les erreurs critiques
+    if (level === 'error' || level === 'fatal') {
+      await this.flush();
+    }
+  }
+
+  private sanitizeDetails(details: any): any {
+    try {
+      // Retirer les données sensibles
+      const sanitized = JSON.parse(JSON.stringify(details));
+      
+      // Liste des clés sensibles à masquer
+      const sensitiveKeys = ['password', 'token', 'key', 'secret', 'authorization'];
+      
+      const sanitizeObject = (obj: any) => {
+        for (const key in obj) {
+          if (sensitiveKeys.some(sk => key.toLowerCase().includes(sk))) {
+            obj[key] = '[REDACTED]';
+          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            sanitizeObject(obj[key]);
+          }
+        }
+      };
+      
+      sanitizeObject(sanitized);
+      return sanitized;
+    } catch (error) {
+      return { originalType: typeof details, error: 'Failed to sanitize' };
+    }
+  }
+
+  private consoleLog(entry: LogEntry) {
+    const styles = {
+      debug: 'color: #888',
+      info: 'color: #2196F3',
+      warn: 'color: #FF9800',
+      error: 'color: #F44336',
+      fatal: 'color: #D32F2F; font-weight: bold',
+    };
+
+    const prefix = `[${entry.timestamp}] [${entry.component}] ${entry.action}`;
+    
+    console.log(
+      `%c${prefix}: ${entry.message}`,
+      styles[entry.level]
+    );
+    
+    if (entry.details) {
+      console.log('Details:', entry.details);
+    }
+    
+    if (entry.error_stack) {
+      console.log('Stack:', entry.error_stack);
+    }
+  }
+
+  private startFlushInterval() {
+    // Flush les logs toutes les 10 secondes
+    this.flushInterval = setInterval(() => {
+      this.flush();
+    }, 10000);
+  }
+
+  async flush(): Promise<void> {
+    if (this.buffer.length === 0) return;
+
+    const logsToFlush = [...this.buffer];
+    this.buffer = [];
+
+    try {
+      // Sauvegarder dans Supabase
+      const { error } = await supabaseAdmin
+        .from('application_logs')
+        .insert(logsToFlush);
+
+      if (error) {
+        // En cas d'erreur, remettre les logs dans le buffer
+        this.buffer = [...logsToFlush, ...this.buffer];
+        console.error('Erreur lors de la sauvegarde des logs:', error);
+      }
+    } catch (error) {
+      // En cas d'erreur réseau, remettre les logs dans le buffer
+      this.buffer = [...logsToFlush, ...this.buffer];
+      console.error('Erreur réseau lors de la sauvegarde des logs:', error);
+    }
+  }
+
+  // Méthodes publiques pour chaque niveau de log
+  debug(component: string, action: string, message: string, details?: any) {
+    this.log('debug', component, action, message, details);
+  }
+
+  info(component: string, action: string, message: string, details?: any) {
+    this.log('info', component, action, message, details);
+  }
+
+  warn(component: string, action: string, message: string, details?: any) {
+    this.log('warn', component, action, message, details);
+  }
+
+  error(component: string, action: string, message: string, details?: any) {
+    this.log('error', component, action, message, details);
+  }
+
+  fatal(component: string, action: string, message: string, details?: any) {
+    this.log('fatal', component, action, message, details);
+  }
+
+  // Méthode pour mesurer la durée d'une opération
+  async measureTime<T>(
+    component: string,
+    action: string,
+    operation: () => Promise<T>
+  ): Promise<T> {
+    const startTime = Date.now();
+    
+    try {
+      this.debug(component, `${action}_start`, `Début de l'opération ${action}`);
+      const result = await operation();
+      const duration = Date.now() - startTime;
+      
+      this.info(component, `${action}_success`, `Opération ${action} réussie`, {
+        duration_ms: duration,
+      });
+      
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      
+      this.error(component, `${action}_error`, `Erreur lors de ${action}`, {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        duration_ms: duration,
+      });
+      
+      throw error;
+    }
+  }
+
+  // Logger pour les requêtes API
+  logApiRequest(
+    method: string,
+    path: string,
+    body?: any,
+    headers?: any,
+    requestId?: string
+  ) {
+    this.info('API', 'request', `${method} ${path}`, {
+      method,
+      path,
+      body: this.sanitizeDetails(body),
+      headers: this.sanitizeDetails(headers),
+      request_id: requestId,
+    });
+  }
+
+  logApiResponse(
+    method: string,
+    path: string,
+    statusCode: number,
+    duration: number,
+    requestId?: string,
+    error?: any
+  ) {
+    const level = statusCode >= 400 ? 'error' : 'info';
+    
+    this.log(level, 'API', 'response', `${method} ${path} - ${statusCode}`, {
+      method,
+      path,
+      status_code: statusCode,
+      duration_ms: duration,
+      request_id: requestId,
+      error: error ? this.sanitizeDetails(error) : undefined,
+    });
+  }
+
+  // Logger pour les opérations de génération
+  logGeneration(
+    clientEmail: string,
+    documentType: string,
+    success: boolean,
+    details?: any
+  ) {
+    const level = success ? 'info' : 'error';
+    const action = `generate_${documentType}`;
+    const message = success 
+      ? `Document ${documentType} généré avec succès`
+      : `Échec de génération du document ${documentType}`;
+    
+    this.log(level, 'GENERATOR', action, message, {
+      client_email: clientEmail,
+      document_type: documentType,
+      success,
+      ...details,
+    });
+  }
+
+  // Logger pour les opérations Supabase
+  logSupabase(
+    operation: string,
+    table: string,
+    success: boolean,
+    details?: any
+  ) {
+    const level = success ? 'debug' : 'error';
+    const message = `Opération Supabase ${operation} sur ${table}`;
+    
+    this.log(level, 'SUPABASE', operation, message, {
+      table,
+      success,
+      ...details,
+    });
+  }
+
+  // Logger pour les opérations GitHub
+  logGitHub(
+    operation: string,
+    path: string,
+    success: boolean,
+    details?: any
+  ) {
+    const level = success ? 'info' : 'error';
+    const message = `Opération GitHub ${operation} sur ${path}`;
+    
+    this.log(level, 'GITHUB', operation, message, {
+      path,
+      success,
+      ...details,
+    });
+  }
+
+  // Nettoyer avant la fermeture
+  async cleanup() {
+    if (this.flushInterval) {
+      clearInterval(this.flushInterval);
+    }
+    await this.flush();
+  }
+}
+
+// Export de l'instance unique
+export const logger = Logger.getInstance();
+
+// Créer la table de logs dans Supabase
+export const createLogsTableSQL = `
+CREATE TABLE IF NOT EXISTS application_logs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+  level VARCHAR(10) NOT NULL,
+  component VARCHAR(50) NOT NULL,
+  action VARCHAR(100) NOT NULL,
+  message TEXT NOT NULL,
+  details JSONB,
+  error_stack TEXT,
+  user_email VARCHAR(255),
+  client_email VARCHAR(255),
+  request_id VARCHAR(100),
+  session_id VARCHAR(100),
+  ip_address VARCHAR(45),
+  user_agent TEXT,
+  duration_ms INTEGER,
+  status_code INTEGER,
+  environment VARCHAR(20),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index pour améliorer les performances des requêtes
+CREATE INDEX idx_logs_timestamp ON application_logs(timestamp DESC);
+CREATE INDEX idx_logs_level ON application_logs(level);
+CREATE INDEX idx_logs_component ON application_logs(component);
+CREATE INDEX idx_logs_client_email ON application_logs(client_email);
+CREATE INDEX idx_logs_request_id ON application_logs(request_id);
+CREATE INDEX idx_logs_session_id ON application_logs(session_id);
+
+-- Politique de rétention (optionnel - supprimer les logs de plus de 90 jours)
+-- CREATE OR REPLACE FUNCTION delete_old_logs() RETURNS void AS $$
+-- BEGIN
+--   DELETE FROM application_logs WHERE timestamp < NOW() - INTERVAL '90 days';
+-- END;
+-- $$ LANGUAGE plpgsql;
+`;``` 
+ 
+## VARIABLES D'ENVIRONNEMENT 
+ 
+```env 
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://prbidefjoqdrqwjeenxm.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByYmlkZWZqb3FkcnF3amVlbnhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMzY3NDEsImV4cCI6MjA2MzYxMjc0MX0.FaiiU8DTqnBVkNjG2L3wkE0MCsKnit_CNdGMmP0oRME
+SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByYmlkZWZqb3FkcnF3amVlbnhtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAzNjc0MSwiZXhwIjoyMDYzNjEyNzQxfQ.K-f19FXAPH-z2qfRGMS2zOUmsVJ-iya6l0xfEwlVf44
+
+# GitHub 
+GITHUB_OWNER=User785485
+GITHUB_REPO=soulful-connections-new
+GITHUB_BRANCH=main
+# Ajoutez votre token GitHub ici
+GITHUB_TOKEN=votre_nouveau_token_github
+
+# Application
+ACCESS_CODE=7744
+SITE_BASE_URL=https://user785485.github.io/soulful-connections-new
+``` 

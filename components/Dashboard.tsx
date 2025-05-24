@@ -77,6 +77,15 @@ export default function Dashboard() {
 
           const result = await response.json();
           
+          // IMPORTANT: Attacher les données client complètes au résultat
+          result.client = client;
+          
+          console.log('Résultat avec client attaché:', { 
+            email: result.client_email, 
+            success: result.success, 
+            client_attached: !!result.client
+          });
+          
           if (result.success) {
             setProcessingStatus(prev => ({
               ...prev,
@@ -100,11 +109,18 @@ export default function Dashboard() {
             errors: prev.errors + 1
           }));
           
+          // Même en cas d'erreur, inclure les données client complètes
           newResults.push({
             client_email: client.email,
+            client: client, // Attacher les données client complètes
             success: false,
             documents: {},
             error: 'Erreur de traitement'
+          });
+          
+          console.log('Résultat d\'erreur avec client attaché:', { 
+            email: client.email, 
+            client_attached: true
           });
         }
       });
@@ -121,18 +137,49 @@ export default function Dashboard() {
   };
 
   const handleDownloadCSV = async () => {
+    console.log('Début de l\'export CSV');
+    console.log('Results disponibles:', results.length);
+    console.log('Premier résultat:', {
+      email: results[0]?.client_email,
+      has_client_data: !!results[0]?.client,
+      documents: Object.keys(results[0]?.documents || {})
+    });
+    
     try {
+      // Vérifier que les résultats contiennent bien les données client
+      if (results.length > 0 && !results[0].client) {
+        console.warn('ATTENTION: Les données client ne semblent pas attachées aux résultats');
+      }
+      
       const response = await fetch('/api/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ results })
       });
 
-      const { csv } = await response.json();
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log('Réponse de l\'API export:', {
+        success: !!responseData.csv,
+        csvLength: responseData.csv?.length || 0
+      });
+      
+      if (!responseData.csv) {
+        throw new Error('Aucune donnée CSV retournée par l\'API');
+      }
+      
       const timestamp = new Date().toISOString().split('T')[0];
-      CSVParser.downloadCSV(csv, `export_${timestamp}.csv`);
+      const filename = `export_${timestamp}.csv`;
+      CSVParser.downloadCSV(responseData.csv, filename);
+      console.log(`CSV téléchargé avec succès: ${filename}`);
     } catch (error) {
       console.error('Erreur export CSV:', error);
+      // Typer correctement l'erreur pour accéder à message
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      alert(`Erreur lors de l'export CSV: ${errorMessage}`);
     }
   };
 

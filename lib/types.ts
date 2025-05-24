@@ -48,6 +48,7 @@ export type DocumentType = 'vente' | 'compte-rendu' | 'onboarding';
 
 export interface GenerationResult {
   client_email: string;
+  client?: ClientData;  // Ajout du champ client pour stocker les données client complètes
   success: boolean;
   documents: {
     vente?: { url: string; generated: boolean };
