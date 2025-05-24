@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Définition du type pour les logs
+interface LogEntry {
+  id?: string;
+  timestamp: string;
+  level: 'error' | 'warning' | 'success' | 'info';
+  action?: string;
+  message?: string;
+  details?: any;
+  duration?: number;
+  [key: string]: any; // Pour les autres propriétés potentielles
+}
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY!;
 
@@ -44,19 +56,20 @@ export async function GET(request: NextRequest) {
 
       if (error) throw error;
 
-      const logs = data || [];
+      // Typer les logs pour éviter l'erreur 'Parameter log implicitly has an any type'
+      const logs = (data || []) as LogEntry[];
       
       // Calculer les statistiques
       const totalLogs = logs.length;
-      const errorCount = logs.filter(log => log.level === 'error').length;
-      const warningCount = logs.filter(log => log.level === 'warning').length;
-      const successCount = logs.filter(log => log.level === 'success').length;
-      const infoCount = logs.filter(log => log.level === 'info').length;
+      const errorCount = logs.filter((log: LogEntry) => log.level === 'error').length;
+      const warningCount = logs.filter((log: LogEntry) => log.level === 'warning').length;
+      const successCount = logs.filter((log: LogEntry) => log.level === 'success').length;
+      const infoCount = logs.filter((log: LogEntry) => log.level === 'info').length;
 
       // Statistiques par action
       const actionStats: Record<string, { count: number, avgDuration: number, errors: number }> = {};
       
-      logs.forEach(log => {
+      logs.forEach((log: LogEntry) => {
         if (log.action) {
           if (!actionStats[log.action]) {
             actionStats[log.action] = { count: 0, avgDuration: 0, errors: 0 };
@@ -128,7 +141,7 @@ export async function GET(request: NextRequest) {
     if (error) throw error;
 
     // Formater les logs pour l'affichage
-    const formattedLogs = (data || []).map(log => ({
+    const formattedLogs = (data || []).map((log: LogEntry) => ({
       ...log,
       formattedDate: formatDate(new Date(log.timestamp)),
       formattedDuration: log.duration ? formatDuration(log.duration) : null
