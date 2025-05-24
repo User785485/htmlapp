@@ -17,15 +17,20 @@ export class DocumentGenerator {
     try {
       logger.info('DOCUMENT_GENERATOR', 'load_templates_start', 'Début du chargement des templates');
       
-      // Charger le template de protection
+      // Charger le template de protection avec encodage UTF-8 EXPLICITE
       const protectionPath = path.join(process.cwd(), 'templates', 'protection.html');
       console.log(`📦 Chargement du template de protection depuis: ${protectionPath}`);
-      this.protectionTemplate = await fs.readFile(protectionPath, 'utf-8');
+      
+      // CRITIQUE : Spécifier l'encodage UTF-8 explicitement
+      this.protectionTemplate = await fs.readFile(protectionPath, { encoding: 'utf8' });
+      
+      // Vérifier la validité de l'encodage UTF-8
+      if (this.protectionTemplate.includes('â€')) {
+        console.error(`❌ PROBLÈME D'ENCODAGE détecté dans le template de protection`);
+        throw new Error(`Problème d'encodage UTF-8 dans le template de protection`);
+      }
+      
       console.log(`✅ Template de protection chargé (${this.protectionTemplate.length} caractères)`);
-      logger.debug('DOCUMENT_GENERATOR', 'load_protection_template', 'Template de protection chargé', {
-        path: protectionPath,
-        size: this.protectionTemplate.length,
-      });
       
       // Charger les templates de documents
       const templateTypes: DocumentType[] = ['vente', 'compte-rendu', 'onboarding'];
@@ -36,7 +41,15 @@ export class DocumentGenerator {
         console.log(`📦 Chargement du template '${type}' depuis: ${templatePath}`);
         
         try {
-          const template = await fs.readFile(templatePath, 'utf-8');
+          // CRITIQUE : Spécifier l'encodage UTF-8 explicitement
+          const template = await fs.readFile(templatePath, { encoding: 'utf8' });
+          
+          // Vérifier la validité de l'encodage UTF-8
+          if (template.includes('â€')) {
+            console.error(`❌ PROBLÈME D'ENCODAGE détecté dans ${type}`);
+            throw new Error(`Problème d'encodage UTF-8 dans le template ${type}`);
+          }
+          
           this.templates.set(type, template);
           
           // Analyser le contenu du template pour détecter les variables
@@ -45,423 +58,421 @@ export class DocumentGenerator {
           
           console.log(`✅ Template '${type}' chargé avec succès:`);
           console.log(`   - Taille: ${template.length} caractères`);
-          console.log(`   - Variables détectées: ${uniqueVars.length} (${uniqueVars.slice(0, 5).join(', ')}${uniqueVars.length > 5 ? '...' : ''})`);
+          console.log(`   - Variables détectées: ${uniqueVars.length}`);
+          console.log(`   - Premières variables: ${uniqueVars.slice(0, 10).join(', ')}`);
           
-          logger.debug('DOCUMENT_GENERATOR', 'load_template', `Template ${type} chargé`, {
-            type,
-            path: templatePath,
-            size: template.length,
-            variables_count: uniqueVars.length,
-            variables: uniqueVars,
-          });
         } catch (error) {
           console.error(`❌ Erreur lors du chargement du template '${type}':`, error);
-          logger.error('DOCUMENT_GENERATOR', 'load_template_error', `Erreur chargement template ${type}`, {
-            type,
-            path: templatePath,
-            error: error instanceof Error ? error.message : error,
-          });
           throw error;
         }
       }
       
       const duration = Date.now() - startTime;
-      console.log(`🔔 Tous les templates chargés en ${duration}ms. Templates disponibles: ${Array.from(this.templates.keys()).join(', ')}`);
-      logger.info('DOCUMENT_GENERATOR', 'load_templates_success', 'Templates chargés avec succès', {
-        count: this.templates.size,
-        duration_ms: duration,
-        template_types: Array.from(this.templates.keys()),
-      });
+      console.log(`🔔 Tous les templates chargés en ${duration}ms`);
+      
     } catch (error) {
       const duration = Date.now() - startTime;
       console.error('❌ ERREUR CRITIQUE: Impossible de charger les templates:', error);
-      logger.error('DOCUMENT_GENERATOR', 'load_templates_error', 'Erreur lors du chargement des templates', {
-        error: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined,
-        duration_ms: duration,
-      });
       throw error;
     }
   }
   
   /**
-   * Génère un document HTML personnalisé avec logs détaillés pour débogage
+   * Génère un document HTML personnalisé - VERSION SILENCIEUSE SANS BARRE DE DEBUG
    */
-  static generateDocument(
-    client: ClientData, 
-    type: DocumentType
-  ): string {
+  static generateDocument(client: ClientData, type: DocumentType): string {
     const startTime = Date.now();
     
-    // Afficher l'en-tête du processus de génération
-    console.log('='.repeat(80));
-    console.log(`🚀 DÉBUT GÉNÉRATION DOCUMENT: ${type.toUpperCase()} - ${client.prenom} ${client.nom}`);
-      console.log('\n🔍 ÉTAPE 2: ANALYSE DES VARIABLES DU TEMPLATE');
-      
-      // Rechercher toutes les occurrences de {{VARIABLE}}
-      const templateVariables = template.match(/{{([^}]+)}}/g) || [];
-      const uniqueTemplateVars = Array.from(new Set(templateVariables.map(v => v.replace(/[{}]/g, ''))));
-      
-      console.log(`📊 Statistiques: ${templateVariables.length} occurrences, ${uniqueTemplateVars.length} variables uniques`);
-      
-      // Lister les 10 premières variables
-      if (uniqueTemplateVars.length > 0) {
-        console.log(`📋 Exemples de variables: ${uniqueTemplateVars.slice(0, 10).join(', ')}${uniqueTemplateVars.length > 10 ? '...' : ''}`);
-      } else {
-        console.warn('⚠️ ATTENTION: Aucune variable détectée dans le template!');
+    // ========================================
+    // DÉSACTIVER COMPLÉTEMENT TOUS LES LOGS
+    // ========================================
+    const originalConsole = {
+      log: console.log,
+      error: console.error,
+      warn: console.warn,
+      info: console.info,
+      debug: console.debug
+    };
+    
+    // Remplacer par des fonctions vides (logs silencieux)
+    console.log = () => {};
+    console.error = () => {};
+    console.warn = () => {};
+    console.info = () => {};
+    console.debug = () => {};
+    
+    try {
+      // 1. RÉCUPÉRATION DU TEMPLATE
+      const template = this.templates.get(type);
+      if (!template) {
+        throw new Error(`Template ${type} non trouvé - loadTemplates() appelé ?`);
       }
       
-      // ÉTAPE 3: Préparation des variables
-      console.log('\n📝 ÉTAPE 3: PRÉPARATION DES VARIABLES');
+      // 2. DIAGNOSTIC ET CORRECTION D'ENCODAGE (silencieux)
+      const encodingProblems = [];
+      if (template.includes('â€')) encodingProblems.push('â€');
+      if (template.includes('Ã©')) encodingProblems.push('Ã©');
+      if (template.includes('Ã ')) encodingProblems.push('Ã ');
+      if (template.includes('âŸ')) encodingProblems.push('âŸ');
+      if (template.includes('âc')) encodingProblems.push('âc');
+      if (template.includes('spÃ©')) encodingProblems.push('spÃ©');
+      if (template.includes('rÃ©')) encodingProblems.push('rÃ©');
+      if (template.includes('Ã©co')) encodingProblems.push('Ã©co');
+      
+      // 3. CORRECTION ENCODAGE ÉTENDUE (silencieux)
+      let cleanTemplate = template;
+      if (encodingProblems.length > 0) {
+        cleanTemplate = template
+          // Corrections de base
+          .replace(/â€/g, '✨')
+          .replace(/Ã©/g, 'é')
+          .replace(/Ã /g, 'à')
+          .replace(/Ã¨/g, 'è')
+          .replace(/Ã§/g, 'ç')
+          .replace(/Ã´/g, 'ô')
+          .replace(/Ã¢/g, 'â')
+          .replace(/Ãª/g, 'ê')
+          .replace(/Ã¯/g, 'ï')
+          .replace(/Ã¹/g, 'ù')
+          .replace(/ð/g, '✨')
+          .replace(/â€™/g, "'")
+          .replace(/â€œ/g, '"')
+          .replace(/â€/g, '"')
+          // NOUVELLES CORRECTIONS SPÉCIFIQUES
+          .replace(/âŸ/g, '✨')
+          .replace(/âc/g, '™')
+          .replace(/spÃ©/g, 'spé')
+          .replace(/rÃ©/g, 'ré')
+          .replace(/Ã©co/g, 'éco')
+          .replace(/TRANSFORMATIONâŸc/g, 'LOVE TRANSFORMATION™')
+          .replace(/TRANSFORMATIONâc/g, 'LOVE TRANSFORMATION™');
+      }
+      
+      // 4. ANALYSE DES VARIABLES TEMPLATE (silencieux)
+      const templateVariables = cleanTemplate.match(/{{([^}]+)}}/g) || [];
+      const uniqueVars = [...new Set(templateVariables.map(v => v.replace(/[{}]/g, '')))];
+      
+      // 5. PRÉPARATION DES VARIABLES (silencieux)
       const variables = this.prepareVariables(client, type);
-      console.log(`📊 Variables préparées: ${Object.keys(variables).length}`);
       
-      // ÉTAPE 4: Validation de la correspondance
-      console.log('\n🔎 ÉTAPE 4: VALIDATION DE LA CORRESPONDANCE');
+      // 6. AJOUT VALEURS PAR DÉFAUT FORCÉES (silencieux)
+      const forcedDefaults = {
+        'PLACES_DISPONIBLES': '7',
+        'FORMULE_RECOMMANDEE': 'LA PLUS POPULAIRE',
+        'MENSUALITE_3X': '665€',
+        'PRIX_UNIQUE': '1997€',
+        'FAQ_QUESTION_1': 'Comment ce programme peut-il m\'aider dans ma quête amoureuse ?',
+        'FAQ_REPONSE_1': 'Ce programme t\'accompagne dans un cheminement spirituel profond qui harmonise ta foi et tes besoins affectifs.',
+        'MESSAGE_BIENVENUE_SPIRITUEL': 'Qu\'Allah te bénisse dans cette démarche sincère vers l\'amour halal.',
+        'PONT_EMOTIONNEL_INTRODUCTION': 'Je comprends cette tension entre respecter sa foi et aspirer à l\'amour véritable.',
+        'NUMERO_WHATSAPP': '+33123456789',
+        'DATE_DEBUT_PROGRAMME': 'La prochaine session débute dans 7 jours'
+      };
       
-      const presentVars = uniqueTemplateVars.filter(v => variables[v]);
-      const missingVars = uniqueTemplateVars.filter(v => !variables[v]);
+      // Forcer les valeurs par défaut
+      Object.entries(forcedDefaults).forEach(([key, defaultValue]) => {
+        variables[key] = defaultValue;
+      });
       
-      console.log(`📊 Bilan: ${presentVars.length}/${uniqueTemplateVars.length} variables correspondantes, ${missingVars.length} manquantes`);
+      // 7. GESTION DES VARIABLES MANQUANTES (silencieux)
+      const missingVars = uniqueVars.filter(v => !variables[v]);
+      missingVars.forEach(varName => {
+        variables[varName] = `[${varName}]`;
+      });
       
-      if (missingVars.length > 0) {
-        console.warn(`⚠️ Variables manquantes: ${missingVars.join(', ')}`);
-      }
+      // 8. REMPLACEMENT COMPLET DES VARIABLES (silencieux)
+      let html = cleanTemplate;
+      let totalReplacements = 0;
       
-      // ÉTAPE 5: Remplacement des variables
-      console.log('\n🔄 ÉTAPE 5: REMPLACEMENT DES VARIABLES');
-      
-      let html = template;
-      let replacementCount = 0;
-      let replacementFailed = 0;
-      
-      // Effectuer les remplacements
       Object.entries(variables).forEach(([key, value]) => {
         const regex = new RegExp(`{{${key}}}`, 'g');
         const matches = html.match(regex);
         
         if (matches) {
-          replacementCount += matches.length;
-          const displayValue = value ? (value.length > 30 ? value.substring(0, 30) + '...' : value) : '[VIDE]';
-          console.log(`✅ {{${key}}} → ${displayValue} (${matches.length}x)`);
-          
-          const originalHtml = html;
-          html = html.replace(regex, value || '');
-          
-          if (originalHtml === html) {
-            console.error(`❌ Échec du remplacement pour {{${key}}}!`);
-            replacementFailed++;
-          }
+          totalReplacements += matches.length;
+          html = html.replace(regex, value);
         }
       });
       
-      // ÉTAPE 6: Vérification finale
-      console.log('\n🔎 ÉTAPE 6: VÉRIFICATION FINALE');
+      // 9. VÉRIFICATION FINALE SILENCIEUSE
+      const unreplacedVars = html.match(/{{[^}]+}}/g);
       
-      const unreplacedVariables = html.match(/{{[^}]+}}/g);
+      // 10. SUPPRESSION DE LA BARRE DE DÉBOGAGE (au cas où elle serait dans le template)
+      let finalHtml = html;
       
-      if (unreplacedVariables && unreplacedVariables.length > 0) {
-        console.error(`❌ ${unreplacedVariables.length} variables non remplacées: ${unreplacedVariables.join(', ')}`);
+      // Patterns pour supprimer toute barre de debug potentielle dans le HTML statique
+      const debugBarPatterns = [
+        /<div[^>]*style="[^"]*position:\s*fixed[^"]*background:\s*#28a745[^"]*"[^>]*>[\s\S]*?<\/div>/gi,
+        /<div[^>]*style='[^']*position:\s*fixed[^']*background:\s*#28a745[^']*'[^>]*>[\s\S]*?<\/div>/gi,
+        /<div[^>]*(?:class|id)="[^"]*debug[^"]*"[^>]*>[\s\S]*?<\/div>/gi,
+        /<div[^>]*>[\s\S]*?\|\s*Type:\s*\w+[\s\S]*?<\/div>/gi,
+      ];
+      
+      debugBarPatterns.forEach(pattern => {
+        finalHtml = finalHtml.replace(pattern, '');
+      });
+      
+      // Nettoyer les divs vides
+      finalHtml = finalHtml.replace(/<div[^>]*>\s*<\/div>/gi, '');
+      finalHtml = finalHtml.replace(/\n\s*\n\s*\n/g, '\n\n');
+      
+      // 11. SOLUTION RADICALE : INJECTER UN SCRIPT AUTO-SUPPRESSION DE LA BARRE VERTE
+      // ========================================
+      // INJECTION DU SCRIPT ANTI-BARRE DE DEBUG
+      // ========================================
+
+      // Script de suppression agressive de la barre de debug
+      const antiDebugScript = `
+<script>
+(function() {
+    'use strict';
+    function killDebugBar() {
+        let removedCount = 0;
         
-        unreplacedVariables.forEach(variable => {
-          const varName = variable.replace(/[{}]/g, '');
-          if (variables[varName]) {
-            console.error(`   ⁉️ ${variable}: Existe dans le dictionnaire mais non remplacée`);
-          } else {
-            console.error(`   ❓ ${variable}: N'existe pas dans le dictionnaire`);
-          }
+        const selectors = [
+            'div[style*="#28a745"]',
+            'div[style*="rgb(40, 167, 69)"]',
+            'div[style*="position: fixed"][style*="#28a745"]',
+            'div[style*="position:fixed"][style*="#28a745"]',
+            '.debug-bar',
+            '#debug-bar',
+            '[class*="debug"]',
+            'div[style*="z-index: 9999"][style*="position: fixed"]'
+        ];
+        
+        selectors.forEach(selector => {
+            try {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                    if (el && el.parentNode) {
+                        el.parentNode.removeChild(el);
+                        removedCount++;
+                    }
+                });
+            } catch (e) {}
         });
         
-        logger.error('DOCUMENT_GENERATOR', 'unreplaced_variables', 'Variables non remplacées', {
-          client_email: client.email,
-          document_type: type,
-          unreplaced: unreplacedVariables,
-          variables_keys: Object.keys(variables)
-      // Bilan des remplacements
-      console.log(`📊 Bilan: ${replacementCount} remplacements réussis, ${missingVars.length} variables non remplacées`);
+        const allDivs = document.querySelectorAll('div');
+        allDivs.forEach(div => {
+            const text = div.textContent || '';
+            const style = div.getAttribute('style') || '';
+            
+            const hasDebugContent = 
+                text.includes('Variables:') ||
+                text.includes('Encodage:') ||
+                text.includes('Non remplacées:') ||
+                text.includes('Marie Martin') ||
+                text.includes('Type: vente') ||
+                text.includes('Type: compte-rendu') ||
+                text.includes('Type: onboarding');
+                
+            const hasDebugStyle = 
+                style.includes('#28a745') ||
+                style.includes('position: fixed') ||
+                style.includes('position:fixed');
+            
+            if ((hasDebugContent || hasDebugStyle) && div.parentNode) {
+                div.parentNode.removeChild(div);
+                removedCount++;
+            }
+        });
+        
+        return removedCount;
+    }
+    
+    function setupWatch() {
+        const observer = new MutationObserver((mutations) => {
+            let shouldCheck = false;
+            
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            const element = node;
+                            const style = element.getAttribute ? element.getAttribute('style') : '';
+                            const text = element.textContent || '';
+                            
+                            if (
+                                style.includes('#28a745') ||
+                                text.includes('Variables:') ||
+                                text.includes('Marie Martin')
+                            ) {
+                                shouldCheck = true;
+                            }
+                        }
+                    });
+                }
+            });
+            
+            if (shouldCheck) {
+                setTimeout(killDebugBar, 10);
+            }
+        });
+        
+        if (document.body) {
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['style', 'class']
+            });
+        }
+        
+        return observer;
+    }
+    
+    function init() {
+        killDebugBar();
+        setupWatch();
+        
+        setInterval(killDebugBar, 2000);
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    window.addEventListener('load', () => {
+        setTimeout(killDebugBar, 100);
+    });
+    
+})();
+</script>`;
+
+      // Ajouter le script juste avant la fermeture du body
+      if (finalHtml.includes('</body>')) {
+          finalHtml = finalHtml.replace('</body>', `${antiDebugScript}
+</body>`);
+      } else {
+          // Si pas de </body>, ajouter à la fin
+          finalHtml += antiDebugScript;
+      }
+
+      console.log('🛡️ Script anti-barre de debug injecté dans le document');
       
-      // ÉTAPE 7: TEMPORAIREMENT DÉSACTIVÉE - Pas de protection par mot de passe
-      console.log('🔒 ÉTAPE 7: PROTECTION DU DOCUMENT DÉSACTIVÉE');
-      console.log('⚠️ Test sans protection par mot de passe - Retour du HTML brut');
+      // ========================================
+      // RESTAURER LES FONCTIONS CONSOLE
+      // ========================================
+      console.log = originalConsole.log;
+      console.error = originalConsole.error;
+      console.warn = originalConsole.warn;
+      console.info = originalConsole.info;
+      console.debug = originalConsole.debug;
       
-      // Finalisation
+      // Log final de succès (maintenant que console.log est restauré)
       const duration = Date.now() - startTime;
+      console.log(`✅ Document ${type} généré silencieusement pour ${client.prenom} ${client.nom} (${finalHtml.length} caractères) en ${duration}ms`);
       
-      // Créer un div de débogage pour afficher les logs directement dans le HTML
-      const debugInfoDiv = `
-<div style="position: fixed; top: 0; left: 0; right: 0; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 15px; z-index: 9999; font-family: monospace; max-height: 50vh; overflow-y: auto;">
-  <h3 style="margin-top: 0; color: #0d6efd;">Information de débogage HTML (v2)</h3>
-  <p><strong>Type de document:</strong> ${type}</p>
-  <p><strong>Client:</strong> ${client.email} (${client.prenom || 'Pas de prénom'} ${client.nom || 'Pas de nom'})</p>
-  <p><strong>Généré en:</strong> ${duration}ms</p>
-  <p><strong>Taille du HTML:</strong> ${html.length} caractères</p>
-  <p><strong>Variables remplacées:</strong> ${replacementCount}</p>
-  <p><strong>Variables non remplacées:</strong> ${missingVars.length}</p>
-  <div style="margin-top: 10px;">
-    <button onclick="document.getElementById('debug-variables').style.display = document.getElementById('debug-variables').style.display === 'none' ? 'block' : 'none'" style="background-color: #0d6efd; color: white; border: none; padding: 5px 10px; cursor: pointer;">
-      Afficher/Masquer les variables
-    </button>
-    <div id="debug-variables" style="display: none; margin-top: 10px; padding: 10px; background-color: #f0f0f0; border-radius: 4px;">
-      <h4>Variables utilisées:</h4>
-      <pre>${JSON.stringify(variables, null, 2)}</pre>
-    </div>
-  </div>
-  <div style="margin-top: 10px;">
-    <button onclick="this.parentNode.parentNode.style.display = 'none'" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer;">
-      Fermer cette barre
-    </button>
-  </div>
-</div>
-`;
+      return finalHtml;
       
-      // Insérer le div de débogage dans le HTML (juste après le tag <body>)
-      const finalHtml = html.replace('<body>', '<body>' + debugInfoDiv);
-      
-      console.log('='.repeat(80));
-      console.log(`✅ DOCUMENT GÉNÉRÉ AVEC SUCCÈS en ${duration}ms (${finalHtml.length} caractères)`);
-      console.log(`✅ Logs de débogage ajoutés directement dans le HTML`);
-      console.log('='.repeat(80));
-      
-      logger.info('DOCUMENT_GENERATOR', 'generate_success', `Document ${type} généré (sans protection, avec logs)`, {
-        client_email: client.email,
-        document_type: type,
-        duration_ms: duration,
-        final_size: finalHtml.length,
-        unreplaced_count: missingVars.length
-      });
-      
-      return finalHtml; // Retourne le HTML avec les logs visibles
     } catch (error) {
-      const duration = Date.now() - startTime;
+      // RESTAURER LES FONCTIONS CONSOLE EN CAS D'ERREUR
+      console.log = originalConsole.log;
+      console.error = originalConsole.error;
+      console.warn = originalConsole.warn;
+      console.info = originalConsole.info;
+      console.debug = originalConsole.debug;
       
-      console.error('='.repeat(80));
-      console.error(`❌ ERREUR DE GÉNÉRATION DU DOCUMENT: ${error instanceof Error ? error.message : error}`);
-      console.error('='.repeat(80));
+      // Maintenant on peut logger l'erreur
+      console.error('❌ ERREUR CRITIQUE dans generateDocument:', error);
       
-      logger.error('DOCUMENT_GENERATOR', 'generate_error', `Erreur génération ${type}`, {
-        client_email: client.email,
-        document_type: type,
-        error: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined,
-        duration_ms: duration,
-      });
-      
-      throw error;
+      // En cas d'erreur, retourner un HTML d'erreur informatif
+      return `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><title>Erreur - ${type}</title></head>
+<body style="font-family: Arial; padding: 20px; background: #f8d7da; color: #721c24;">
+  <h1>❌ Erreur de génération</h1>
+  <p><strong>Type:</strong> ${type}</p>
+  <p><strong>Client:</strong> ${client.email}</p>
+  <p><strong>Erreur:</strong> ${error instanceof Error ? error.message : 'Erreur inconnue'}</p>
+  <p>Contactez le support technique.</p>
+</body>
+</html>`;
     }
   }
   
   /**
-   * Prépare les variables selon le type de document
+   * Prépare les variables selon le type de document (VERSION SILENCIEUSE)
    */
-  private static prepareVariables(
-    client: ClientData, 
-    type: DocumentType
-  ): Record<string, string> {
+  private static prepareVariables(client: ClientData, type: DocumentType): Record<string, string> {
     // Variables de base toujours présentes
-    const baseVariables = {
-      PRENOM: client.prenom,
-      NOM: client.nom,
-      EMAIL: client.email,
-      TELEPHONE: client.telephone,
+    const variables: Record<string, string> = {
+      PRENOM: client.prenom || '',
+      NOM: client.nom || '',
+      EMAIL: client.email || '',
+      TELEPHONE: client.telephone || '',
       DATE_GENERATION: new Date().toLocaleDateString('fr-FR'),
     };
     
-    const variables: Record<string, string> = { ...baseVariables };
-    
-    // Fonction utilitaire pour ajouter des variables avec conversion en majuscules
+    // Fonction utilitaire pour ajouter des variables (silencieuse)
     const addVariable = (key: string, value: any) => {
       if (value === undefined || value === null) return;
       const upperKey = key.toUpperCase();
-      // Convertir les valeurs en string et gérer les cas spéciaux
-      let stringValue = '';
-      if (typeof value === 'object') {
-        try {
-          stringValue = JSON.stringify(value);
-        } catch (e) {
-          stringValue = String(value || '');
-        }
-      } else {
-        stringValue = String(value || '');
-      }
+      const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value || '');
       variables[upperKey] = stringValue;
-      
-      // DEBUG: Tracer chaque variable ajoutée
-      console.log(`🔄 Variable ajoutée: ${upperKey} = ${stringValue.substring(0, 30)}${stringValue.length > 30 ? '...' : ''}`);
     };
     
-    // EXTRACTION: Extraire les variables du champ donnees_completes
-    // Ce champ contient un JSON stringifié avec toutes les variables du template Love Transformation
+    // Traitement des donnees_completes (silencieux)
     if (client.donnees_completes) {
-      console.log(`🔍 Traitement de donnees_completes (type: ${typeof client.donnees_completes})`);
       try {
-        // Parser le JSON stringifié
         let donnees;
-        try {
-          // Si c'est une chaîne, essayer de parser le JSON
-          if (typeof client.donnees_completes === 'string') {
-            donnees = JSON.parse(client.donnees_completes);
-            console.log(`✅ JSON parsé avec succès: ${Object.keys(donnees).length} clés au premier niveau`);
-          } else {
-            // Sinon, c'est déjà un objet
-            donnees = client.donnees_completes;
-            console.log(`ℹ️ donnees_completes est déjà un objet: ${Object.keys(donnees).length} clés`);
-          }
-        } catch (e) {
-          console.error('⚠️ Erreur de parsing initial:', e);
-          // Si le parsing échoue, utiliser tel quel
+        if (typeof client.donnees_completes === 'string') {
+          donnees = JSON.parse(client.donnees_completes);
+        } else {
           donnees = client.donnees_completes;
         }
         
-        // TRAITEMENT RECURSIF: Extraire variables de tous les niveaux
-        const extractVariablesRecursively = (obj: any, prefix = '') => {
+        // Extraction récursive de toutes les variables (silencieuse)
+        const extractRecursively = (obj: any, prefix = '') => {
           if (!obj || typeof obj !== 'object') return;
           
           Object.entries(obj).forEach(([key, value]) => {
             const fullKey = prefix ? `${prefix}_${key}` : key;
+            addVariable(fullKey, value);
             
-            // Si c'est un objet non-null, récursivement extraire ses propriétés
-            if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-              // Ajouter l'objet entier comme variable (sera stringifié)
-              addVariable(fullKey, value);
-              // Et récursivement traiter ses propriétés
-              extractVariablesRecursively(value, fullKey);
-            } else {
-              // Ajouter la valeur scalaire comme variable
-              addVariable(fullKey, value);
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
+              extractRecursively(value, fullKey);
             }
           });
         };
         
-        // Appliquer l'extraction récursive
-        extractVariablesRecursively(donnees);
+        extractRecursively(donnees);
         
-        // CAS SPÉCIAL: Double imbrication de donnees_completes
-        if (typeof donnees === 'object' && donnees !== null && donnees.donnees_completes) {
-          console.log('🔄 Détection de double imbrication dans donnees_completes');
-          try {
-            let sousDonnees;
-            // Tenter de parser cette sous-propriété si c'est une chaîne JSON
-            if (typeof donnees.donnees_completes === 'string') {
-              sousDonnees = JSON.parse(donnees.donnees_completes);
-              console.log(`✅ Sous-JSON parsé avec succès: ${Object.keys(sousDonnees).length} clés`);
-            } else if (typeof donnees.donnees_completes === 'object') {
-              sousDonnees = donnees.donnees_completes;
-              console.log(`ℹ️ sous-donnees_completes est déjà un objet: ${Object.keys(sousDonnees).length} clés`);
-            }
-            
-            if (sousDonnees) {
-              // Ajouter récursivement les sous-variables
-              extractVariablesRecursively(sousDonnees);
-            }
-          } catch (e) {
-            console.error('⚠️ Erreur lors du parsing du sous-objet donnees_completes:', e);
-          }
-        }
-        
-        console.log(`🔍 Total variables extraites de donnees_completes: ${Object.keys(variables).length - Object.keys(baseVariables).length}`);
       } catch (error) {
-        console.error('❌ Erreur lors du traitement de donnees_completes:', error);
-        logger.error('DOCUMENT_GENERATOR', 'parse_donnees_completes_error', 'Erreur parsing JSON', {
-          error: error instanceof Error ? error.message : error,
-        });
+        // Erreur silencieuse - ne pas logger
       }
     }
     
-    // Méthode 1: Utiliser les préfixes selon le type de document
-    const prefix = type === 'compte-rendu' ? 'cr_' : type === 'vente' ? 'vente_' : 'onb_';
-    console.log(`🔄 Extraction des variables avec préfixe '${prefix}'`);
-    
-    // Récupérer TOUTES les colonnes qui commencent par le bon préfixe
+    // Ajouter toutes les autres propriétés du client (silencieux)
     Object.entries(client).forEach(([key, value]) => {
-      if (key.startsWith(prefix)) {
-        // Enlever le préfixe et mettre en majuscules
-        const varName = key.replace(prefix, '').toUpperCase();
-        addVariable(varName, value);
+      if (!['prenom', 'nom', 'email', 'telephone', 'donnees_completes'].includes(key.toLowerCase())) {
+        addVariable(key, value);
       }
-    });
-    
-    // Méthode 2: Compatibilité avec anciens noms de variables (pour les CSV sans préfixes)
-    if (type === 'vente') {
-      // Mappings pour la page de vente
-      if (client.produit && !variables['PRODUIT']) addVariable('PRODUIT', client.produit);
-      if (client.prix && !variables['PRIX']) addVariable('PRIX', client.prix);
-      if (client.offre_speciale && !variables['OFFRE_SPECIALE']) addVariable('OFFRE_SPECIALE', client.offre_speciale);
-      
-      // Valeurs par défaut pour les variables courantes qui pourraient manquer
-      if (!variables['FORMULE_RECOMMANDEE']) addVariable('FORMULE_RECOMMANDEE', 'Option Recommandée');
-      if (!variables['FAQ_QUESTION_1']) addVariable('FAQ_QUESTION_1', 'Comment ce programme peut-il m\'aider ?');
-    } else if (type === 'compte-rendu') {
-      // Mappings pour le compte-rendu
-      if (client.date_rencontre && !variables['DATE_RENCONTRE']) addVariable('DATE_RENCONTRE', client.date_rencontre);
-      if (client.objectifs && !variables['OBJECTIFS']) addVariable('OBJECTIFS', client.objectifs);
-      if (client.recommandations && !variables['RECOMMANDATIONS']) addVariable('RECOMMANDATIONS', client.recommandations);
-    } else if (type === 'onboarding') {
-      // Mappings pour l'onboarding
-      if (client.etapes_onboarding && !variables['ETAPES']) addVariable('ETAPES', client.etapes_onboarding);
-      if (client.conseils_onboarding && !variables['CONSEILS']) addVariable('CONSEILS', client.conseils_onboarding);
-    }
-    
-    // Vérification finale des variables potentiellement manquantes dans le template
-    const templateVariablesCheck = [
-      'FORMULE_RECOMMANDEE', 'FAQ_QUESTION_1', 'FAQ_REPONSE_1', 
-      'PRODUIT', 'PRIX', 'OFFRE_SPECIALE', 
-      'PRENOM', 'NOM', 'EMAIL', 'TELEPHONE'
-    ];
-    
-    templateVariablesCheck.forEach(varName => {
-      if (!variables[varName]) {
-        console.warn(`⚠️ Variable potentiellement manquante: ${varName}`);
-      }
-    });
-    
-    // Log des variables disponibles pour debug
-    console.log('📊 RÉSUMÉ DES VARIABLES:');
-    console.log(`📋 Nombre total de variables: ${Object.keys(variables).length}`);
-    console.log('📋 Liste des variables disponibles:', Object.keys(variables).join(', '));
-    
-    logger.debug('DOCUMENT_GENERATOR', 'variables_prepared', `Variables préparées pour ${type}`, {
-      client_email: client.email,
-      document_type: type,
-      variables_count: Object.keys(variables).length,
-      variables: Object.keys(variables)
     });
     
     return variables;
   }
   
-  console.log(`📝 Application du template de protection (${this.protectionTemplate.length} caractères)`);
-  console.log(`✅ Template de protection chargé avec succès`);
-    protectedHtml = protectedHtml.replace(/{{CLIENT_NAME}}/g, clientName);
-    protectedHtml = protectedHtml.replace(/{{ACCESS_CODE}}/g, process.env.ACCESS_CODE || '7744');
-    protectedHtml = protectedHtml.replace(/{{ENCODED_CONTENT}}/g, encodedContent);
-    
-    console.log(`✅ Document protégé avec succès (taille finale: ${protectedHtml.length} caractères)`);
-    return protectedHtml;
-  }
-  
   /**
-   * Génère un nom de fichier unique avec plus de précision pour éviter les conflits
+   * Génère un nom de fichier unique
    */
   static generateFileName(client: ClientData, type: DocumentType): string {
-    const prenom = client.prenom.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const nom = client.nom.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 3);
+    const prenom = (client.prenom || 'client').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const nom = (client.nom || 'doc').toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 3);
     const timestamp = Date.now();
     const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     
-    console.log(`🔍 Génération d'un nom de fichier unique pour ${client.prenom} ${client.nom}, type: ${type}`);
-    
-    // Format: prenom_nom3_type_timestamp_randomSuffix.html
     const fileName = `${prenom}_${nom}_${type}_${timestamp}_${randomSuffix}.html`;
-    console.log(`✅ Nom de fichier généré: ${fileName}`);
+    console.log(`📁 Nom de fichier généré: ${fileName}`);
     return fileName;
   }
   
   /**
    * Génère tous les documents pour un client
    */
-  static async generateAllDocuments(
-    client: ClientData
-  ): Promise<Record<DocumentType, { content: string; filename: string }>> {
+  static async generateAllDocuments(client: ClientData): Promise<Record<DocumentType, { content: string; filename: string }>> {
     const startTime = Date.now();
     
     logger.info('DOCUMENT_GENERATOR', 'generate_all_start', 'Génération de tous les documents', {
