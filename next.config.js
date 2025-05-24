@@ -35,9 +35,9 @@ const nextConfig = {
       ];
     },
     
-    // Configuration des images si nécessaire
+    // Configuration des images - mise à jour pour pointer vers le nouveau domaine
     images: {
-      domains: ['github.com', 'user785485.github.io'],
+      domains: ['my-muqabala.fr', 'vercel.app'],
     },
   }
   
