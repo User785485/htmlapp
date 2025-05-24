@@ -190,7 +190,7 @@ export class DocumentGenerator {
       // Créer un div de débogage pour afficher les logs directement dans le HTML
       const debugInfoDiv = `
 <div style="position: fixed; top: 0; left: 0; right: 0; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 15px; z-index: 9999; font-family: monospace; max-height: 50vh; overflow-y: auto;">
-  <h3 style="margin-top: 0; color: #0d6efd;">Information de débogage HTML</h3>
+  <h3 style="margin-top: 0; color: #0d6efd;">Information de débogage HTML (v2)</h3>
   <p><strong>Type de document:</strong> ${type}</p>
   <p><strong>Client:</strong> ${client.email} (${client.prenom || 'Pas de prénom'} ${client.nom || 'Pas de nom'})</p>
   <p><strong>Généré en:</strong> ${duration}ms</p>
