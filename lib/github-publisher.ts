@@ -12,16 +12,29 @@ export class GitHubPublisher {
   constructor() {
     // Vérification du token GitHub
     const githubToken = process.env.GITHUB_TOKEN;
+    console.log('🔍 DEBUG: Vérification du token GitHub');
+    console.log('🔍 ENV GITHUB_TOKEN défini:', !!githubToken);
+    console.log('🔍 ENV GITHUB_OWNER:', process.env.GITHUB_OWNER);
+    console.log('🔍 ENV GITHUB_REPO:', process.env.GITHUB_REPO);
+    console.log('🔍 ENV GITHUB_BRANCH:', process.env.GITHUB_BRANCH);
+    
     if (!githubToken) {
       console.error('⚠️ ERREUR CRITIQUE: Token GitHub manquant!');
       logger.error('GITHUB_PUBLISHER', 'missing_token', 'Token GitHub manquant', {
         error: 'GITHUB_TOKEN nest pas défini dans les variables denvironnement'
       });
-    } else if (githubToken.includes('votre_nouveau_token_github')) {
-      console.error('⚠️ ERREUR CRITIQUE: Token GitHub est toujours la valeur par défaut!');
-      logger.error('GITHUB_PUBLISHER', 'default_token', 'Token GitHub est la valeur par défaut', {
-        error: 'GITHUB_TOKEN contient la valeur placeholder votre_nouveau_token_github'
-      });
+    } else if (githubToken.includes('votre_nouveau_token_github') || githubToken.includes('ghp_')) {
+      // Vérifie si le token commence par ghp_ pour détecter un token valide
+      if (githubToken.includes('votre_nouveau_token_github')) {
+        console.error('⚠️ ERREUR CRITIQUE: Token GitHub est toujours la valeur par défaut!');
+        logger.error('GITHUB_PUBLISHER', 'default_token', 'Token GitHub est la valeur par défaut', {
+          error: 'GITHUB_TOKEN contient la valeur placeholder votre_nouveau_token_github'
+        });
+      } else {
+        console.log('✅ Token GitHub semble être au bon format (commence par ghp_)');
+      }
+    } else {
+      console.warn('⚠️ AVERTISSEMENT: Format du token GitHub inhabituel, vérifiez qu\'il s\'agit d\'un token valide');
     }
     
     this.octokit = new Octokit({
@@ -54,6 +67,8 @@ export class GitHubPublisher {
   ): Promise<string> {
     const startTime = Date.now();
     
+    console.log(`🔍 Début de publication sur GitHub pour: ${path}`);
+    
     try {
       logger.debug('GITHUB_PUBLISHER', 'publish_file_start', `Publication de ${path}`, {
         path,
@@ -64,6 +79,7 @@ export class GitHubPublisher {
       // Vérifier si le fichier existe déjà
       let sha: string | undefined;
       try {
+        console.log(`🔍 Vérification si le fichier existe déjà: ${path}`);
         const { data } = await this.octokit.repos.getContent({
           owner: this.owner,
           repo: this.repo,
@@ -72,6 +88,7 @@ export class GitHubPublisher {
         
         if ('sha' in data) {
           sha = data.sha;
+          console.log(`✅ Fichier existant trouvé avec SHA: ${sha}`);
           logger.debug('GITHUB_PUBLISHER', 'file_exists', 'Fichier existant trouvé', {
             path,
             sha,
@@ -79,34 +96,55 @@ export class GitHubPublisher {
         }
       } catch (error: any) {
         // Le fichier n'existe pas, c'est OK
+        console.log(`🔍 Statut de l'erreur lors de la vérification: ${error.status}`);
+        console.error(`🔍 Détails de l'erreur:`, JSON.stringify(error, null, 2));
+        
         if (error.status !== 404) {
+          console.error(`❌ Erreur lors de la vérification du fichier: ${error.message}`);
           throw error;
         }
+        console.log(`🔍 Fichier n'existe pas encore, création d'un nouveau fichier: ${path}`);
         logger.debug('GITHUB_PUBLISHER', 'file_not_exists', 'Nouveau fichier', { path });
       }
       
       // Créer ou mettre à jour le fichier
-      const { data } = await this.octokit.repos.createOrUpdateFileContents({
-        owner: this.owner,
-        repo: this.repo,
-        path,
-        message,
-        content: Buffer.from(content).toString('base64'),
-        branch: this.branch,
-        sha, // Si le fichier existe, on doit fournir le SHA
-      });
+      console.log(`🔍 Tentative de création/mise à jour du fichier: ${path}`);
+      console.log(`🔍 Paramètres: owner=${this.owner}, repo=${this.repo}, branch=${this.branch}`);
+      
+      let fileData: any;
+      try {
+        const response = await this.octokit.repos.createOrUpdateFileContents({
+          owner: this.owner,
+          repo: this.repo,
+          path,
+          message,
+          content: Buffer.from(content).toString('base64'),
+          branch: this.branch,
+          sha, // Si le fichier existe, on doit fournir le SHA
+        });
+        
+        fileData = response.data;
+        console.log(`✅ Fichier ${path} publié avec succès`);
+      } catch (apiError: any) {
+        console.error(`❌ ERREUR API GITHUB: ${apiError.message}`);
+        console.error(`❌ Status: ${apiError.status}`);
+        console.error(`❌ Détails:`, JSON.stringify(apiError?.response?.data || {}, null, 2));
+        throw apiError;
+      }
       
       // Retourner l'URL publique
       const publicUrl = `${this.baseUrl}/${path}`;
+      console.log(`🔗 URL publique générée: ${publicUrl}`);
       
       const duration = Date.now() - startTime;
       logger.logGitHub('publish_file', path, true, {
-        sha: data.content?.sha,
+        sha: fileData?.content?.sha || 'unknown',
         size: content.length,
         duration_ms: duration,
         url: publicUrl,
       });
       
+      console.log(`✅ Publication terminée en ${duration}ms`);
       return publicUrl;
       
     } catch (error: any) {
@@ -128,6 +166,9 @@ export class GitHubPublisher {
     documents: Record<DocumentType, { content: string; filename: string }>
   ): Promise<Record<DocumentType, string>> {
     const startTime = Date.now();
+    
+    console.log(`🔍 Début de la publication des documents pour le client: ${clientEmail}`);
+    console.log(`🔍 Types de documents à publier: ${Object.keys(documents).join(', ')}`);
     
     logger.info('GITHUB_PUBLISHER', 'publish_client_start', 'Publication des documents client', {
       client_email: clientEmail,
