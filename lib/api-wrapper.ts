@@ -4,18 +4,17 @@ import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Fonction HOC pour logger les requêtes API
- * @param handler La fonction de gestionnaire d'API Next.js
  * @param component Le nom du composant pour les logs
- * @param action L'action effectuée
+ * @param handler La fonction de gestionnaire d'API Next.js
  */
-export function withApiLogging<T>(
-  handler: (req: NextRequest) => Promise<NextResponse<T>>,
+export function withApiLogging(
   component: string,
-  action: string
+  handler: (req: NextRequest, context?: any) => Promise<NextResponse>
 ) {
   return async (req: NextRequest) => {
     const startTime = Date.now();
     const requestId = crypto.randomUUID();
+    const action = req.method?.toLowerCase() || 'request';
     
     try {
       // Log du début de la requête
