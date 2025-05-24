@@ -18,9 +18,7 @@ export function middleware(request: NextRequest) {
   
   // Créer la réponse avec les headers modifiés
   const response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
+    headers: requestHeaders,
   });
   
   // Ajouter des headers de sécurité et de tracking
