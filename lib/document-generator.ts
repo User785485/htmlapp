@@ -221,12 +221,20 @@ export class DocumentGenerator {
   }
   
   /**
-   * Génère un nom de fichier unique
+   * Génère un nom de fichier unique avec plus de précision pour éviter les conflits
    */
   static generateFileName(client: ClientData, type: DocumentType): string {
     const prenom = client.prenom.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const nom = client.nom.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 3);
     const timestamp = Date.now();
-    return `${prenom}_${type}_${timestamp}.html`;
+    const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    
+    console.log(`🔍 Génération d'un nom de fichier unique pour ${client.prenom} ${client.nom}, type: ${type}`);
+    
+    // Format: prenom_nom3_type_timestamp_randomSuffix.html
+    const fileName = `${prenom}_${nom}_${type}_${timestamp}_${randomSuffix}.html`;
+    console.log(`✅ Nom de fichier généré: ${fileName}`);
+    return fileName;
   }
   
   /**

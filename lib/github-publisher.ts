@@ -58,22 +58,30 @@ export class GitHubPublisher {
   }
   
   /**
-   * Publie un fichier sur GitHub
+   * Publie un fichier sur GitHub avec gestion des conflits
+   * @param path Chemin du fichier
+   * @param content Contenu du fichier
+   * @param message Message de commit
+   * @param retryCount Compteur de tentatives en cas de conflit (usage interne)
+   * @returns URL publique du fichier publié
    */
   async publishFile(
     path: string, 
     content: string, 
-    message: string
+    message: string,
+    retryCount: number = 0
   ): Promise<string> {
     const startTime = Date.now();
+    const maxRetries = 3; // Nombre maximum de tentatives en cas de conflit
     
-    console.log(`🔍 Début de publication sur GitHub pour: ${path}`);
+    console.log(`🔍 Début de publication sur GitHub pour: ${path}${retryCount > 0 ? ` (tentative ${retryCount+1}/${maxRetries+1})` : ''}`);
     
     try {
       logger.debug('GITHUB_PUBLISHER', 'publish_file_start', `Publication de ${path}`, {
         path,
         content_size: content.length,
         message,
+        retry_count: retryCount,
       });
       
       // Vérifier si le fichier existe déjà
@@ -129,6 +137,26 @@ export class GitHubPublisher {
         console.error(`❌ ERREUR API GITHUB: ${apiError.message}`);
         console.error(`❌ Status: ${apiError.status}`);
         console.error(`❌ Détails:`, JSON.stringify(apiError?.response?.data || {}, null, 2));
+        
+        // Traitement spécial pour les erreurs de conflit (409)
+        if (apiError.status === 409 && retryCount < 3) {
+          console.log(`🔄 Erreur de conflit 409 détectée, tentative de résolution...`);
+          
+          // Générer un nouveau nom de fichier avec un suffix aléatoire pour éviter le conflit
+          const pathParts = path.split('/');
+          const fileName = pathParts.pop();
+          const fileNameParts = fileName?.split('.') || ['file', 'html'];
+          const extension = fileNameParts.pop();
+          const baseName = fileNameParts.join('.');
+          const newFileName = `${baseName}_retry${retryCount + 1}.${extension}`;
+          const newPath = [...pathParts, newFileName].join('/');
+          
+          console.log(`🔄 Nouvel essai avec un nom de fichier modifié: ${newPath}`);
+          
+          // Réessayer avec un nouveau nom de fichier
+          return this.publishFile(newPath, content, message, retryCount + 1);
+        }
+        
         throw apiError;
       }
       

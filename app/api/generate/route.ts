@@ -120,9 +120,14 @@ export async function POST(request: NextRequest) {
     // Préparer les données pour Supabase
     console.log('API generate: Préparation des données pour Supabase');
     const now = new Date();
+    
+    console.log('API generate: Préparation des données sécurisées pour Supabase');
+    
+    // Structure de données sécurisante, sans client_phone qui pose problème
     const supabaseData = {
       client_email: client.email,
-      client_phone: client.telephone,
+      // Ne pas inclure client_phone si la colonne n'existe pas dans Supabase
+      // client_phone: client.telephone,  // Commenté pour éviter l'erreur de colonne manquante
       client_name: `${client.prenom} ${client.nom}`,
       raw_data: client,
       ...(publishedUrls.vente && {
@@ -138,6 +143,11 @@ export async function POST(request: NextRequest) {
         onboarding_generated_at: now
       })
     };
+    
+    console.log('API generate: Données Supabase préparées', { 
+      email: supabaseData.client_email,
+      docs: Object.keys(publishedUrls).length
+    });
     
     // Sauvegarder dans Supabase
     console.log('API generate: Sauvegarde des données dans Supabase');

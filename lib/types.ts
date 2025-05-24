@@ -27,7 +27,7 @@ export interface ClientData {
 export interface GeneratedDocument {
   id?: string;
   client_email: string;
-  client_phone: string;
+  client_phone?: string; // Rendu optionnel car la colonne peut ne pas exister dans Supabase
   client_name: string;
   
   vente_url?: string;
