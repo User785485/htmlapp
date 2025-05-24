@@ -13,6 +13,8 @@ export class VercelPublisher {
   private createdFolders: Set<string>;
 
   constructor() {
+    console.log('💥💥💥 ATTENTION: VercelPublisher est maintenant utilisé! 💥💥💥');
+    
     // Initialiser l'ensemble des dossiers créés
     this.createdFolders = new Set<string>();
     
@@ -23,9 +25,13 @@ export class VercelPublisher {
     this.documentsDir = path.join(process.cwd(), 'public', 'documents');
     
     // Logs d'initialisation
-    console.log('🔍 VercelPublisher: Initialisation');
-    console.log(`🔍 URL de base: ${this.baseUrl}`);
-    console.log(`🔍 Dossier documents: ${this.documentsDir}`);
+    console.log('💥 VercelPublisher: Initialisation - NOUVELLE IMPLÉMENTATION');
+    console.log(`💥 Version: 1.0.0 - Déployé le: ${new Date().toISOString()}`);
+    console.log(`💥 URL de base: ${this.baseUrl}`);
+    console.log(`💥 Dossier documents: ${this.documentsDir}`);
+    console.log('💥 Process env NODE_ENV:', process.env.NODE_ENV);
+    console.log('💥 Process env VERCEL:', process.env.VERCEL);
+    console.log('💥 Process cwd:', process.cwd());
     
     logger.debug('VERCEL_PUBLISHER', 'init', 'Vercel Publisher initialisé', {
       baseUrl: this.baseUrl,

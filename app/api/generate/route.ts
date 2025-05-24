@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Publier sur Vercel (fichiers statiques)
-    console.log('API generate: Initialisation de la publication sur Vercel');
+    console.log('💥💥💥 API generate: NOUVELLE MÉTHODE - Publication sur Vercel (fichiers statiques) 💥💥💥');
     let publishedUrls;
     try {
       const publisher = new VercelPublisher();
