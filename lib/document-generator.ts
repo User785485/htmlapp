@@ -96,32 +96,6 @@ export class DocumentGenerator {
     // Afficher l'en-tête du processus de génération
     console.log('='.repeat(80));
     console.log(`🚀 DÉBUT GÉNÉRATION DOCUMENT: ${type.toUpperCase()} - ${client.prenom} ${client.nom}`);
-    console.log(`📅 Date: ${new Date().toLocaleString('fr-FR')}`);
-    console.log('='.repeat(80));
-    
-    try {
-      logger.debug('DOCUMENT_GENERATOR', 'generate_start', `Génération document ${type}`, {
-        client_email: client.email,
-        document_type: type,
-      });
-      
-      // ÉTAPE 1: Sélection du template
-      console.log('\n📦 ÉTAPE 1: SÉLECTION DU TEMPLATE');
-      
-      // Vérifier les templates disponibles
-      const availableTemplates = Array.from(this.templates.keys());
-      console.log(`📄 Templates disponibles: ${availableTemplates.join(', ')}`);
-      console.log(`🔍 Sélection du template: '${type}'`);
-      
-      const template = this.templates.get(type);
-      if (!template) {
-        console.error(`❌ ERREUR: Template '${type}' non trouvé!`);
-        throw new Error(`Template non trouvé pour le type: ${type}`);
-      }
-      
-      console.log(`✅ Template '${type}' sélectionné (${template.length} caractères)`);
-      
-      // ÉTAPE 2: Analyse des variables du template
       console.log('\n🔍 ÉTAPE 2: ANALYSE DES VARIABLES DU TEMPLATE');
       
       // Rechercher toutes les occurrences de {{VARIABLE}}
@@ -203,35 +177,60 @@ export class DocumentGenerator {
           document_type: type,
           unreplaced: unreplacedVariables,
           variables_keys: Object.keys(variables)
-        });
-      } else {
-        console.log('✅ Toutes les variables ont été remplacées avec succès!');
-      }
-      
       // Bilan des remplacements
-      console.log(`📊 Bilan: ${replacementCount} remplacements réussis, ${unreplacedVariables?.length || 0} variables non remplacées`);
+      console.log(`📊 Bilan: ${replacementCount} remplacements réussis, ${missingVars.length} variables non remplacées`);
       
-      // ÉTAPE 7: Protection du document
-      console.log('\n🔒 ÉTAPE 7: PROTECTION DU DOCUMENT');
-      const protectedHtml = this.addPasswordProtection(html, client.prenom);
-      console.log(`✅ Protection appliquée avec succès`);
+      // ÉTAPE 7: TEMPORAIREMENT DÉSACTIVÉE - Pas de protection par mot de passe
+      console.log('🔒 ÉTAPE 7: PROTECTION DU DOCUMENT DÉSACTIVÉE');
+      console.log('⚠️ Test sans protection par mot de passe - Retour du HTML brut');
       
       // Finalisation
       const duration = Date.now() - startTime;
       
+      // Créer un div de débogage pour afficher les logs directement dans le HTML
+      const debugInfoDiv = `
+<div style="position: fixed; top: 0; left: 0; right: 0; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 15px; z-index: 9999; font-family: monospace; max-height: 50vh; overflow-y: auto;">
+  <h3 style="margin-top: 0; color: #0d6efd;">Information de débogage HTML</h3>
+  <p><strong>Type de document:</strong> ${type}</p>
+  <p><strong>Client:</strong> ${client.email} (${client.prenom || 'Pas de prénom'} ${client.nom || 'Pas de nom'})</p>
+  <p><strong>Généré en:</strong> ${duration}ms</p>
+  <p><strong>Taille du HTML:</strong> ${html.length} caractères</p>
+  <p><strong>Variables remplacées:</strong> ${replacementCount}</p>
+  <p><strong>Variables non remplacées:</strong> ${missingVars.length}</p>
+  <div style="margin-top: 10px;">
+    <button onclick="document.getElementById('debug-variables').style.display = document.getElementById('debug-variables').style.display === 'none' ? 'block' : 'none'" style="background-color: #0d6efd; color: white; border: none; padding: 5px 10px; cursor: pointer;">
+      Afficher/Masquer les variables
+    </button>
+    <div id="debug-variables" style="display: none; margin-top: 10px; padding: 10px; background-color: #f0f0f0; border-radius: 4px;">
+      <h4>Variables utilisées:</h4>
+      <pre>${JSON.stringify(variables, null, 2)}</pre>
+    </div>
+  </div>
+  <div style="margin-top: 10px;">
+    <button onclick="this.parentNode.parentNode.style.display = 'none'" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer;">
+      Fermer cette barre
+    </button>
+  </div>
+</div>
+`;
+      
+      // Insérer le div de débogage dans le HTML (juste après le tag <body>)
+      const finalHtml = html.replace('<body>', '<body>' + debugInfoDiv);
+      
       console.log('='.repeat(80));
-      console.log(`✅ DOCUMENT GÉNÉRÉ AVEC SUCCÈS en ${duration}ms (${protectedHtml.length} caractères)`);
+      console.log(`✅ DOCUMENT GÉNÉRÉ AVEC SUCCÈS en ${duration}ms (${finalHtml.length} caractères)`);
+      console.log(`✅ Logs de débogage ajoutés directement dans le HTML`);
       console.log('='.repeat(80));
       
-      logger.info('DOCUMENT_GENERATOR', 'generate_success', `Document ${type} généré`, {
+      logger.info('DOCUMENT_GENERATOR', 'generate_success', `Document ${type} généré (sans protection, avec logs)`, {
         client_email: client.email,
         document_type: type,
         duration_ms: duration,
-        final_size: protectedHtml.length,
-        unreplaced_count: unreplacedVariables?.length || 0
+        final_size: finalHtml.length,
+        unreplaced_count: missingVars.length
       });
       
-      return protectedHtml;
+      return finalHtml; // Retourne le HTML avec les logs visibles
     } catch (error) {
       const duration = Date.now() - startTime;
       
@@ -430,26 +429,8 @@ export class DocumentGenerator {
     return variables;
   }
   
-  /**
-   * Ajoute une protection par mot de passe au document HTML
-   */
-  private static addPasswordProtection(content: string, clientName: string): string {
-    console.log(`🔒 Protection du document avec mot de passe pour: '${clientName}'`);
-    
-    if (!this.protectionTemplate) {
-      console.error('❌ ERREUR: Template de protection non chargé!');
-      throw new Error('Template de protection non chargé');
-    }
-    
-    console.log(`📝 Application du template de protection (${this.protectionTemplate.length} caractères)`);
-    
-    // Encoder le contenu en base64 pour éviter les problèmes d'échappement
-    console.log(`🔐 Encodage du contenu en base64 (${content.length} caractères)`);
-    const encodedContent = Buffer.from(content).toString('base64');
-    console.log(`✅ Contenu encodé avec succès (${encodedContent.length} caractères en base64)`);
-    
-    // Remplacer les variables dans le template de protection
-    let protectedHtml = this.protectionTemplate;
+  console.log(`📝 Application du template de protection (${this.protectionTemplate.length} caractères)`);
+  console.log(`✅ Template de protection chargé avec succès`);
     protectedHtml = protectedHtml.replace(/{{CLIENT_NAME}}/g, clientName);
     protectedHtml = protectedHtml.replace(/{{ACCESS_CODE}}/g, process.env.ACCESS_CODE || '7744');
     protectedHtml = protectedHtml.replace(/{{ENCODED_CONTENT}}/g, encodedContent);
