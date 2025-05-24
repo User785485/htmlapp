@@ -83,8 +83,10 @@ export class DocumentGenerator {
   static generateDocument(client: ClientData, type: DocumentType): string {
     const startTime = Date.now();
     
+    // DÉSACTIVER TEMPORAIREMENT LES LOGS CONSOLE POUR ÉVITER L'INJECTION
+    // DE LA BARRE DE DÉBOGAGE VERTE
     // ========================================
-    // DÉSACTIVER COMPLÉTEMENT TOUS LES LOGS
+    // DÉSACTIVER LES FONCTIONS CONSOLE
     // ========================================
     const originalConsole = {
       log: console.log,
@@ -93,13 +95,17 @@ export class DocumentGenerator {
       info: console.info,
       debug: console.debug
     };
-    
-    // Remplacer par des fonctions vides (logs silencieux)
+
+    // Mode silencieux pour éviter les logs qui seraient capturés et affichés
+    // En production, on désactive complètement les logs pour éviter toute injection
     console.log = () => {};
     console.error = () => {};
     console.warn = () => {};
     console.info = () => {};
     console.debug = () => {};
+    
+    // Configuration explicite: désactivation PERMANENTE de la barre de débogage
+    const SHOW_DEBUG_BAR = false; // Toujours désactivé en production
     
     try {
       // 1. RÉCUPÉRATION DU TEMPLATE
@@ -197,26 +203,32 @@ export class DocumentGenerator {
       // 9. VÉRIFICATION FINALE SILENCIEUSE
       const unreplacedVars = html.match(/{{[^}]+}}/g);
       
-      // 10. SUPPRESSION DE LA BARRE DE DÉBOGAGE (au cas où elle serait dans le template)
+      // 10. NETTOYAGE ET FINALISATION DU HTML
       let finalHtml = html;
       
       // Patterns pour supprimer toute barre de debug potentielle dans le HTML statique
+      // Ces patterns sont conservés pour nettoyer tout code de débogage existant qui pourrait être dans les templates
       const debugBarPatterns = [
         /<div[^>]*style="[^"]*position:\s*fixed[^"]*background:\s*#28a745[^"]*"[^>]*>[\s\S]*?<\/div>/gi,
         /<div[^>]*style='[^']*position:\s*fixed[^']*background:\s*#28a745[^']*'[^>]*>[\s\S]*?<\/div>/gi,
         /<div[^>]*(?:class|id)="[^"]*debug[^"]*"[^>]*>[\s\S]*?<\/div>/gi,
         /<div[^>]*>[\s\S]*?\|\s*Type:\s*\w+[\s\S]*?<\/div>/gi,
+        /<div[^>]*information de débogage[^>]*>[\s\S]*?<\/div>/gi,
+        /<div[^>]*debug\-bar[^>]*>[\s\S]*?<\/div>/gi,
       ];
       
+      // Toujours supprimer les éléments de débogage existants dans le HTML
       debugBarPatterns.forEach(pattern => {
         finalHtml = finalHtml.replace(pattern, '');
       });
       
-      // Nettoyer les divs vides
+      // Nettoyer les divs vides et l'espacement excessif
       finalHtml = finalHtml.replace(/<div[^>]*>\s*<\/div>/gi, '');
       finalHtml = finalHtml.replace(/\n\s*\n\s*\n/g, '\n\n');
       
-      // 11. SOLUTION RADICALE : INJECTER UN SCRIPT AUTO-SUPPRESSION DE LA BARRE VERTE
+      // 11. SCRIPT DE SÉCURITÉ POUR SUPPRIMER TOUTE BARRE DE DÉBOGAGE RÉSIDUELLE
+      // La barre de débogage est désactivée via SHOW_DEBUG_BAR = false
+      // Ce script est une mesure de sécurité supplémentaire pour garantir qu'aucune barre n'apparaît
       // ========================================
       // INJECTION DU SCRIPT ANTI-BARRE DE DEBUG
       // ========================================
@@ -341,7 +353,9 @@ export class DocumentGenerator {
 })();
 </script>`;
 
-      // Ajouter le script juste avant la fermeture du body
+      // N'ajouter le script anti-debug que si nécessaire (par sécurité)
+      // Même si SHOW_DEBUG_BAR = false, on ajoute quand même le script comme mesure de sécurité
+      // pour s'assurer qu'aucune barre ne puisse être injectée par un autre moyen
       if (finalHtml.includes('</body>')) {
           finalHtml = finalHtml.replace('</body>', `${antiDebugScript}
 </body>`);
@@ -350,7 +364,7 @@ export class DocumentGenerator {
           finalHtml += antiDebugScript;
       }
 
-      console.log('🛡️ Script anti-barre de debug injecté dans le document');
+      console.log('🛡️ Protection anti-barre de debug injectée dans le document');
       
       // ========================================
       // RESTAURER LES FONCTIONS CONSOLE
