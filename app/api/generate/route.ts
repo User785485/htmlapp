@@ -86,14 +86,48 @@ export async function POST(request: NextRequest) {
     console.log('API generate: Documents à générer', documentsToGenerate);
     
     const generatedDocuments: Record<string, { content: string; filename: string }> = {};
-    
+
     try {
       for (const type of documentsToGenerate) {
+        console.log(`\n=== GENERATION DOCUMENT ${type.toUpperCase()} ====================`);
         console.log(`API generate: Génération du document de type ${type}`);
-        const content = DocumentGenerator.generateDocument(client, type);
-        const filename = DocumentGenerator.generateFileName(client, type);
-        generatedDocuments[type] = { content, filename };
-        console.log(`API generate: Document ${type} généré avec succès`, { filename });
+        console.log(`🔥 AVANT APPEL DocumentGenerator.generateDocument pour ${type}`);
+        console.log('Client data:', { 
+          email: client.email, 
+          prenom: client.prenom, 
+          nom: client.nom, 
+          donnees_completes: client.donnees_completes ? 'présent' : 'absent'
+        });
+        
+        // ✅ DÉCLARER LES VARIABLES AVANT LE TRY
+        let content: string;
+        let filename: string;
+        
+        try {
+          // Vérification des templates chargés
+          console.log('Vérification que les templates sont bien chargés:', { templatesLoaded });
+          
+          content = DocumentGenerator.generateDocument(client, type);
+          console.log(`🚀 APRÈS APPEL DocumentGenerator.generateDocument pour ${type} - SUCCÈS`);
+          console.log(`Taille du contenu généré: ${content.length} caractères`);
+          
+          filename = DocumentGenerator.generateFileName(client, type);
+          console.log(`Nom de fichier généré: ${filename}`);
+          
+          // ✅ ASSIGNER DANS LE MÊME SCOPE
+          generatedDocuments[type] = { content, filename };
+          console.log(`API generate: Document ${type} généré avec succès`, { filename });
+          
+        } catch (err: unknown) {
+          // Typage correct de l'erreur pour accéder aux propriétés
+          const error = err as Error;
+          console.error(`❌ ERREUR pendant DocumentGenerator.generateDocument pour ${type}:`, error);
+          console.error('Détails de l\'erreur:', {
+            message: error.message,
+            stack: error.stack
+          });
+          throw error;
+        }
       }
     } catch (genError) {
       console.error('API generate: Erreur lors de la génération des documents', genError);
