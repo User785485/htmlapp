@@ -132,16 +132,13 @@ export async function POST(request: NextRequest) {
         
         try {
           // Stocker dans Supabase Storage
-          console.log(`🔴 DIAGNOSTIC - Tentative de publication dans Supabase: ${path}`);
+          console.log(`API generate: Tentative de publication dans Supabase: ${path}`);
           const supabaseUrl = await publisher.publishFile(path, docInfo.content);
-          console.log(`🔴 DIAGNOSTIC - URL Supabase reçue: ${supabaseUrl}`);
+          console.log(`API generate: URL Supabase reçue: ${supabaseUrl}`);
           
-          // FORCER l'URL vers my-muqabala.fr indépendamment de ce que retourne la méthode de publication
-          const forcedUrl = `https://my-muqabala.fr/api/documents/${path}`;
-          publishedUrls[type as DocumentType] = forcedUrl;
-          
-          console.log(`🔴 DIAGNOSTIC - URL FORCÉE pour ${type}: ${forcedUrl}`);
-          console.log(`🔴 DIAGNOSTIC - Comparaison - URL Supabase: ${supabaseUrl} vs URL forcée: ${forcedUrl}`);
+          // Utiliser l'URL retournée par le publisher
+          publishedUrls[type as DocumentType] = supabaseUrl;
+          console.log(`📄 URL générée pour ${type}: ${supabaseUrl}`);
         } catch (error) {
           console.error(`🔴 ERREUR lors de la publication du document ${type}:`, error);
           // Continuer malgré l'erreur pour les autres documents

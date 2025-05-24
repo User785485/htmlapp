@@ -19,9 +19,9 @@ export class SupabaseStoragePublisher {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByYmlkZWZqb3FkcnF3amVlbnhtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAzNjc0MSwiZXhwIjoyMDYzNjEyNzQxfQ.K-f19FXAPH-z2qfRGMS2zOUmsVJ-iya6l0xfEwlVf44';
     this.bucketName = 'documents';
     
-    // URL de base pour les documents (API route) - FORCu00c9E pour u00e9viter les problu00e8mes
-    this.baseUrl = 'https://my-muqabala.fr';
-    console.log('🔴🔴🔴 IMPORTANT: URL de base FORCu00c9E u00e0 https://my-muqabala.fr');
+    // URL de base pour les documents (API route)
+    this.baseUrl = process.env.SITE_BASE_URL || 'https://my-muqabala.fr';
+    console.log('\ud83d\udd17 URL de base configur\u00e9e:', this.baseUrl);
     
     // Initialiser le client Supabase avec la clé de service pour avoir les permissions d'upload
     this.supabase = createClient(supabaseUrl, supabaseServiceKey);
