@@ -8,8 +8,12 @@ export class GitHubPublisher {
   private repo: string;
   private branch: string;
   private baseUrl: string;
+  private createdFolders: Set<string>;
   
   constructor() {
+    // Initialiser l'ensemble des dossiers créés
+    this.createdFolders = new Set<string>();
+    
     // Vérification du token GitHub
     const githubToken = process.env.GITHUB_TOKEN;
     console.log('🔍 DEBUG: Vérification du token GitHub');
@@ -17,6 +21,8 @@ export class GitHubPublisher {
     console.log('🔍 ENV GITHUB_OWNER:', process.env.GITHUB_OWNER);
     console.log('🔍 ENV GITHUB_REPO:', process.env.GITHUB_REPO);
     console.log('🔍 ENV GITHUB_BRANCH:', process.env.GITHUB_BRANCH);
+    console.log('🔍 ENV GITHUB_TOKEN length:', githubToken ? `${githubToken.length} caractères` : 'Non défini');
+    console.log('🔍 ENV GITHUB_TOKEN format:', githubToken ? (githubToken.startsWith('ghp_') ? 'Format valide (ghp_)' : 'Format inconnu') : 'Non défini');
     
     if (!githubToken) {
       console.error('⚠️ ERREUR CRITIQUE: Token GitHub manquant!');
@@ -121,6 +127,17 @@ export class GitHubPublisher {
       
       let fileData: any;
       try {
+        console.log(`🔍 Début de l'appel API createOrUpdateFileContents pour ${path}`);
+        console.log(`🔍 Paramètres complets:`, {
+          owner: this.owner,
+          repo: this.repo,
+          path,
+          branch: this.branch,
+          contentLength: content.length,
+          hasMessage: !!message,
+          hasSha: !!sha
+        });
+        
         const response = await this.octokit.repos.createOrUpdateFileContents({
           owner: this.owner,
           repo: this.repo,
@@ -133,6 +150,11 @@ export class GitHubPublisher {
         
         fileData = response.data;
         console.log(`✅ Fichier ${path} publié avec succès`);
+        console.log(`🔍 Détails de la réponse:`, {
+          commit: response.data.commit?.sha?.substring(0, 8) || 'inconnu',
+          htmlUrl: response.data.content?.html_url || 'inconnu',
+          name: response.data.content?.name || 'inconnu'
+        });
       } catch (apiError: any) {
         console.error(`❌ ERREUR API GITHUB: ${apiError.message}`);
         console.error(`❌ Status: ${apiError.status}`);
@@ -187,6 +209,83 @@ export class GitHubPublisher {
   }
   
   /**
+   * Crée un dossier dans GitHub en créant un fichier README.md
+   * @param folderPath Chemin du dossier à créer
+   */
+  async ensureDirectoryExists(folderPath: string): Promise<void> {
+    // Si ce dossier a déjà été créé dans cette session, on évite de refaire l'appel
+    if (this.createdFolders.has(folderPath)) {
+      console.log(`🔍 Dossier ${folderPath} déjà créé dans cette session, on ignore`); 
+      return;
+    }
+    
+    console.log(`🔍 Vérification/création du dossier: ${folderPath}`);
+    
+    try {
+      // Vérifier si le dossier existe déjà
+      await this.octokit.repos.getContent({
+        owner: this.owner,
+        repo: this.repo,
+        path: folderPath,
+      });
+      
+      console.log(`✅ Dossier ${folderPath} existe déjà`);
+      this.createdFolders.add(folderPath);
+      return;
+    } catch (error: any) {
+      // Si l'erreur n'est pas 404 (Not Found), c'est une erreur inattendue
+      if (error.status !== 404) {
+        console.error(`❌ Erreur lors de la vérification du dossier ${folderPath}:`, error);
+        throw error;
+      }
+      
+      // Le dossier n'existe pas, créons-le avec un README.md
+      console.log(`🔍 Dossier ${folderPath} n'existe pas, création en cours...`);
+      
+      try {
+        // Créer les dossiers parents si nécessaire
+        const parts = folderPath.split('/');
+        for (let i = 1; i <= parts.length; i++) {
+          const parentPath = parts.slice(0, i).join('/');
+          if (parentPath && !this.createdFolders.has(parentPath)) {
+            // Vérifier si le dossier parent existe
+            try {
+              await this.octokit.repos.getContent({
+                owner: this.owner,
+                repo: this.repo,
+                path: parentPath,
+              });
+              this.createdFolders.add(parentPath);
+            } catch (parentError: any) {
+              if (parentError.status === 404) {
+                // Créer le dossier parent avec un README
+                console.log(`🔍 Création du dossier parent: ${parentPath}`);
+                await this.octokit.repos.createOrUpdateFileContents({
+                  owner: this.owner,
+                  repo: this.repo,
+                  path: `${parentPath}/README.md`,
+                  message: `Création du dossier ${parentPath}`,
+                  content: Buffer.from(`# ${parentPath.split('/').pop()}
+Dossier créé automatiquement.`).toString('base64'),
+                  branch: this.branch,
+                });
+                this.createdFolders.add(parentPath);
+              } else {
+                throw parentError;
+              }
+            }
+          }
+        }
+        
+        console.log(`✅ Dossier ${folderPath} créé avec succès`);
+      } catch (createError) {
+        console.error(`❌ Erreur lors de la création du dossier ${folderPath}:`, createError);
+        throw createError;
+      }
+    }
+  }
+
+  /**
    * Publie tous les documents d'un client
    */
   async publishClientDocuments(
@@ -208,10 +307,15 @@ export class GitHubPublisher {
     let errorCount = 0;
     
     for (const [type, doc] of Object.entries(documents)) {
-      const path = `protected-pages/${type}/${doc.filename}`;
+      const folderPath = `protected-pages/${type}`;
+      const path = `${folderPath}/${doc.filename}`;
       const message = `Ajout document ${type} pour ${clientEmail}`;
       
       try {
+        // S'assurer que le dossier existe avant de publier le fichier
+        console.log(`🔍 Vérification que le dossier ${folderPath} existe avant publication`);
+        await this.ensureDirectoryExists(folderPath);
+        
         const url = await this.publishFile(path, doc.content, message);
         urls[type] = url;
         successCount++;
