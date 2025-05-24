@@ -16,6 +16,16 @@ export interface SelectOptions {
 }
 
 /**
+ * Options pour l'opération upsert
+ */
+export interface UpsertOptions {
+  onConflict?: string;
+  returning?: string;
+  ignoreDuplicates?: boolean;
+  count?: 'exact' | 'planned' | 'estimated';
+}
+
+/**
  * Exécute une requête select compatible avec différentes versions de Supabase
  * 
  * @param query La requête Supabase (table, de, from, etc.)
@@ -56,6 +66,61 @@ export function compatSelect(query: any, columns: string, options?: SelectOption
 }
 
 /**
+ * Exécute une opération upsert compatible avec différentes versions de Supabase
+ * 
+ * @param query La requête Supabase (table, from, etc.)
+ * @param documents Les documents à insérer/mettre à jour (un seul document ou un tableau)
+ * @param options Options pour l'upsert (onConflict, returning, etc.)
+ * @returns La requête avec upsert appliqué
+ */
+export function compatUpsert(query: any, documents: any | any[], options?: UpsertOptions) {
+  // Convertir un seul document en tableau si nécessaire
+  const docs = Array.isArray(documents) ? documents : [documents];
+  
+  // Tenter différentes approches selon la version de Supabase
+  try {
+    // Approche 1: Version plus récente avec options séparées
+    if (options) {
+      // Créer un nouvel objet d'options sans 'returning' si présent
+      const sanitizedOptions: any = { ...options };
+      if (sanitizedOptions.returning) {
+        delete sanitizedOptions.returning;
+      }
+      
+      // Appliquer l'upsert avec les options sanitizées
+      let result = query.upsert(docs, sanitizedOptions);
+      
+      // Si returning était spécifié, ajouter un select
+      if (options.returning) {
+        result = result.select();
+      }
+      
+      return result;
+    } else {
+      // Sans options
+      return query.upsert(docs);
+    }
+  } catch (error) {
+    // Approche 2: Ancienne version avec options intégrées
+    try {
+      // Format alternatif
+      return query.upsert(docs, options);
+    } catch (error2) {
+      // Approche 3: Dernier recours, séparer l'insertion et la mise à jour
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Fallback pour upsert: utilisation d\'insert avec onConflict manuel', error2);
+      }
+      
+      if (options?.onConflict) {
+        return query.insert(docs).onConflict(options.onConflict);
+      } else {
+        return query.insert(docs);
+      }
+    }
+  }
+}
+
+/**
  * Extension pour les clients Supabase
  */
 export const extendSupabaseClient = (client: SupabaseClient) => {
@@ -68,6 +133,11 @@ export const extendSupabaseClient = (client: SupabaseClient) => {
     // Ajouter une méthode compatSelect
     (query as any).compatSelect = (columns: string, options?: SelectOptions) => {
       return compatSelect(query, columns, options);
+    };
+    
+    // Ajouter une méthode compatUpsert
+    (query as any).compatUpsert = (documents: any | any[], options?: UpsertOptions) => {
+      return compatUpsert(query, documents, options);
     };
     
     return query;

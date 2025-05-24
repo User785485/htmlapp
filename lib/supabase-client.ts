@@ -60,10 +60,10 @@ if (!(globalThis as ExtendedGlobalThis).supaPatchApplied) {
 }
 
 // Client public pour le côté client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = extendSupabaseClient(createClient(supabaseUrl, supabaseAnonKey));
 
 // Client service pour le côté serveur (avec tous les droits)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+export const supabaseAdmin = extendSupabaseClient(createClient(supabaseUrl, supabaseServiceKey));
 
 export class SupabaseService {
   /**
@@ -111,7 +111,7 @@ export class SupabaseService {
     try {
       const { data, error } = await supabaseAdmin
         .from('generated_documents')
-        .upsert(document, {
+        .compatUpsert(document, {
           onConflict: 'client_email',
           returning: 'representation'
         })
