@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { GeneratedDocument } from './types';
 import { logger } from './logger';
-import { extendSupabaseClient, SelectOptions, compatSelect } from './supabase-compat';
+import { extendSupabaseClient, SelectOptions, compatSelect, compatUpsert, UpsertOptions } from './supabase-compat';
 
 // Utiliser les variables d'environnement ou des valeurs de secours pour le développement
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://prbidefjogdrqwjeenxm.supabase.co';
@@ -109,12 +109,15 @@ export class SupabaseService {
     const startTime = Date.now();
     
     try {
-      const { data, error } = await supabaseAdmin
-        .from('generated_documents')
-        .compatUpsert(document, {
+      // Utiliser la fonction compatUpsert avec un cast de type pour contourner les vérifications TypeScript
+      const { data, error } = await compatUpsert(
+        supabaseAdmin.from('generated_documents') as any,
+        document,
+        {
           onConflict: 'client_email',
           returning: 'representation'
-        })
+        }
+      )
         .select()
         .single();
       

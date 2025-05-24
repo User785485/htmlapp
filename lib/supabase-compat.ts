@@ -6,6 +6,15 @@
  */
 
 import { SupabaseClient } from '@supabase/supabase-js';
+import { PostgrestQueryBuilder } from '@supabase/postgrest-js';
+
+// Étendre le type PostgrestQueryBuilder pour inclure nos méthodes compatibles
+declare module '@supabase/postgrest-js' {
+  interface PostgrestQueryBuilder<Schema, Relation, RelationName, Relationships, T, J> {
+    compatSelect: (columns: string, options?: SelectOptions) => PostgrestQueryBuilder<Schema, Relation, RelationName, Relationships, T, J>;
+    compatUpsert: (documents: any | any[], options?: UpsertOptions) => PostgrestQueryBuilder<Schema, Relation, RelationName, Relationships, T, J>;
+  }
+}
 
 /**
  * Options de sélection pour les requêtes Supabase
