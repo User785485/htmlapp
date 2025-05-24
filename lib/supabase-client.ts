@@ -115,20 +115,51 @@ export class SupabaseService {
     });
     
     try {
-      // Utiliser la fonction compatUpsert avec un cast de type pour contourner les vérifications TypeScript
-      const { data, error } = await compatUpsert(
-        supabaseAdmin.from('generated_documents') as any,
-        document,
-        {
-          onConflict: 'client_email',
-          returning: 'representation'
-        }
-      )
-        .select()
-        .single();
+      // Vérifier d'abord si un document avec cet email existe déjà
+      console.log(`SupabaseService: Vérification si le document existe pour ${document.client_email}`);
+      const { data: existingDoc, error: checkError } = await supabaseAdmin
+        .from('generated_documents')
+        .select('id')
+        .eq('client_email', document.client_email)
+        .maybeSingle();
       
-      if (error) {
-        throw error;
+      if (checkError) {
+        console.error('SupabaseService: Erreur lors de la vérification du document', checkError);
+        throw checkError;
+      }
+      
+      let result;
+      
+      // Si le document existe, le mettre à jour, sinon l'insérer
+      if (existingDoc) {
+        console.log(`SupabaseService: Document existant trouvé pour ${document.client_email}, mise à jour`);
+        const { data, error } = await supabaseAdmin
+          .from('generated_documents')
+          .update(document)
+          .eq('id', existingDoc.id)
+          .select()
+          .single();
+          
+        if (error) {
+          console.error('SupabaseService: Erreur lors de la mise à jour', error);
+          throw error;
+        }
+        
+        result = data;
+      } else {
+        console.log(`SupabaseService: Aucun document existant pour ${document.client_email}, création`);
+        const { data, error } = await supabaseAdmin
+          .from('generated_documents')
+          .insert(document)
+          .select()
+          .single();
+          
+        if (error) {
+          console.error('SupabaseService: Erreur lors de l\'insertion', error);
+          throw error;
+        }
+        
+        result = data;
       }
       
       const duration = Date.now() - startTime;
@@ -149,7 +180,7 @@ export class SupabaseService {
         duration_ms: duration,
       });
       
-      return data;
+      return result as GeneratedDocument;
     } catch (error) {
       const duration = Date.now() - startTime;
       logger.logSupabase('upsert', 'generated_documents', false, {
