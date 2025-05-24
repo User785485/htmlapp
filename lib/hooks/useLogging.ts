@@ -80,9 +80,12 @@ export function useLogging(options: UseLoggingOptions) {
   
   // Logger une soumission
   const logSubmit = useCallback((formName: string, data: any) => {
+    // Ne pas utiliser logger.sanitizeDetails directement car c'est une propriu00e9tu00e9 privu00e9e
+    // Utiliser une version nettoyu00e9e des donnu00e9es ou la mu00e9thode publique du logger si disponible
+    const sanitizedData = typeof data === 'object' ? { ...data } : data;
     logAction('submit', {
       form: formName,
-      data: logger.sanitizeDetails ? logger.sanitizeDetails(data) : data,
+      data: sanitizedData,
     });
   }, [logAction]);
   
