@@ -156,7 +156,9 @@ export class DocumentGenerator {
       
       // 4. ANALYSE DES VARIABLES TEMPLATE (silencieux)
       const templateVariables = cleanTemplate.match(/{{([^}]+)}}/g) || [];
-      const uniqueVars = [...new Set(templateVariables.map(v => v.replace(/[{}]/g, '')))];
+      // Correction pour compatibilité ES5 - sans utiliser [...Set] qui n'est pas supporté par la config TypeScript actuelle
+      const varsSet = new Set(templateVariables.map(v => v.replace(/[{}]/g, '')));
+      const uniqueVars = Array.from(varsSet);
       
       // 5. PRÉPARATION DES VARIABLES (silencieux)
       const variables = this.prepareVariables(client, type);
