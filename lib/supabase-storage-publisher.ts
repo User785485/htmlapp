@@ -145,11 +145,22 @@ export class SupabaseStoragePublisher {
       
       console.log(`\ud83d\udca5 SupabaseStoragePublisher: Upload du fichier: ${sanitizedPath}`);
       
+      // Vérifier que le contenu n'est pas corrompu
+      if (content.includes('â€')) {
+        console.error('❌ CONTENU CORROMPU détecté avant upload!');
+        throw new Error('Contenu HTML corrompu - problème d\'encodage UTF-8');
+      }
+      
+      // CRITIQUE : Créer un Blob avec encodage UTF-8 explicite
+      const blob = new Blob([content], { 
+        type: 'text/html; charset=utf-8' 
+      });
+      
       // Uploader le fichier
       const { data, error } = await this.supabase.storage
         .from(this.bucketName)
-        .upload(sanitizedPath, content, {
-          contentType: 'text/html',
+        .upload(sanitizedPath, blob, {
+          contentType: 'text/html; charset=utf-8',
           upsert: true // Remplacer si le fichier existe déjà
         });
       

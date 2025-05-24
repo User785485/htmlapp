@@ -1,219 +1,3881 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guide d'onboarding pour {{PRENOM}} {{NOM}}</title>
-    <style>
-        /* Styles de base */
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8fafc;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="Love Transformation™ - Un cheminement spirituel profond pour retrouver l'harmonie entre ta foi et ta vie amoureuse">
+  <meta name="theme-color" content="#6200EA">
+  <title>Love Transformation™ | Du Célibat à l'Amour Authentique</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* SYSTÈME DE DESIGN MODERNE ET COHÉRENT */
+    :root {
+      /* Palette de couleurs vibrantes avec excellent contraste */
+      --primary: #6200EA;
+      --primary-light: #9552FF;
+      --primary-dark: #3700B3;
+      --primary-bg: #F6F2FF;
+      
+      --accent: #E91E63;
+      --accent-light: #F06292;
+      --accent-dark: #AD1457;
+      --accent-bg: #FFF0F3;
+      
+      --success: #00C853;
+      --success-light: #5EE77D;
+      --success-dark: #00A243;
+      --success-bg: #F1FFF5;
+      
+      --warning: #FF6B00;
+      --warning-light: #FF8F40;
+      --warning-dark: #CC5500;
+      --warning-bg: #FFF3E8;
+      
+      /* Gris neutres optimisés */
+      --white: #FFFFFF;
+      --gray-50: #FAFAFA;
+      --gray-100: #F5F5F5;
+      --gray-200: #EEEEEE;
+      --gray-300: #E0E0E0;
+      --gray-400: #BDBDBD;
+      --gray-500: #9E9E9E;
+      --gray-600: #757575;
+      --gray-700: #616161;
+      --gray-800: #424242;
+      --gray-900: #212121;
+      --black: #000000;
+      
+      /* Typographie */
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'Montserrat', system-ui, sans-serif;
+      
+      /* Système typographique simplifié et cohérent */
+      --text-xs: 0.75rem;    /* 12px */
+      --text-sm: 0.875rem;   /* 14px */
+      --text-base: 1rem;     /* 16px */
+      --text-lg: 1.125rem;   /* 18px */
+      --text-xl: 1.25rem;    /* 20px */
+      --text-2xl: 1.5rem;    /* 24px */
+      --text-3xl: 1.875rem;  /* 30px */
+      --text-4xl: 2.25rem;   /* 36px */
+      --text-5xl: 3rem;      /* 48px */
+      
+      /* Poids de police */
+      --weight-light: 300;
+      --weight-regular: 400;
+      --weight-medium: 500;
+      --weight-semibold: 600;
+      --weight-bold: 700;
+      
+      /* Hauteurs de ligne */
+      --leading-tight: 1.25;
+      --leading-normal: 1.5;
+      --leading-relaxed: 1.75;
+      
+      /* Système d'espacement cohérent */
+      --space-1: 0.25rem;   /* 4px */
+      --space-2: 0.5rem;    /* 8px */
+      --space-3: 0.75rem;   /* 12px */
+      --space-4: 1rem;      /* 16px */
+      --space-5: 1.25rem;   /* 20px */
+      --space-6: 1.5rem;    /* 24px */
+      --space-8: 2rem;      /* 32px */
+      --space-10: 2.5rem;   /* 40px */
+      --space-12: 3rem;     /* 48px */
+      --space-16: 4rem;     /* 64px */
+      --space-20: 5rem;     /* 80px */
+      
+      /* Rayons de bordure */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+      --radius-full: 9999px;
+      
+      /* Ombres améliorées pour plus d'impact */
+      --shadow-xs: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.07);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.1);
+      --shadow-xl: 0 16px 48px rgba(0,0,0,0.12);
+      --shadow-2xl: 0 24px 64px rgba(0,0,0,0.14);
+      
+      /* Ombres colorées pour éléments spéciaux */
+      --shadow-primary: 0 8px 24px rgba(98, 0, 234, 0.25);
+      --shadow-accent: 0 8px 24px rgba(233, 30, 99, 0.25);
+      --shadow-success: 0 8px 24px rgba(0, 200, 83, 0.25);
+      --shadow-glow: 0 0 40px rgba(98, 0, 234, 0.3);
+      
+      /* Transitions fluides */
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      
+      /* Conteneur et espacement mobile */
+      --container-max: 1200px;
+      --container-padding: 1.5rem; /* 24px sur mobile */
+      
+      /* Z-index hiérarchie */
+      --z-base: 0;
+      --z-elevated: 10;
+      --z-dropdown: 20;
+      --z-sticky: 30;
+      --z-modal: 40;
+      --z-tooltip: 50;
+    }
+    
+    /* RESET MODERNE ET ACCESSIBLE */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-size-adjust: 100%;
+    }
+    
+    body {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-regular);
+      line-height: var(--leading-normal);
+      color: var(--gray-800);
+      background-color: var(--white);
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    /* Empêche les éléments de déborder */
+    * {
+      max-width: 100vw !important;
+    }
+
+    /* CONTENEUR PRINCIPAL OPTIMISÉ */
+    .container {
+      width: 100%;
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 0 var(--container-padding);
+      overflow-x: hidden;
+    }
+    
+    /* TYPOGRAPHIE HIÉRARCHIQUE */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-display);
+      font-weight: var(--weight-bold);
+      line-height: var(--leading-tight);
+      color: var(--primary);
+      margin-bottom: var(--space-4);
+    }
+    
+    h1 { font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl)); }
+    h2 { font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl)); }
+    h3 { font-size: clamp(var(--text-xl), 3vw, var(--text-3xl)); }
+    h4 { font-size: clamp(var(--text-lg), 2.5vw, var(--text-2xl)); }
+    
+    p {
+      margin-bottom: var(--space-4);
+      max-width: 65ch;
+      line-height: var(--leading-relaxed);
+    }
+    
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+    
+    a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    /* SYSTÈME DE MISE EN VALEUR DESIGN ÉMOTIONNEL */
+    .highlight-primary {
+      font-weight: var(--weight-bold);
+      color: var(--primary);
+    }
+    
+    .highlight-subtle {
+      font-weight: var(--weight-semibold);
+      color: var(--primary-dark);
+    }
+    
+    .highlight-soft {
+      font-weight: var(--weight-semibold);
+      color: var(--primary-light);
+    }
+    
+    .highlight-contrast {
+      font-weight: var(--weight-bold);
+      color: var(--accent);
+    }
+    
+    .highlight-success {
+      font-weight: var(--weight-bold);
+      color: var(--success-dark);
+    }
+    
+    .highlight-warning {
+      font-weight: var(--weight-bold);
+      color: var(--warning-dark);
+    }
+    
+    .text-gradient {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: var(--weight-bold);
+    }
+    
+    /* BOUTONS MODERNES ET ACCESSIBLES */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-8);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-semibold);
+      text-decoration: none;
+      border: none;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      min-height: 56px;
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn--primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      box-shadow: var(--shadow-md), var(--shadow-primary);
+    }
+    
+    .btn--primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: var(--shadow-lg), var(--shadow-primary);
+      text-decoration: none;
+    }
+    
+    .btn--primary:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+    
+    .btn--secondary {
+      background: var(--white);
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn--secondary:hover {
+      background: var(--primary-bg);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: var(--shadow-md);
+      text-decoration: none;
+    }
+    
+    .btn--large {
+      padding: var(--space-5) var(--space-10);
+      font-size: var(--text-lg);
+      min-height: 64px;
+    }
+    
+    .btn--full {
+      width: 100%;
+    }
+    
+    /* Effet ripple au clic */
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:active::after {
+      width: 300px;
+      height: 300px;
+    }
+    
+    /* Animation pulse pour CTA */
+    @keyframes pulse-strong {
+      0%, 100% { 
+        transform: scale(1); 
+        box-shadow: var(--shadow-md), var(--shadow-primary);
+      }
+      50% { 
+        transform: scale(1.05); 
+        box-shadow: var(--shadow-lg), var(--shadow-glow);
+      }
+    }
+    
+    .btn--pulse {
+      animation: pulse-strong 2s infinite;
+    }
+    
+    /* CARDS MODERNES */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-base);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+    
+    /* SECTIONS */
+    .section {
+      padding: var(--space-16) 0;
+    }
+    
+    .section__header {
+      text-align: center;
+      margin-bottom: var(--space-12);
+    }
+    
+    .section__title {
+      position: relative;
+      display: inline-block;
+      margin-bottom: var(--space-6);
+    }
+    
+    .section__title::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      border-radius: var(--radius-full);
+    }
+    
+    .section__subtitle {
+      font-size: var(--text-lg);
+      color: var(--gray-700);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: var(--leading-relaxed);
+    }
+    
+    /* GRILLES RESPONSIVES */
+    .grid {
+      display: grid;
+      gap: var(--space-8);
+    }
+    
+    .grid--2 {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    
+    .grid--3 {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    
+    /* ANIMATIONS FLUIDES */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.1); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.1); }
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -100% -100%; }
+      100% { background-position: 100% 100%; }
+    }
+    
+    .animate-in {
+      opacity: 0;
+      animation: fadeInUp 0.8s var(--transition-base) forwards;
+    }
+    
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s var(--transition-base);
+    }
+    
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* UTILITAIRES */
+    .text-center { text-align: center !important; }
+    .text-primary { color: var(--primary); }
+    .text-accent { color: var(--accent); }
+    .text-success { color: var(--success); }
+    .fw-semibold { font-weight: var(--weight-semibold); }
+    .fw-bold { font-weight: var(--weight-bold); }
+    
+    /* COMPOSANTS SPÉCIFIQUES */
+    
+    /* Logo amélioré */
+    .logo {
+      text-align: center;
+      margin-bottom: var(--space-12);
+    }
+    
+    .logo__circle {
+      width: 100px;
+      height: 100px;
+      margin: var(--space-4) auto var(--space-4);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-xl), var(--shadow-primary);
+      animation: float 6s ease-in-out infinite;
+      position: relative;
+    }
+    
+    .logo__circle::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent-light));
+      border-radius: 50%;
+      z-index: -1;
+      opacity: 0.5;
+      animation: pulse-strong 3s infinite;
+    }
+    
+    .logo__icon {
+      font-size: var(--text-5xl);
+      color: var(--white);
+      animation: heartbeat 2s infinite;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: var(--weight-bold);
+      font-size: clamp(var(--text-3xl), 6vw, var(--text-5xl));
+      line-height: 1.2;
+    }
+    
+    /* Badges de confiance améliorés */
+    .trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-4);
+      margin-top: var(--space-8);
+    }
+    
+    .trust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: linear-gradient(135deg, var(--white), var(--primary-bg));
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--primary);
+      box-shadow: var(--shadow-md);
+      border: 2px solid var(--primary-bg);
+      transition: all var(--transition-fast);
+    }
+    
+    .trust-badge:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: var(--shadow-lg);
+      background: var(--primary-bg);
+      border-color: var(--primary-light);
+    }
+    
+    /* Message de bienvenue amélioré */
+    .welcome-message {
+      background: linear-gradient(135deg, var(--primary-bg), var(--white));
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10);
+      margin: var(--space-10) 0;
+      box-shadow: var(--shadow-lg);
+      border-left: 6px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .welcome-message::before {
+      content: '✨';
+      position: absolute;
+      top: var(--space-6);
+      right: var(--space-6);
+      font-size: var(--text-4xl);
+      opacity: 0.1;
+    }
+    
+    .welcome-greeting {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      color: var(--primary);
+      margin-bottom: var(--space-6);
+      animation: fadeInScale 0.8s ease-out;
+    }
+    
+    .welcome-personal-note {
+      font-style: italic;
+      color: var(--gray-700);
+      padding-left: var(--space-6);
+      border-left: 3px solid var(--primary-light);
+      margin-bottom: var(--space-8);
+      font-size: var(--text-lg);
+      line-height: var(--leading-relaxed);
+    }
+    
+    /* Stats rapides améliorés */
+    .quick-stats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-6);
+      margin-top: var(--space-8);
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: var(--space-6);
+      background: linear-gradient(135deg, var(--white), var(--primary-bg));
+      border-radius: var(--radius-xl);
+      min-width: 140px;
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-base);
+      border: 2px solid transparent;
+    }
+    
+    .stat-item:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+    
+    .stat-number {
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      color: var(--primary);
+      font-family: var(--font-display);
+      margin-bottom: var(--space-2);
+    }
+    
+    .stat-label {
+      font-size: var(--text-sm);
+      color: var(--gray-700);
+      font-weight: var(--weight-medium);
+    }
+    
+    /* Profil expert amélioré */
+    .expert-card {
+      text-align: center;
+      padding: var(--space-10) var(--space-4);
+    }
+    
+    .expert-main-content {
+      background: linear-gradient(135deg, var(--white), var(--primary-bg));
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10);
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .expert-main-content::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--primary-bg) 0%, transparent 70%);
+      opacity: 0.1;
+    }
+    
+    .expert-image-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 0 auto var(--space-10);
+      z-index: 1;
+    }
+    
+    /* Halo violet élégant autour de l'image */
+    .expert-image-container::after {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(circle, 
+        rgba(149, 82, 255, 0.15) 0%, 
+        rgba(149, 82, 255, 0.05) 40%, 
+        transparent 70%
+      );
+      border-radius: 50%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    /* Désactive tous les effets visuels sur l'image */
+    .expert-image-container,
+    .expert-image {
+      animation: none !important;
+      filter: none !important;
+      transform: none !important;
+    }
+    
+    .expert-image-container:hover {
+      transform: none !important;
+    }
+    
+    .expert-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center center;
+      border: 4px solid var(--white);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      filter: none;
+    }
+    
+    .expert-stats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-4);
+      margin: var(--space-8) 0;
+      z-index: 1;
+      position: relative;
+    }
+    
+    .expert-stat {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-6);
+      background: linear-gradient(135deg, var(--white), var(--primary-bg));
+      border-radius: var(--radius-full);
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+      border: 2px solid var(--primary-bg);
+    }
+    
+    .expert-stat:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: var(--shadow-md);
+      background: var(--primary-bg);
+      border-color: var(--primary-light);
+    }
+    
+    /* Countdown moderne et impactant */
+    .countdown-container {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      padding: var(--space-12) var(--space-8);
+      border-radius: var(--radius-2xl);
+      text-align: center;
+      margin: var(--space-10) auto;
+      max-width: 900px;
+      box-shadow: var(--shadow-xl), var(--shadow-primary);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .countdown-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shimmer 3s linear infinite;
+      background-size: 200% 200%;
+    }
+    
+    .countdown-container h3 {
+      color: var(--white) !important;
+      font-size: var(--text-3xl) !important;
+      margin-bottom: var(--space-4) !important;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .countdown-container p {
+      color: var(--white) !important;
+      opacity: 0.95 !important;
+      font-size: var(--text-lg) !important;
+      margin: 0 auto !important;
+      max-width: 100% !important;
+      text-align: center !important;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .countdown {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-6);
+      margin: var(--space-8) auto;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .countdown__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .countdown__number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      margin-bottom: var(--space-2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      transition: all var(--transition-base);
+    }
+    
+    .countdown__number:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .countdown__label {
+      font-size: var(--text-base);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 1;
+      color: var(--white);
+      font-weight: var(--weight-semibold);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    
+    /* Section Avant/Après redesignée */
+    .before-after-container {
+      position: relative;
+      padding-top: var(--space-16) !important;
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      overflow: visible !important;
+    }
+    
+    .before-after-badge {
+      position: absolute;
+      top: -25px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      padding: var(--space-3) var(--space-8) !important;
+      background: var(--white) !important;
+      border-radius: var(--radius-full) !important;
+      font-size: var(--text-lg) !important;
+      font-weight: var(--weight-bold) !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.1em !important;
+      box-shadow: var(--shadow-xl) !important;
+      z-index: 10 !important;
+      min-width: 150px !important;
+      text-align: center !important;
+    }
+    
+    .before-badge {
+      color: var(--accent) !important;
+      border: 3px solid var(--accent) !important;
+      background: linear-gradient(135deg, var(--white), var(--accent-bg)) !important;
+    }
+    
+    .after-badge {
+      color: var(--success) !important;
+      border: 3px solid var(--success) !important;
+      background: linear-gradient(135deg, var(--white), var(--success-bg)) !important;
+    }
+    
+    /* Checklist moderne */
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: var(--space-8) 0;
+    }
+    
+    .checklist__item {
+      position: relative;
+      padding-left: var(--space-4);
+      margin-bottom: var(--space-6);
+      line-height: var(--leading-relaxed);
+      font-size: var(--text-base);
+      animation: fadeInUp 0.6s ease-out;
+      animation-fill-mode: both;
+    }
+    
+    .checklist__item:nth-child(1) { animation-delay: 0.1s; }
+    .checklist__item:nth-child(2) { animation-delay: 0.2s; }
+    .checklist__item:nth-child(3) { animation-delay: 0.3s; }
+    .checklist__item:nth-child(4) { animation-delay: 0.4s; }
+    .checklist__item:nth-child(5) { animation-delay: 0.5s; }
+    
+    /* Checkmarks verts qui fonctionnent */
+    .checklist__item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 0;
+      height: 0;
+      display: none;
+    }
+    
+    /* Modules accordéon optimisés */
+    .modules {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .module {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-8);
+      box-shadow: var(--shadow-md);
+      border: 2px solid var(--gray-200);
+      overflow: hidden;
+      transition: all var(--transition-base);
+    }
+    
+    .module:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+      border-color: var(--primary-light);
+    }
+    
+    .module.active {
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+    
+    .module__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-5);
+      padding: var(--space-8);
+      background: linear-gradient(147deg, var(--primary-bg), var(--white));
+      cursor: pointer;
+      position: relative;
+      min-height: 100px;
+    }
+    
+    .module__icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: var(--text-2xl);
+      flex-shrink: 0;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .module__info {
+      flex: 1;
+    }
+    
+    .module__number {
+      font-size: var(--text-base);
+      color: var(--primary);
+      font-weight: var(--weight-bold);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-2);
+    }
+    
+    .module-duration {
+      color: var(--gray-700);
+      font-weight: var(--weight-medium);
+      background: var(--gray-100);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+    }
+    
+    .module__title {
+      font-size: var(--text-xl);
+      color: var(--gray-900);
+      margin: 0;
+      line-height: var(--leading-tight);
+    }
+    
+    .module__toggle {
+      width: 48px;
+      height: 48px;
+      background: var(--primary-bg);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      border-radius: var(--radius-full);
+      transition: all var(--transition-base);
+    }
+    
+    .module__toggle:hover {
+      background: var(--primary-light);
+      transform: scale(1.1);
+    }
+    
+    .module__toggle::before,
+    .module__toggle::after {
+      content: '';
+      position: absolute;
+      background: var(--primary);
+      border-radius: 2px;
+      transition: all var(--transition-base);
+    }
+    
+    .module__toggle::before {
+      width: 3px;
+      height: 16px;
+      top: 16px;
+      left: 22.5px;
+    }
+    
+    .module__toggle::after {
+      width: 16px;
+      height: 3px;
+      top: 22.5px;
+      left: 16px;
+    }
+    
+    .module.active .module__toggle {
+      background: var(--primary);
+    }
+    
+    .module.active .module__toggle::before,
+    .module.active .module__toggle::after {
+      background: var(--white);
+    }
+    
+    .module.active .module__toggle::before {
+      transform: rotate(90deg);
+    }
+    
+    .module__content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--transition-slow);
+    }
+    
+    .module.active .module__content {
+      max-height: 2000px;
+    }
+    
+    .module__body {
+      padding: var(--space-10);
+      background: linear-gradient(to bottom, var(--gray-50), var(--white));
+    }
+    
+    /* Note personnalisée dans les modules */
+    .personal-note {
+      background: linear-gradient(135deg, var(--primary-bg), rgba(255, 255, 255, 0.8));
+      border-left: 4px solid var(--primary);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      margin-top: var(--space-8);
+      position: relative;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .personal-note::before {
+      content: '💝';
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      font-size: var(--text-2xl);
+      opacity: 0.2;
+    }
+    
+    .personal-note h4 {
+      color: var(--primary-dark);
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-4);
+    }
+    
+    .personalized-goals {
+      margin-top: var(--space-6);
+    }
+    
+    .personalized-goals h5 {
+      color: var(--primary-dark);
+      font-size: var(--text-lg);
+      margin: var(--space-4) 0 var(--space-3);
+      font-weight: var(--weight-semibold);
+    }
+    
+    .personalized-goals p {
+      background: rgba(255, 255, 255, 0.8);
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      border-left: 3px solid var(--primary);
+      margin-bottom: 0;
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+    }
+    
+    /* Témoignages centrés et émotionnels */
+    .testimonial-card {
+      background: var(--white);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-xl);
+      padding: var(--space-10);
+      margin: var(--space-8) auto;
+      max-width: 800px;
+      position: relative;
+      transition: all var(--transition-base);
+    }
+    
+    .testimonial-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-2xl);
+    }
+    
+    .testimonial-card::before {
+      content: '"';
+      position: absolute;
+      top: var(--space-4);
+      left: var(--space-6);
+      font-size: var(--text-5xl);
+      color: var(--primary-light);
+      opacity: 0.2;
+      font-family: var(--font-display);
+    }
+    
+    .testimonial-featured {
+      border-left: 6px solid var(--primary);
+      background: linear-gradient(147deg, var(--white), var(--primary-bg));
+    }
+    
+    .testimonial-whatsapp {
+      background: linear-gradient(135deg, #E8F5E9, #F1F8E9);
+      border-left: 6px solid #25D366;
+    }
+    
+    .testimonial-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-5);
+      margin-bottom: var(--space-6);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .testimonial-avatar {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary-bg), var(--primary-light));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-2xl);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .testimonial-info {
+      text-align: center;
+    }
+    
+    .testimonial-name {
+      font-weight: var(--weight-bold);
+      color: var(--primary);
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-1);
+    }
+    
+    .testimonial-meta {
+      font-size: var(--text-base);
+      color: var(--gray-600);
+    }
+    
+    .testimonial-content {
+      text-align: center;
+      font-style: italic;
+      color: var(--gray-700);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-6);
+      position: relative;
+      padding: 0 var(--space-6);
+      font-size: var(--text-lg);
+    }
+    
+    .testimonial-badge {
+      display: block;
+      padding: var(--space-3) var(--space-6);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      margin: 0 auto;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      max-width: fit-content;
+    }
+    
+    /* Tarification moderne et claire */
+    .pricing__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--space-8);
+      margin-top: var(--space-10);
+      align-items: stretch;
+    }
+    
+    .pricing__card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8);
+      position: relative;
+      transition: all var(--transition-base);
+      border: 2px solid transparent;
+      background-image: linear-gradient(white, white), 
+                        linear-gradient(135deg, #9552FF, #F06292);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: visible;
+    }
+    
+    .pricing__card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary-light);
+    }
+    
+    .pricing__card--featured {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--white), var(--primary-bg));
+      box-shadow: var(--shadow-xl), var(--shadow-primary);
+      transform: scale(1.05);
+    }
+    
+    .pricing__card--featured {
+      background: linear-gradient(135deg, #FFFFFF, #F8F4FF);
+      border: 3px solid transparent;
+      background-image: linear-gradient(135deg, #FFFFFF, #F8F4FF), 
+                        linear-gradient(135deg, #6200EA, #E91E63);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      transform: scale(1.08);
+      box-shadow: 0 20px 60px rgba(98, 0, 234, 0.25);
+    }
+    
+    /* Effet de brillance au survol */
+    .pricing__card::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      background: linear-gradient(135deg, #9552FF, #F06292);
+      border-radius: var(--radius-2xl);
+      opacity: 0;
+      z-index: -1;
+      transition: opacity var(--transition-base);
+    }
+    
+    .pricing__card:hover::before {
+      opacity: 0.3;
+    }
+    
+    /* Emoji flottant sur la carte featured */
+    .pricing__card--featured::after {
+      content: '✨';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 30px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .pricing__badge {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--warning), var(--warning-dark));
+      color: var(--white);
+      padding: var(--space-2) var(--space-6);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      box-shadow: var(--shadow-lg);
+      white-space: nowrap;
+      animation: pulse-strong 2s infinite;
+    }
+    
+    .pricing__header {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+    
+    .pricing__icon {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-4);
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 5px 15px rgba(98, 0, 234, 0.3));
+    }
+    
+    .pricing__title {
+      font-size: var(--text-2xl);
+      color: var(--gray-900);
+      margin-bottom: var(--space-3);
+    }
+    
+    .pricing__desc {
+      font-size: var(--text-base);
+      color: var(--gray-600);
+      line-height: var(--leading-relaxed);
+    }
+    
+    .pricing__price {
+      text-align: center;
+      margin: var(--space-8) 0;
+      padding: var(--space-6);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), var(--primary-bg));
+      border-radius: var(--radius-xl);
+      border: 2px solid var(--primary-bg);
+    }
+    
+    .pricing__amount {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl);
+      font-weight: var(--weight-bold);
+      background: linear-gradient(135deg, #6200EA, #E91E63);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: var(--space-2);
+      text-shadow: 0 4px 20px rgba(98, 0, 234, 0.2);
+    }
+    
+    .pricing__frequency {
+      font-size: var(--text-base);
+      color: var(--gray-700);
+      font-weight: var(--weight-medium);
+    }
+    
+    .pricing__savings {
+      display: inline-block;
+      margin-top: var(--space-4);
+      padding: var(--space-2) var(--space-4);
+      background: linear-gradient(135deg, var(--success), var(--success-dark));
+      color: var(--white);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .pricing__features {
+      list-style: none;
+      margin-bottom: var(--space-8);
+      flex-grow: 1;
+    }
+    
+    .pricing__feature {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      margin-bottom: var(--space-5);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+    }
+    
+    .pricing__feature-icon {
+      color: var(--success);
+      font-size: var(--text-lg);
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-weight: var(--weight-bold);
+    }
+    
+    /* Bonus améliorés */
+    .bonus-card {
+      display: flex;
+      gap: var(--space-5);
+      align-items: flex-start;
+      margin-bottom: var(--space-6);
+      padding: var(--space-6);
+      background: linear-gradient(135deg, var(--white), var(--warning-bg));
+      border-radius: var(--radius-xl);
+      border-left: 4px solid var(--warning);
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-base);
+    }
+    
+    .bonus-card:hover {
+      transform: translateX(8px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .bonus-icon {
+      font-size: var(--text-3xl);
+      flex-shrink: 0;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .bonus-tag {
+      display: inline-block;
+      padding: var(--space-2) var(--space-3);
+      background: linear-gradient(135deg, var(--warning), var(--warning-dark));
+      color: var(--white);
+      border-radius: var(--radius-md);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-3);
+    }
+    
+    /* FAQ moderne et accessible */
+    .faq-item {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-6);
+      box-shadow: var(--shadow-md);
+      border: 2px solid var(--gray-200);
+      overflow: hidden;
+      transition: all var(--transition-base);
+    }
+    
+    .faq-item:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+    
+    .faq-item.active {
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+    
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-6) var(--space-8);
+      cursor: pointer;
+      font-weight: var(--weight-semibold);
+      color: var(--gray-800);
+      min-height: 80px;
+      font-size: var(--text-lg);
+      line-height: var(--leading-relaxed);
+      transition: all var(--transition-base);
+    }
+    
+    .faq-question:hover {
+      background: var(--primary-bg);
+      color: var(--primary);
+    }
+    
+    .faq-toggle {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-bg);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-left: var(--space-6);
+      position: relative;
+      transition: all var(--transition-base);
+    }
+    
+    .faq-question:hover .faq-toggle {
+      background: var(--primary);
+      transform: scale(1.1);
+    }
+    
+    .faq-toggle::before,
+    .faq-toggle::after {
+      content: '';
+      position: absolute;
+      background: var(--primary);
+      transition: all var(--transition-base);
+      border-radius: 2px;
+    }
+    
+    .faq-question:hover .faq-toggle::before,
+    .faq-question:hover .faq-toggle::after {
+      background: var(--white);
+    }
+    
+    .faq-toggle::before {
+      width: 16px;
+      height: 3px;
+      top: 18.5px;
+      left: 12px;
+    }
+    
+    .faq-toggle::after {
+      width: 3px;
+      height: 16px;
+      top: 12px;
+      left: 18.5px;
+    }
+    
+    .faq-item.active .faq-toggle {
+      background: var(--primary);
+    }
+    
+    .faq-item.active .faq-toggle::before,
+    .faq-item.active .faq-toggle::after {
+      background: var(--white);
+    }
+    
+    .faq-item.active .faq-toggle::after {
+      opacity: 0;
+      transform: rotate(90deg);
+    }
+    
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: all var(--transition-base);
+      opacity: 0;
+    }
+    
+    .faq-item.active .faq-answer {
+      max-height: 1000px;
+      opacity: 1;
+      padding: 0 var(--space-8) var(--space-8);
+    }
+    
+    .faq-answer p {
+      color: var(--gray-700);
+      line-height: var(--leading-relaxed);
+      font-size: var(--text-base);
+    }
+    
+    /* Garantie améliorée */
+    .guarantee-section {
+      background: linear-gradient(135deg, var(--success-bg), rgba(255, 255, 255, 0.5));
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10);
+      margin-top: var(--space-10);
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--success);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .guarantee-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--success-light) 0%, transparent 70%);
+      opacity: 0.1;
+      animation: float 20s infinite alternate;
+    }
+    
+    .guarantee-content {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .guarantee-icon {
+      font-size: var(--text-5xl);
+      color: var(--success);
+      animation: pulse-strong 2s infinite;
+    }
+    
+    .guarantee-text h3 {
+      color: var(--success-dark);
+      margin-bottom: var(--space-3);
+      font-size: var(--text-2xl);
+    }
+    
+    .guarantee-text p {
+      color: var(--gray-700);
+      margin-bottom: 0;
+      font-size: var(--text-lg);
+      line-height: var(--leading-relaxed);
+    }
+    
+    /* CTA finale épique */
+    .final-cta {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius-2xl);
+      padding: var(--space-16) var(--space-10);
+      margin-top: var(--space-20);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-2xl), var(--shadow-glow);
+    }
+    
+    .final-cta::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shimmer 3s linear infinite;
+      background-size: 200% 200%;
+    }
+    
+    .cta-container {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .cta-title {
+      font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+      margin-bottom: var(--space-6);
+      color: var(--white);
+      text-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      line-height: 1.2;
+    }
+    
+    .cta-subtitle {
+      font-size: var(--text-xl);
+      color: var(--white);
+      opacity: 0.9;
+      margin-bottom: var(--space-10);
+      line-height: var(--leading-relaxed);
+    }
+    
+    .cta-highlights {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-8);
+      margin-bottom: var(--space-10);
+      flex-wrap: wrap;
+    }
+    
+    .cta-highlight {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .highlight-icon {
+      font-size: var(--text-3xl);
+      color: var(--white);
+    }
+    
+    .highlight-text {
+      text-align: left;
+      color: var(--white);
+    }
+    
+    .highlight-text strong {
+      display: block;
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-1);
+    }
+    
+    .highlight-text span {
+      opacity: 0.9;
+      font-size: var(--text-base);
+    }
+    
+    .cta-action {
+      margin-bottom: var(--space-6);
+    }
+    
+    .cta-action .btn {
+      background: linear-gradient(135deg, var(--white), var(--gray-100));
+      color: var(--primary);
+      font-size: var(--text-xl);
+      padding: var(--space-6) var(--space-12);
+      box-shadow: var(--shadow-xl);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: var(--weight-bold);
+      min-height: 80px;
+    }
+    
+    .cta-action .btn:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: var(--shadow-2xl);
+    }
+    
+    .cta-footer p {
+      color: var(--white);
+      opacity: 0.9;
+    }
+    
+    .cta-footer a {
+      color: var(--white);
+      font-weight: var(--weight-semibold);
+      text-decoration: underline;
+    }
+    
+    /* Bouton flottant amélioré */
+    .btn--float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: var(--z-sticky);
+      box-shadow: var(--shadow-xl), var(--shadow-primary);
+      animation: pulse-strong 2s infinite;
+      transform: scale(1.1);
+    }
+    
+    /* Programme moderne et émotionnel */
+    .program-container {
+      background: linear-gradient(135deg, var(--white), var(--primary-bg));
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10);
+      box-shadow: var(--shadow-xl);
+      margin: var(--space-10) 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .program-container::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -30%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, var(--primary-bg) 0%, transparent 70%);
+      opacity: 0.3;
+      animation: float 15s infinite alternate;
+    }
+    
+    .program-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-8);
+      margin-top: var(--space-10);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .program-card {
+      background: linear-gradient(135deg, var(--white), rgba(255, 255, 255, 0.9));
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-base);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+    }
+    
+    .program-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+    
+    .program-icon-container {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto var(--space-6);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: var(--text-3xl);
+      box-shadow: var(--shadow-md);
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .program-title {
+      font-size: var(--text-xl);
+      color: var(--primary-dark);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-4);
+      border-bottom: 2px solid var(--primary-bg);
+    }
+    
+    .program-content {
+      font-size: var(--text-base);
+      color: var(--gray-700);
+      line-height: var(--leading-relaxed);
+    }
+    
+    .program-list {
+      list-style: none;
+      text-align: left;
+      margin-top: var(--space-4);
+    }
+    
+    .program-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+    }
+    
+    .program-list-icon {
+      color: var(--primary);
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-weight: var(--weight-bold);
+    }
+    
+    /* Récapitulatif des bénéfices amélioré */
+    .benefits-card {
+      background: linear-gradient(135deg, var(--white), var(--primary-bg));
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10);
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--space-8);
+      margin-top: var(--space-8);
+    }
+    
+    .benefits-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-6);
+      border-bottom: 2px solid var(--gray-100);
+    }
+    
+    .benefits-check {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: var(--text-base);
+      margin-top: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .benefits-text strong {
+      color: var(--primary);
+      display: block;
+      margin-bottom: var(--space-2);
+      font-size: var(--text-lg);
+    }
+    
+    .benefits-text span {
+      font-size: var(--text-base);
+      color: var(--gray-700);
+      line-height: var(--leading-relaxed);
+    }
+    
+    /* Section experte */
+    .sacred-quote {
+      font-family: var(--font-display);
+      font-style: italic;
+      text-align: center;
+      padding: var(--space-10);
+      max-width: 900px;
+      margin: var(--space-10) auto;
+      position: relative;
+      font-size: var(--text-xl);
+      color: var(--gray-700);
+      line-height: var(--leading-relaxed);
+      background: linear-gradient(135deg, var(--primary-bg), rgba(255, 255, 255, 0.5));
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .sacred-quote::before,
+    .sacred-quote::after {
+      content: '"';
+      position: absolute;
+      font-size: var(--text-5xl);
+      color: var(--primary-light);
+      opacity: 0.3;
+    }
+    
+    .sacred-quote::before {
+      top: var(--space-4);
+      left: var(--space-6);
+    }
+    
+    .sacred-quote::after {
+      bottom: var(--space-4);
+      right: var(--space-6);
+      transform: rotate(180deg);
+    }
+    
+    /* Skip link pour accessibilité */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 10px;
+      padding: var(--space-2) var(--space-4);
+      background: var(--primary);
+      color: var(--white);
+      border-radius: var(--radius-md);
+      z-index: 100;
+      transition: top var(--transition-fast);
+    }
+    
+    .skip-link:focus {
+      top: 10px;
+    }
+    
+    /* Notification banner améliorée */
+    .notification-banner {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--white);
+      padding: var(--space-4);
+      text-align: center;
+      font-weight: var(--weight-semibold);
+      position: relative;
+      overflow: hidden;
+      font-size: var(--text-base);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    
+    .notification-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shimmer 3s linear infinite;
+      background-size: 200% 200%;
+    }
+    
+    /* Navigation sticky sur mobile */
+    @media (max-width: 768px) {
+      .mobile-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--white);
+        box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+        padding: var(--space-4);
+        z-index: var(--z-sticky);
+        display: flex;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+      }
+      
+      .mobile-nav .btn {
+        font-size: var(--text-sm);
+        padding: var(--space-3) var(--space-6);
+      }
+    }
+    
+    /* ========================================
+       CORRECTIONS CSS MOBILE - LOVE TRANSFORMATION
+       ======================================== */
+    
+    /* RESPONSIVE MOBILE OPTIMISÉ */
+    @media (max-width: 768px) {
+      :root {
+        /* Réduction harmonieuse des tailles de texte */
+        --text-xs: 0.75rem;    /* 12px */
+        --text-sm: 0.8125rem;  /* 13px */
+        --text-base: 0.875rem; /* 14px - réduit de 16px */
+        --text-lg: 1rem;       /* 16px - réduit de 18px */
+        --text-xl: 1.125rem;   /* 18px - réduit de 20px */
+        --text-2xl: 1.25rem;   /* 20px - réduit de 24px */
+        --text-3xl: 1.5rem;    /* 24px - réduit de 28px */
+        --text-4xl: 1.75rem;   /* 28px - réduit de 32px */
         
-        /* En-tu00eate */
-        header {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
+        /* Espacement mobile */
+        --container-padding: 1.5rem; /* 24px */
+      }
+      
+      /* Corps de texte plus petit et plus lisible */
+      body {
+        font-size: var(--text-base);
+        line-height: 1.6;
+      }
+      
+      /* Paragraphes avec meilleur espacement */
+      p {
+        font-size: var(--text-base);
+        line-height: 1.7;
+        margin-bottom: var(--space-4);
+      }
+      
+      /* Titres principaux moins imposants */
+      h1 { 
+        font-size: clamp(1.5rem, 4vw, 1.75rem) !important; 
+      }
+      
+      h2 { 
+        font-size: clamp(1.25rem, 3.5vw, 1.5rem) !important; 
+      }
+      
+      h3 { 
+        font-size: clamp(1.125rem, 3vw, 1.25rem) !important; 
+      }
+      
+      h4 { 
+        font-size: clamp(1rem, 2.5vw, 1.125rem) !important; 
+      }
+      
+      /* Sections */
+      .section {
+        padding: var(--space-12) 0;
+      }
+      
+      .section__header {
+        margin-bottom: var(--space-10);
+      }
+      
+      .section__subtitle {
+        font-size: var(--text-base);
+      }
+      
+      /* Logo */
+      .logo__circle {
+        width: 80px;
+        height: 80px;
+        margin: var(--space-3) auto;
+      }
+      
+      .logo__icon {
+        font-size: var(--text-4xl);
+      }
+      
+      .gradient-text {
+        font-size: clamp(1.5rem, 5vw, 1.75rem) !important;
+      }
+      
+      /* Message de bienvenue */
+      .welcome-message {
+        padding: var(--space-8);
+      }
+      
+      .welcome-greeting {
+        font-size: var(--text-2xl);
+      }
+      
+      .welcome-personal-note {
+        font-size: var(--text-base);
+      }
+      
+      /* Stats */
+      .quick-stats {
+        gap: var(--space-4);
+      }
+      
+      .stat-item {
+        min-width: 110px;
+        padding: var(--space-4);
+      }
+      
+      .stat-number {
+        font-size: var(--text-2xl);
+      }
+      
+      /* SECTION EXPERT CORRIGÉE */
+      .expert-card {
+        padding: var(--space-8) var(--space-2);
+      }
+      
+      .expert-main-content {
+        padding: var(--space-8) var(--space-4);
+      }
+      
+      .expert-image-container {
+        width: 200px;
+        height: 200px;
+        margin-bottom: var(--space-8);
+      }
+      
+      .expert-stats {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-3);
+        margin: var(--space-8) 0;
+      }
+      
+      .expert-stat {
+        padding: var(--space-3) var(--space-5);
+        width: 100%;
+        justify-content: flex-start;
+        font-size: var(--text-sm);
+      }
+      
+      /* Countdown mobile */
+      .countdown-container {
+        padding: var(--space-8) var(--space-4);
+      }
+      
+      .countdown-container h3 {
+        font-size: var(--text-2xl) !important;
+      }
+      
+      .countdown-container p {
+        font-size: var(--text-base) !important;
+      }
+      
+      .countdown {
+        gap: var(--space-4);
+      }
+      
+      .countdown__number {
+        width: 65px;
+        height: 65px;
+        font-size: var(--text-xl);
+      }
+      
+      .countdown__label {
+        font-size: var(--text-sm);
+      }
+      
+      /* Grilles */
+      .grid--2,
+      .grid--3 {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+      }
+      
+      /* Avant/Après mobile */
+      .before-after-container {
+        margin-bottom: var(--space-8);
+        padding: var(--space-6);
+      }
+      
+      .before-after-badge {
+        font-size: var(--text-base) !important;
+        padding: var(--space-2) var(--space-6) !important;
+      }
+      
+      /* Modules mobile */
+      .module__header {
+        padding: var(--space-5) var(--space-4);
+        gap: var(--space-3);
+        min-height: auto;
+      }
+      
+      .module__icon {
+        width: 45px;
+        height: 45px;
+        font-size: var(--text-lg);
+      }
+      
+      .module__title {
+        font-size: var(--text-base);
+      }
+      
+      .module__number {
+        font-size: var(--text-sm);
+      }
+      
+      .module-duration {
+        font-size: var(--text-xs);
+      }
+      
+      .module__body {
+        padding: var(--space-6);
+      }
+      
+      .personal-note {
+        padding: var(--space-5);
+      }
+      
+      .personal-note h4 {
+        font-size: var(--text-lg);
+      }
+      
+      .personalized-goals h5 {
+        font-size: var(--text-base);
+      }
+      
+      /* Checklist mobile */
+      .checklist__item {
+        padding-left: var(--space-6);
+        margin-bottom: var(--space-4);
+        font-size: var(--text-base);
+      }
+      
+      .checklist__item::before {
+        display: none;
+      }
+      
+      /* Témoignages */
+      .testimonial-card {
+        padding: var(--space-6);
+      }
+      
+      .testimonial-content {
+        font-size: var(--text-base);
+        padding: 0 var(--space-3);
+      }
+      
+      .testimonial-name {
+        font-size: var(--text-lg);
+      }
+      
+      /* PRICING MOBILE CORRIGÉ */
+      .pricing__grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+      }
+      
+      .pricing__card {
+        padding: var(--space-6);
+        max-width: 100%;
+      }
+      
+      .pricing__card--featured {
+        transform: scale(1);
+        order: -1;
+        box-shadow: var(--shadow-lg);
+      }
+      
+      .pricing__card--featured::before {
+        display: none;
+      }
+      
+      .pricing__badge {
+        font-size: var(--text-xs);
+        padding: var(--space-2) var(--space-4);
+        animation: none;
+      }
+      
+      .pricing__icon {
+        font-size: var(--text-3xl);
+        animation: none;
+      }
+      
+      .pricing__title {
+        font-size: var(--text-xl);
+      }
+      
+      .pricing__desc {
+        font-size: var(--text-sm);
+      }
+      
+      .pricing__price {
+        padding: var(--space-4);
+        margin: var(--space-6) 0;
+      }
+      
+      .pricing__amount {
+        font-size: var(--text-2xl);
+      }
+      
+      .pricing__frequency {
+        font-size: var(--text-sm);
+      }
+      
+      .pricing__savings {
+        font-size: var(--text-xs);
+      }
+      
+      .pricing__feature {
+        margin-bottom: var(--space-3);
+        font-size: var(--text-sm);
+      }
+      
+      /* Bonus mobile */
+      .bonus-card {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-3);
+        padding: var(--space-5);
+      }
+      
+      .bonus-icon {
+        font-size: var(--text-2xl);
+        animation: none;
+      }
+      
+      .bonus-tag {
+        font-size: var(--text-xs);
+      }
+      
+      /* PROGRAMME MOBILE CORRIGÉ */
+      .program-container {
+        padding: var(--space-6);
+        margin: var(--space-6) 0;
+      }
+      
+      .program-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+        margin-top: var(--space-6);
+      }
+      
+      .program-card {
+        padding: var(--space-5);
+        background: var(--white);
+        box-shadow: var(--shadow-sm);
+      }
+      
+      .program-icon-container {
+        width: 50px;
+        height: 50px;
+        font-size: var(--text-xl);
+        animation: none;
+        margin-bottom: var(--space-4);
+      }
+      
+      .program-title {
+        font-size: var(--text-base);
+        margin-bottom: var(--space-3);
+        padding-bottom: var(--space-3);
+      }
+      
+      .program-content {
+        font-size: var(--text-sm);
+      }
+      
+      .program-list-item {
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-3);
+      }
+      
+      /* FAQ mobile */
+      .faq-question {
+        padding: var(--space-4);
+        font-size: var(--text-base);
+        min-height: auto;
+      }
+      
+      .faq-toggle {
+        width: 32px;
+        height: 32px;
+        margin-left: var(--space-3);
+      }
+      
+      .faq-answer {
+        font-size: var(--text-sm);
+      }
+      
+      .faq-item.active .faq-answer {
+        padding: 0 var(--space-4) var(--space-4);
+      }
+      
+      /* CTA FINALE CORRIGÉE */
+      .final-cta {
+        padding: var(--space-8) var(--space-4);
+        margin-top: var(--space-10);
+      }
+      
+      .cta-title {
+        font-size: var(--text-2xl);
+        margin-bottom: var(--space-4);
+      }
+      
+      .cta-subtitle {
+        font-size: var(--text-base);
+        margin-bottom: var(--space-6);
+      }
+      
+      .cta-highlights {
+        flex-direction: column;
+        gap: var(--space-4);
+        margin-bottom: var(--space-6);
+      }
+      
+      .cta-highlight {
+        width: 100%;
+        padding: var(--space-4);
+      }
+      
+      .highlight-icon {
+        font-size: var(--text-2xl);
+      }
+      
+      .highlight-text strong {
+        font-size: var(--text-base);
+      }
+      
+      .highlight-text span {
+        font-size: var(--text-sm);
+      }
+      
+      .cta-action .btn {
+        font-size: var(--text-base);
+        padding: var(--space-4) var(--space-6);
+        min-height: 60px;
+      }
+      
+      /* Texte lisible sur fond violet */
+      .cta-footer p {
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-size: var(--text-base);
+      }
+      
+      .cta-footer a {
+        color: var(--white) !important;
+        opacity: 1 !important;
+        text-decoration-color: rgba(255, 255, 255, 0.5);
+      }
+      
+      /* BOUTONS MOBILE CORRIGÉS */
+      .btn {
+        font-size: var(--text-sm);
+        padding: var(--space-3) var(--space-5);
+        min-height: 50px;
+        width: calc(100% - var(--space-4));
+        max-width: 100%;
+        margin: 0 auto;
+        letter-spacing: 0.03em;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .btn--large {
+        font-size: var(--text-base);
+        padding: var(--space-4) var(--space-6);
+        min-height: 56px;
+      }
+      
+      .btn--full {
+        width: 100%;
+      }
+      
+      .btn--pulse {
+        animation: none;
+      }
+      
+      .btn--float {
+        bottom: 5rem;
+        right: 1rem;
+        font-size: var(--text-sm);
+        padding: var(--space-3) var(--space-5);
+        animation: none;
+        transform: scale(1);
+      }
+      
+      /* Garantie mobile */
+      .guarantee-section {
+        padding: var(--space-6);
+      }
+      
+      .guarantee-content {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-4);
+      }
+      
+      .guarantee-icon {
+        font-size: var(--text-3xl);
+        animation: none;
+      }
+      
+      .guarantee-text h3 {
+        font-size: var(--text-xl);
+      }
+      
+      .guarantee-text p {
+        font-size: var(--text-base);
+      }
+      
+      /* Utilitaires responsive */
+      p {
+        max-width: 100%;
+      }
+      
+      /* Overflow prevention */
+      * {
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+      
+      /* Sacred quote mobile */
+      .sacred-quote {
+        padding: var(--space-6);
+        font-size: var(--text-base);
+      }
+      
+      .sacred-quote::before,
+      .sacred-quote::after {
+        font-size: var(--text-2xl);
+      }
+      
+      /* Désactiver les animations lourdes sur mobile */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
         }
-        
-        header h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            letter-spacing: -0.5px;
-        }
-        
-        header p {
-            margin: 10px 0 0;
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        /* Contenu principal */
-        main {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        
-        section {
-            margin-bottom: 40px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-        }
-        
-        h2 {
-            color: #059669;
-            margin-top: 0;
-            font-size: 1.6rem;
-            border-bottom: 2px solid #d1fae5;
-            padding-bottom: 10px;
-        }
-        
-        h3 {
-            color: #047857;
-            font-size: 1.3rem;
-            margin: 25px 0 15px;
-        }
-        
-        p {
-            margin: 15px 0;
-            color: #334155;
-        }
-        
-        /* Liste */
-        ul, ol {
-            padding-left: 25px;
-        }
-        
-        li {
-            margin-bottom: 10px;
-            color: #334155;
-        }
-        
-        /* u00c9tapes */
-        .step {
-            display: flex;
-            margin-bottom: 20px;
-            border-left: 3px solid #10b981;
-            padding-left: 20px;
-        }
-        
-        .step-number {
-            background-color: #10b981;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            flex-shrink: 0;
-            margin-right: 15px;
-            margin-top: 2px;
-        }
-        
-        .step-content {
-            flex-grow: 1;
-        }
-        
-        .step-content h4 {
-            margin: 0 0 10px;
-            color: #047857;
-        }
-        
-        /* Notes */
-        .important-note {
-            background-color: #ecfdf5;
-            border-left: 4px solid #10b981;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        /* Carte */
-        .success-card {
-            background-color: #f0fdf4;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .success-card h3 {
-            color: #166534;
-            margin-top: 0;
-        }
-        
-        /* Pied de page */
-        footer {
-            background-color: #f1f5f9;
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8rem;
-            }
-            
-            main {
-                padding: 20px;
-            }
-        }
-    </style>
+      }
+      
+      /* Animations simplifiées sur mobile */
+      .animate-in,
+      .reveal {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+      
+      /* Trust badges */
+      .trust-badge {
+        font-size: var(--text-xs);
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      /* Notification banner */
+      .notification-banner {
+        font-size: var(--text-sm);
+        padding: var(--space-3);
+      }
+    }
+    
+    /* Très petits écrans */
+    @media (max-width: 375px) {
+      :root {
+        --container-padding: 1rem;
+        --text-base: 0.8125rem; /* 13px */
+        --text-sm: 0.75rem;     /* 12px */
+      }
+      
+      .countdown__number {
+        width: 55px;
+        height: 55px;
+        font-size: var(--text-lg);
+      }
+      
+      .btn {
+        font-size: var(--text-xs);
+        padding: var(--space-3) var(--space-4);
+      }
+      
+      .logo__circle {
+        width: 80px;
+        height: 80px;
+      }
+      
+      .expert-image-container {
+        width: 160px;
+        height: 160px;
+      }
+      
+      .pricing__card {
+        padding: var(--space-5);
+      }
+      
+      .program-card {
+        padding: var(--space-4);
+      }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Guide de Démarrage</h1>
-        <p>{{PRENOM}} {{NOM}} | Début le {{DATE_DEBUT}}</p>
-    </header>
-    
-    <main>
-        <section>
-            <h2>Bienvenue dans votre programme !</h2>
-            <p>Bonjour {{PRENOM}},</p>
-            <p>Félicitations pour votre inscription à <strong>{{PRODUIT}}</strong> ! Ce guide vous aidera à bien démarrer et à tirer le meilleur parti de votre expérience.</p>
-            
-            <div class="important-note">
-                <p><strong>Important :</strong> Votre programme commence officiellement le <strong>{{DATE_DEBUT}}</strong>. Assurez-vous d'être disponible et prêt(e) pour cette date.</p>
-            </div>
-        </section>
+  <!-- Skip link pour accessibilité -->
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- Notification banner -->
+  <div class="notification-banner" role="banner" aria-live="polite">
+    ✨ Offre spéciale : frais d'inscription offerts (économise 90€) pour toute réservation avant demain ! Plus que {{PLACES_DISPONIBLES}} places disponibles ✨
+  </div>
+  
+  <div class="container">
+    <main id="main-content">
+      <!-- Logo & Header -->
+      <header class="logo animate-in" role="banner">
+        <div class="logo__circle">
+          <span class="logo__icon" aria-hidden="true">💖</span>
+        </div>
+        <h1 class="gradient-text">LOVE TRANSFORMATION™</h1>
+        <p class="section__subtitle">
+          <strong>L'harmonie entre foi et amour</strong> - Un cheminement spirituel pour retrouver l'équilibre dans ta vie amoureuse
+        </p>
         
-        <section>
-            <h2>Les étapes de votre onboarding</h2>
-            <p>Voici les étapes que nous suivrons ensemble pour assurer votre succès :</p>
-            
-            <div class="steps">
-                {{ETAPES}}
-            </div>
-        </section>
+        <!-- Badges de crédibilité -->
+        <div class="trust-badges">
+          <span class="trust-badge">✓ <strong>500+ âmes accompagnées</strong></span>
+          <span class="trust-badge">✓ Approche psycho-spirituelle</span>
+          <span class="trust-badge">✓ Méthode éprouvée</span>
+        </div>
+      </header>
+
+      <!-- Message personnalisé de bienvenue -->
+      <section class="welcome-message reveal">
+        <div class="welcome-greeting">
+          <span class="text-primary">As-salamu alaykum</span>, {{PRENOM}}
+        </div>
         
-        <section>
-            <h2>Conseils pour réussir</h2>
-            <p>Voici quelques conseils pour maximiser votre expérience et atteindre vos objectifs plus rapidement :</p>
-            
-            <div class="tips">
-                {{CONSEILS}}
-            </div>
-            
-            <div class="success-card">
-                <h3>Notre engagement envers votre succès</h3>
-                <p>Nous sommes totalement engagés pour vous aider à atteindre vos objectifs : <strong>{{OBJECTIFS}}</strong>.</p>
-                <p>N'hésitez jamais à nous contacter si vous avez des questions.</p>
-            </div>
-        </section>
+        <div class="welcome-personal-note">
+          "{{MESSAGE_BIENVENUE_SPIRITUEL}}"
+        </div>
         
-        <section>
-            <h2>Comment nous contacter</h2>
-            <p>Si vous avez des questions ou besoin d'assistance :</p>
+        <p>{{PONT_EMOTIONNEL_INTRODUCTION}}</p>
+        
+        <p>{{PARAGRAPHE_CONNEXION_1}}</p>
+        
+        <div class="quick-stats">
+          <div class="stat-item">
+            <div class="stat-number">6</div>
+            <div class="stat-label">Mois d'accompagnement</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">7</div>
+            <div class="stat-label">Modules transformateurs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Compatible avec ta foi</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Expert -->
+      <section class="section reveal">
+        <div class="expert-card">
+          <h2>Qui suis-je et pourquoi je peux t'accompagner</h2>
+          
+          <div class="expert-main-content">
+            <div class="expert-image-container">
+              <img src="https://i.postimg.cc/43C019TB/Capture-d-cran-2024-01-18-163326.jpg" 
+                   alt="Mohamed - Thérapeute Musulman" 
+                   class="expert-image" />
+            </div>
             
-            <ul>
-                <li><strong>Par WhatsApp :</strong> {{NUMERO_WHATSAPP}}</li>
-                <li><strong>Par email :</strong> support@example.com</li>
-                <li><strong>Par téléphone :</strong> {{TELEPHONE}}</li>
+            <div class="expert-info text-center">
+              <h3>Mohamed</h3>
+              <p class="expert-title">Thérapeute spécialiste en conjugalité, relations & spiritualité islamique</p>
+            </div>
+            
+            <div class="expert-stats">
+              <div class="expert-stat">
+                <span>👥</span>
+                <span>Suivi par <strong>+100 000 personnes</strong></span>
+              </div>
+              <div class="expert-stat">
+                <span>📅</span>
+                <span><strong>15 ans</strong> d'expertise</span>
+              </div>
+              <div class="expert-stat">
+                <span>👨‍👩‍👧‍👦</span>
+                <span>Marié, 3 enfants</span>
+              </div>
+            </div>
+            
+            <div class="expert-content">
+              <p>Mon parcours a commencé il y a <strong>15 ans</strong>, lorsque j'ai moi-même traversé une période difficile dans ma quête de l'amour authentique. Comme beaucoup, j'oscillais entre respecter pleinement ma foi et répondre à mes besoins émotionnels profonds. Cette tension m'a conduit à développer une approche unique qui <strong>fusionne les enseignements islamiques traditionnels avec la psychologie moderne des relations</strong>.</p>
+              
+              <p>Ce qui rend ma méthode différente est qu'elle ne traite pas la spiritualité et les émotions comme des domaines séparés. <strong class="highlight-primary">J'ai accompagné personnellement plus de 500 femmes musulmanes</strong> à travers ce chemin de transformation, les aidant à créer des relations qui nourrissent l'âme tout en honorant Allah ﷑ et les enseignements du Prophète ﷗.</p>
+              
+              <p>Aujourd'hui, ma mission est de t'offrir <strong>les outils et la guidance nécessaires</strong> pour vivre une vie relationnelle épanouissante qui renforce ta foi plutôt que de la compromettre. J'apporte un espace sécurisé où ta spiritualité est honorée et où tes aspirations amoureuses sont prises au sérieux.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Citation sacrée -->
+      <div class="sacred-quote reveal">
+        "Parmi Ses signes Il a créé de vous, pour vous, des épouses pour que vous viviez en tranquillité avec elles et Il a mis entre vous de l'affection et de la bonté. Il y a en cela des preuves pour des gens qui réfléchissent."
+        <div style="font-size: var(--text-base); margin-top: var(--space-4); font-weight: var(--weight-semibold);">— Sourate Ar-Rum (30:21)</div>
+      </div>
+
+      <!-- Compte à rebours -->
+      <section class="section reveal">
+        <div class="countdown-container" aria-live="polite">
+          <h3>Offre exceptionnelle à durée limitée</h3>
+          <p>Cette opportunité unique expire dans :</p>
+          <div class="countdown" id="countdown-timer">
+            <div class="countdown__item">
+              <div class="countdown__number" id="countdown-days">01</div>
+              <div class="countdown__label">Jours</div>
+            </div>
+            <div class="countdown__item">
+              <div class="countdown__number" id="countdown-hours">18</div>
+              <div class="countdown__label">Heures</div>
+            </div>
+            <div class="countdown__item">
+              <div class="countdown__number" id="countdown-minutes">47</div>
+              <div class="countdown__label">Minutes</div>
+            </div>
+            <div class="countdown__item">
+              <div class="countdown__number" id="countdown-seconds">32</div>
+              <div class="countdown__label">Secondes</div>
+            </div>
+          </div>
+          <p style="font-size: var(--text-lg); margin-top: var(--space-6);"><strong>Seulement {{PLACES_DISPONIBLES}} places disponibles</strong> pour la prochaine session</p>
+        </div>
+      </section>
+
+      <!-- Transformation Avant/Après -->
+      <section class="section reveal">
+        <div class="section__header">
+          <h2 class="section__title">Le chemin de transformation qui s'ouvre à toi</h2>
+          <p class="section__subtitle">
+            Love Transformation™ n'est pas un simple programme sur les relations — c'est un <strong>parcours spirituel complet</strong> qui intègre harmonieusement ta foi et tes émotions.
+          </p>
+        </div>
+
+        <div class="grid grid--2">
+          <div class="card before-after-container" style="border-left: 5px solid var(--accent);">
+            <div class="before-after-badge before-badge">AVANT</div>
+            <ul class="checklist">
+              <li class="checklist__item">{{POINT_AVANT_1}}</li>
+              <li class="checklist__item">{{POINT_AVANT_2}}</li>
+              <li class="checklist__item">{{POINT_AVANT_3}}</li>
+              <li class="checklist__item">{{POINT_AVANT_4}}</li>
+              <li class="checklist__item">{{POINT_AVANT_5}}</li>
             </ul>
+          </div>
+          
+          <div class="card before-after-container" style="border-left: 5px solid var(--success);">
+            <div class="before-after-badge after-badge">APRÈS</div>
+            <ul class="checklist">
+              <li class="checklist__item">{{POINT_APRES_1}}</li>
+              <li class="checklist__item">{{POINT_APRES_2}}</li>
+              <li class="checklist__item">{{POINT_APRES_3}}</li>
+              <li class="checklist__item">{{POINT_APRES_4}}</li>
+              <li class="checklist__item">{{POINT_APRES_5}}</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Programme -->
+      <section class="section reveal" id="programme">
+        <div class="section__header">
+          <h2 class="section__title">LOVE TRANSFORMATION</h2>
+          <p class="section__subtitle">Un parcours spirituel de <strong class="text-primary">6 mois</strong> vers l'amour authentique</p>
+        </div>
+        
+        <div class="program-container">
+          <h3 class="text-center text-primary" style="margin-bottom: var(--space-2);">UN ACCOMPAGNEMENT COMPLET POUR TA TRANSFORMATION</h3>
+          <p class="text-center" style="color: var(--gray-700); margin-bottom: var(--space-6);">Conçu spécifiquement pour les femmes musulmanes modernes en quête d'harmonie entre foi et amour</p>
+          
+          <div class="program-grid">
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>🌱</span>
+              </div>
+              <h4 class="program-title">Programme d'épanouissement</h4>
+              <p class="program-content">Un voyage transformateur qui s'intègre parfaitement à ton quotidien, respectant ton emploi du temps.</p>
+            </div>
             
-            <p>Notre équipe est disponible du lundi au vendredi, de 9h à 18h.</p>
-        </section>
-    </main>
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>🧠</span>
+              </div>
+              <h4 class="program-title">7 modules transformateurs</h4>
+              <p class="program-content">Un parcours structuré qui te guide pas à pas du célibat vers l'amour véritable, avec des stratégies éprouvées et des enseignements spirituels accessibles 24h/24.</p>
+            </div>
+            
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>🔄</span>
+              </div>
+              <h4 class="program-title">Ressources bihebdomadaires</h4>
+              <ul class="program-list">
+                <li class="program-list-item">
+                  <span class="program-list-icon">↪</span>
+                  <div><strong>Chaque lundi</strong> : Dimension individuelle et spirituelle pour développer ta force intérieure</div>
+                </li>
+                <li class="program-list-item">
+                  <span class="program-list-icon">↪</span>
+                  <div><strong>Chaque jeudi</strong> : Dimension relationnelle pour construire des liens authentiques</div>
+                </li>
+              </ul>
+            </div>
+            
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>📝</span>
+              </div>
+              <h4 class="program-title">3 étapes d'évolution</h4>
+              <ul class="program-list">
+                <li class="program-list-item">
+                  <span class="program-list-icon">✓</span>
+                  <div><strong>Mois 1-2</strong> : Exploration profonde et compte-rendu personnalisé</div>
+                </li>
+                <li class="program-list-item">
+                  <span class="program-list-icon">✓</span>
+                  <div><strong>Mois 3-4</strong> : Analyse de progression et nouveaux protocoles adaptés</div>
+                </li>
+                <li class="program-list-item">
+                  <span class="program-list-icon">↪</span>
+                  <div><strong>Mois 6</strong> : Bilan final et vision de ton chemin futur</div>
+                </li>
+              </ul>
+            </div>
+            
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>💌</span>
+              </div>
+              <h4 class="program-title">Canal privé d'inspiration</h4>
+              <p class="program-content">Accès à un espace sacré avec des vidéos motivantes, histoires de transformation réelles et enseignements spirituels pour maintenir ton engagement.</p>
+            </div>
+            
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>📚</span>
+              </div>
+              <h4 class="program-title">Récapitulatifs essentiels</h4>
+              <p class="program-content">Documents synthétisant les enseignements fondamentaux - tu ne manqueras jamais les éléments clés, même avec ton emploi du temps chargé.</p>
+            </div>
+            
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>🧯</span>
+              </div>
+              <h4 class="program-title">Soutien continu</h4>
+              <p class="program-content">Accompagnement pendant ta recherche d'un partenaire compatible avec des outils pratiques et ressources inspirantes à chaque étape.</p>
+            </div>
+            
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>🤲</span>
+              </div>
+              <h4 class="program-title">Accompagnement sur mesure</h4>
+              <p class="program-content">Un parcours qui honore pleinement tes valeurs islamiques tout en s'adaptant à ta situation unique et tes défis spécifiques.</p>
+            </div>
+            
+            <div class="program-card">
+              <div class="program-icon-container">
+                <span>💻</span>
+              </div>
+              <h4 class="program-title">Plateforme centralisée</h4>
+              <p class="program-content">Accès personnel 24/7 à toutes les ressources, formulaires et comptes-rendus – tout en un seul endroit, adapté à ton rythme de vie.</p>
+            </div>
+          </div>
+          
+          <div class="text-center" style="margin-top: var(--space-10);">
+            <a href="#inscription" class="btn btn--primary btn--large btn--pulse">
+              🌟 Je veux accéder à ce programme unique
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modules -->
+<style>
+  /* Style pour les mises en valeur subtiles dans les introductions */
+  .highlight-soft {
+    font-style: italic;
+    color: var(--primary-light, #9552FF);
+    font-weight: 500;
+  }
+</style>
+
+<section class="section reveal" id="modules">
+  <div class="section__header">
+    <h2 class="section__title">Les 7 modules de transformation spirituelle et relationnelle</h2>
+    <p class="section__subtitle">Un parcours structuré qui harmonise foi et amour authentique</p>
+  </div>
+
+  <div class="modules">
+    <!-- Module 1 -->
+    <div class="module active" data-module="1">
+      <div class="module__header" onclick="toggleModule(this)">
+        <div class="module__icon">
+          <span>🔍</span>
+        </div>
+        <div class="module__info">
+          <span class="module__number">Module 1 <span class="module-duration">• 3 semaines</span></span>
+          <h3 class="module__title">L'Éveil : Réconcilier Foi & Désir d'Amour</h3>
+        </div>
+        <button class="module__toggle" aria-expanded="true"></button>
+      </div>
+      
+      <div class="module__content">
+        <div class="module__body">
+          <p><em><strong>"Et parmi Ses signes Il a créé de vous, pour vous, des épouses pour que vous viviez en tranquillité avec elles et Il a mis entre vous de l'affection et de la bonté." - Coran 30:21</strong></em></p>
+          
+          <p>🔍 Tu t'es déjà demandé pourquoi tu te sens coupable de vouloir l'amour alors qu'Allah ﷑ en a fait une sunna ? Ce module révolutionnaire dissout cette culpabilité en te reconnectant à la <em class="highlight-soft">beauté spirituelle du désir d'union</em>.</p>
+          
+          <ul class="checklist">
+            <li class="checklist__item"><strong class="highlight-primary">Les 3 dimensions sacrées de ton être</strong> (ruh, qalb, nafs) et comment leur alignement attire l'amour authentique</li>
+            <li class="checklist__item"><strong class="highlight-primary">Pourquoi ta quête amoureuse EST un acte d'adoration</strong> quand elle est menée avec intention pure</li>
+            <li class="checklist__item"><strong class="highlight-primary">Les schémas amoureux toxiques</strong> qui se répètent et comment les transformer en sagesse</li>
+            <li class="checklist__item"><strong class="highlight-primary">Comment cultiver la sakina</strong> (présence rayonnante) qui attire naturellement les âmes compatibles</li>
+            <li class="checklist__item"><strong class="highlight-primary">Ton style relationnel unique</strong> et son impact sur tes choix du passé</li>
+          </ul>
+          
+          <div class="personal-note">
+            <h4>Spécialement pour toi, {{PRENOM}} :</h4>
+            <p style="font-style: italic;">
+              {{MODULE_1_POINT_EMPATHIE}}
+            </p>
+            <div class="personalized-goals">
+              <h5>Ton objectif personnel pour ce module :</h5>
+              <p>
+                {{MODULE_1_OBJECTIF_PERSONNEL}}
+              </p>
+              
+              <h5>Bénéfice clé pour ta situation :</h5>
+              <p>
+                {{MODULE_1_BENEFICE_CLE}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
-    <footer>
-        <p>Ce guide d'onboarding est personnalisé pour {{PRENOM}} {{NOM}}</p>
-        <p>Généré le {{DATE_GENERATION}}</p>
-    </footer>
+    <!-- Module 2 -->
+    <div class="module" data-module="2">
+      <div class="module__header" onclick="toggleModule(this)">
+        <div class="module__icon">
+          <span>🧠</span>
+        </div>
+        <div class="module__info">
+          <span class="module__number">Module 2 <span class="module-duration">• 3 semaines</span></span>
+          <h3 class="module__title">La Libération : Guérir les Blessures du Cœur</h3>
+        </div>
+        <button class="module__toggle" aria-expanded="false"></button>
+      </div>
+      
+      <div class="module__content">
+        <div class="module__body">
+          <p><em><strong>"Et c'est Lui qui guérit les cœurs." - Coran 17:82</strong></em></p>
+          
+          <p>💔 Tes déceptions passées, les "non" essuyés, les jugements familiaux... tout ça a créé des murs invisibles autour de ton cœur. Ce module puissant te guide dans un <em class="highlight-soft">processus de guérison</em> inspiré des enseignements prophétiques.</p>
+          
+          <ul class="checklist">
+            <li class="checklist__item"><strong class="highlight-primary">Les blessures d'enfance</strong> qui sabotent inconsciemment tes relations adultes</li>
+            <li class="checklist__item"><strong class="highlight-primary">Les barrières émotionnelles</strong> qui t'empêchent de recevoir l'amour halal que tu mérites</li>
+            <li class="checklist__item"><strong class="highlight-primary">Les peurs ancestrales</strong> transmises par les générations de femmes de ta famille</li>
+            <li class="checklist__item"><strong class="highlight-primary">Les traumatismes relationnels</strong> en les transformant en force intérieure et hikma</li>
+            <li class="checklist__item"><strong class="highlight-primary">L'anxiété de la recherche</strong> pour la remplacer par une confiance sereine en Allah ﷑</li>
+          </ul>
+          
+          <div class="personal-note" style="background: linear-gradient(135deg, var(--success-bg), rgba(255, 255, 255, 0.8)); border-left-color: var(--success);">
+            <h4 style="color: var(--success-dark);">Spécialement pour toi, {{PRENOM}} :</h4>
+            <p style="font-style: italic;">
+              {{MODULE_2_POINT_EMPATHIE}}
+            </p>
+            <div class="personalized-goals">
+              <h5 style="color: var(--success-dark);">Ton objectif personnel pour ce module :</h5>
+              <p>
+                {{MODULE_2_OBJECTIF_PERSONNEL}}
+              </p>
+              
+              <h5 style="color: var(--success-dark);">Bénéfice clé pour ta situation :</h5>
+              <p>
+                {{MODULE_2_BENEFICE_CLE}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Module 3 -->
+    <div class="module" data-module="3">
+      <div class="module__header" onclick="toggleModule(this)">
+        <div class="module__icon">
+          <span>✨</span>
+        </div>
+        <div class="module__info">
+          <span class="module__number">Module 3 <span class="module-duration">• 3 semaines</span></span>
+          <h3 class="module__title">La Métamorphose : Transformer tes Croyances Limitantes</h3>
+        </div>
+        <button class="module__toggle" aria-expanded="false"></button>
+      </div>
+      
+      <div class="module__content">
+        <div class="module__body">
+          <p><em><strong>"Allah ne modifie l'état d'un peuple que s'ils modifient ce qui est en eux-mêmes." - Coran 13:11</strong></em></p>
+          
+          <p>🧠 "Je ne mérite pas l'amour", "Tous les hommes bien sont pris", "À mon âge c'est trop tard"... Ces pensées toxiques créent ta réalité. Temps de les <em class="highlight-soft">déraciner</em> avec des outils spirituels puissants !</p>
+          
+          <ul class="checklist">
+            <li class="checklist__item"><strong class="highlight-primary">Les croyances héritées</strong> de ta famille/société qui limitent tes possibilités amoureuses</li>
+            <li class="checklist__item"><strong class="highlight-primary">Le syndrome de la comparaison</strong> qui te fait sentir "pas assez bien"</li>
+            <li class="checklist__item"><strong class="highlight-primary">Les attentes irréalistes</strong> qui sabotent tes rencontres</li>
+            <li class="checklist__item"><strong class="highlight-primary">Les défauts perçus</strong> en atouts relationnels uniques</li>
+            <li class="checklist__item"><strong class="highlight-primary">La vision de l'amour</strong> harmonisant besoins et spiritualité</li>
+          </ul>
+          
+          <div class="personal-note" style="background: linear-gradient(135deg, var(--warning-bg), rgba(255, 255, 255, 0.8)); border-left-color: var(--warning);">
+            <h4 style="color: var(--warning-dark);">Spécialement pour toi, {{PRENOM}} :</h4>
+            <p style="font-style: italic;">
+              {{MODULE_3_POINT_EMPATHIE}}
+            </p>
+            <div class="personalized-goals">
+              <h5 style="color: var(--warning-dark);">Ton objectif personnel pour ce module :</h5>
+              <p>
+                {{MODULE_3_OBJECTIF_PERSONNEL}}
+              </p>
+              
+              <h5 style="color: var(--warning-dark);">Bénéfice clé pour ta situation :</h5>
+              <p>
+                {{MODULE_3_BENEFICE_CLE}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Module 4 -->
+    <div class="module" data-module="4">
+      <div class="module__header" onclick="toggleModule(this)">
+        <div class="module__icon">
+          <span>🤲</span>
+        </div>
+        <div class="module__info">
+          <span class="module__number">Module 4 <span class="module-duration">• 3 semaines</span></span>
+          <h3 class="module__title">L'Harmonie : Embrasser la Vision Sacrée du Mariage</h3>
+        </div>
+        <button class="module__toggle" aria-expanded="false"></button>
+      </div>
+      
+      <div class="module__content">
+        <div class="module__body">
+          <p><em><strong>"Le mariage est la moitié de la foi." - Hadith du Prophète ﷺ</strong></em></p>
+          
+          <p>🌙 Et si ton mariage devenait ton plus beau moyen de <em class="highlight-soft">te rapprocher d'Allah ﷑</em> ? Ce module révolutionnaire te fait redécouvrir la beauté spirituelle de l'union conjugale, loin des interprétations culturelles étouffantes.</p>
+          
+          <ul class="checklist">
+            <li class="checklist__item"><strong class="highlight-primary">Le mariage comme chemin d'élévation spirituelle</strong> et non comme "distraction" de l'adoration</li>
+            <li class="checklist__item"><strong class="highlight-primary">Le tawakkul dans ta vie amoureuse</strong> : faire confiance tout en agissant concrètement</li>
+            <li class="checklist__item"><strong class="highlight-primary">L'équilibre carrière/amour</strong> sans culpabilité ni sacrifice de tes ambitions</li>
+            <li class="checklist__item"><strong class="highlight-primary">Les secrets de la complémentarité</strong> homme/femme selon une vision équilibrée</li>
+            <li class="checklist__item"><strong class="highlight-primary">L'art de préserver ton individualité</strong> tout en construisant une union sacrée</li>
+          </ul>
+          
+          <div class="personal-note" style="background: linear-gradient(135deg, var(--success-bg), rgba(255, 255, 255, 0.8)); border-left-color: var(--success);">
+            <h4 style="color: var(--success-dark);">Spécialement pour toi, {{PRENOM}} :</h4>
+            <p style="font-style: italic;">
+              {{MODULE_4_POINT_EMPATHIE}}
+            </p>
+            <div class="personalized-goals">
+              <h5 style="color: var(--success-dark);">Ton objectif personnel pour ce module :</h5>
+              <p>
+                {{MODULE_4_OBJECTIF_PERSONNEL}}
+              </p>
+              
+              <h5 style="color: var(--success-dark);">Bénéfice clé pour ta situation :</h5>
+              <p>
+                {{MODULE_4_BENEFICE_CLE}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Module 5 -->
+    <div class="module" data-module="5">
+      <div class="module__header" onclick="toggleModule(this)">
+        <div class="module__icon">
+          <span>💬</span>
+        </div>
+        <div class="module__info">
+          <span class="module__number">Module 5 <span class="module-duration">• 4 semaines</span></span>
+          <h3 class="module__title">La Connexion : Maîtriser l'Art de la Rencontre Halal</h3>
+        </div>
+        <button class="module__toggle" aria-expanded="false"></button>
+      </div>
+      
+      <div class="module__content">
+        <div class="module__body">
+          <p><em><strong>"Les croyants et les croyantes sont alliés les uns des autres." - Coran 9:71</strong></em></p>
+          
+          <p>💝 Comment créer une connexion profonde tout en respectant les limites islamiques ? Ce module pratique te donne les clés pour des rencontres <em class="highlight-soft">authentiques et respectueuses</em>.</p>
+          
+          <ul class="checklist">
+            <li class="checklist__item"><strong class="highlight-primary">La communication magnétique</strong> qui révèle ta personnalité sans compromis</li>
+            <li class="checklist__item"><strong class="highlight-primary">Le discernement spirituel</strong> (firasa) pour reconnaître un partenaire compatible</li>
+            <li class="checklist__item"><strong class="highlight-primary">L'art de la conversation</strong> qui crée l'intimité émotionnelle dans le respect</li>
+            <li class="checklist__item"><strong class="highlight-primary">Les signaux d'alarme relationnels</strong> pour éviter les manipulateurs</li>
+            <li class="checklist__item"><strong class="highlight-primary">Ton intuition affinée</strong> comme boussole dans tes choix amoureux</li>
+          </ul>
+          
+          <div class="personal-note" style="background: linear-gradient(135deg, var(--accent-bg), rgba(255, 255, 255, 0.8)); border-left-color: var(--accent);">
+            <h4 style="color: var(--accent-dark);">Spécialement pour toi, {{PRENOM}} :</h4>
+            <p style="font-style: italic;">
+              {{MODULE_5_POINT_EMPATHIE}}
+            </p>
+            <div class="personalized-goals">
+              <h5 style="color: var(--accent-dark);">Ton objectif personnel pour ce module :</h5>
+              <p>
+                {{MODULE_5_OBJECTIF_PERSONNEL}}
+              </p>
+              
+              <h5 style="color: var(--accent-dark);">Bénéfice clé pour ta situation :</h5>
+              <p>
+                {{MODULE_5_BENEFICE_CLE}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Module 6 -->
+    <div class="module" data-module="6">
+      <div class="module__header" onclick="toggleModule(this)">
+        <div class="module__icon">
+          <span>❤️</span>
+        </div>
+        <div class="module__info">
+          <span class="module__number">Module 6 <span class="module-duration">• 4 semaines</span></span>
+          <h3 class="module__title">L'Épanouissement : Bâtir une Relation qui Dure</h3>
+        </div>
+        <button class="module__toggle" aria-expanded="false"></button>
+      </div>
+      
+      <div class="module__content">
+        <div class="module__body">
+          <p><em><strong>"Et parmi Ses signes, Il a créé pour vous, à partir de vous-mêmes, des épouses pour que vous trouviez le repos auprès d'elles." - Coran 30:21</strong></em></p>
+          
+          <p>💕 Une rencontre c'est beau, mais <em class="highlight-soft">construire une relation épanouissante</em> qui traverse les épreuves ? C'est tout un art que ce module te transmet avec bienveillance.</p>
+          
+          <ul class="checklist">
+            <li class="checklist__item"><strong class="highlight-primary">L'expression authentique</strong> de tes émotions sans drama ni manipulation</li>
+            <li class="checklist__item"><strong class="highlight-primary">L'art de préserver ton jardin secret</strong> tout en créant l'intimité</li>
+            <li class="checklist__item"><strong class="highlight-primary">La transformation des conflits</strong> en opportunités de rapprochement</li>
+            <li class="checklist__item"><strong class="highlight-primary">L'affirmation bienveillante</strong> de tes besoins et limites</li>
+            <li class="checklist__item"><strong class="highlight-primary">La construction d'un "nous"</strong> qui honore l'individualité de chacun</li>
+          </ul>
+
+          <div class="personal-note">
+            <h4>Spécialement pour toi, {{PRENOM}} :</h4>
+            <p style="font-style: italic;">
+              {{MODULE_6_POINT_EMPATHIE}}
+            </p>
+            <div class="personalized-goals">
+              <h5>Ton objectif personnel pour ce module :</h5>
+              <p>
+                {{MODULE_6_OBJECTIF_PERSONNEL}}
+              </p>
+              
+              <h5>Bénéfice clé pour ta situation :</h5>
+              <p>
+                {{MODULE_6_BENEFICE_CLE}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Module 7 -->
+    <div class="module" data-module="7">
+      <div class="module__header" onclick="toggleModule(this)">
+        <div class="module__icon">
+          <span>🌟</span>
+        </div>
+        <div class="module__info">
+          <span class="module__number">Module 7 <span class="module-duration">• 4 semaines</span></span>
+          <h3 class="module__title">La Manifestation : Attirer Concrètement ton Âme Sœur</h3>
+        </div>
+        <button class="module__toggle" aria-expanded="false"></button>
+      </div>
+      
+      <div class="module__content">
+        <div class="module__body">
+          <p><em><strong>"Et c'est Lui qui créé les couples." - Coran 36:36</strong></em></p>
+          
+          <p>🎯 Le module final où la théorie devient réalité ! Tu mets en place un <em class="highlight-soft">plan d'action concret</em> pour manifester l'amour dans ta vie, en alliant stratégie terrestre et <em class="highlight-soft">confiance céleste</em>.</p>
+          
+          <ul class="checklist">
+            <li class="checklist__item"><strong class="highlight-primary">Ta liste de critères non-négociables</strong> basée sur une connaissance profonde de tes besoins</li>
+            <li class="checklist__item"><strong class="highlight-primary">Ton plan d'action 360°</strong> : online, offline, cercle social, famille</li>
+            <li class="checklist__item"><strong class="highlight-primary">Ton rayonnement authentique</strong> qui attire magnétiquement les bonnes personnes</li>
+            <li class="checklist__item"><strong class="highlight-primary">Ton réseau social enrichi</strong> propice aux rencontres de qualité</li>
+            <li class="checklist__item"><strong class="highlight-primary">Ta préparation concrète</strong> à la vie de couple épanouie</li>
+          </ul>
+          
+          <div class="personal-note" style="background: linear-gradient(135deg, var(--warning-bg), rgba(255, 255, 255, 0.8)); border-left-color: var(--warning);">
+            <h4 style="color: var(--warning-dark);">Spécialement pour toi, {{PRENOM}} :</h4>
+            <p style="font-style: italic;">
+              {{MODULE_7_POINT_EMPATHIE}}
+            </p>
+            <div class="personalized-goals">
+              <h5 style="color: var(--warning-dark);">Ton objectif personnel pour ce module :</h5>
+              <p>
+                {{MODULE_7_OBJECTIF_PERSONNEL}}
+              </p>
+              
+              <h5 style="color: var(--warning-dark);">Bénéfice clé pour ta situation :</h5>
+              <p>
+                {{MODULE_7_BENEFICE_CLE}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="text-center" style="margin-top: var(--space-10);">
+    <a href="#inscription" class="btn btn--primary btn--large btn--pulse">
+      🌟 Je veux accéder à ces modules transformateurs
+    </a>
+  </div>
+</section>
+
+      <!-- Témoignages -->
+      <section class="section reveal" id="temoignages">
+        <div class="section__header">
+          <h2 class="section__title">Paroles de femmes qui ont vécu la transformation</h2>
+          <p class="section__subtitle">Elles ont retrouvé l'harmonie entre leur foi et leur vie amoureuse</p>
+        </div>
+        
+        <!-- Premier témoignage -->
+        <div class="testimonial-card testimonial-whatsapp reveal">
+          <div class="testimonial-header">
+            <div class="testimonial-avatar">{{EMOJI_PROFESSION_1}}</div>
+            <div class="testimonial-info">
+              <div class="testimonial-name">{{PRENOM_TEMOIGNAGE_1}}</div>
+              <div class="testimonial-meta">{{PROFESSION_TEMOIGNAGE_1}}, {{AGE_TEMOIGNAGE_1}} ans</div>
+            </div>
+          </div>
+          <div class="testimonial-content">
+            <p>"{{TEMOIGNAGE_COURT_1}}"</p>
+          </div>
+          <div class="testimonial-badge">{{TEMOIGNAGE_1_TRANSFORMATION_ALIGNEE}}</div>
+        </div>
+        
+        <!-- Second témoignage -->
+        <div class="testimonial-card testimonial-featured reveal">
+          <div class="testimonial-header">
+            <div class="testimonial-avatar">{{EMOJI_PROFESSION_3}}</div>
+            <div class="testimonial-info">
+              <div class="testimonial-name">{{PRENOM_TEMOIGNAGE_3}}</div>
+              <div class="testimonial-meta">{{PROFESSION_TEMOIGNAGE_3}}, {{AGE_TEMOIGNAGE_3}} ans</div>
+            </div>
+          </div>
+          <div class="testimonial-content">
+            <p>"{{TEMOIGNAGE_COURT_3}}"</p>
+          </div>
+          <div class="testimonial-badge">{{TEMOIGNAGE_3_TRANSFORMATION_ALIGNEE}}</div>
+        </div>
+        
+        <div class="text-center" style="margin-top: var(--space-10);">
+          <a href="#inscription" class="btn btn--primary btn--large btn--pulse">
+            💃 Je veux vivre cette transformation moi aussi
+          </a>
+        </div>
+      </section>
+
+      <!-- Bonus -->
+      <section class="section reveal">
+        <div class="section__header">
+          <h2 class="section__title">6 Bonus Exceptionnels pour Enrichir ton Parcours</h2>
+          <p class="section__subtitle">Des ressources complémentaires soigneusement sélectionnées pour approfondir ta transformation</p>
+        </div>
+        
+        <div style="max-width: 900px; margin: 0 auto;">
+          <div class="bonus-card reveal">
+            <div class="bonus-icon">🎁</div>
+            <div>
+              <div class="bonus-tag">Bonus #1</div>
+              <h4 style="color: var(--warning-dark); margin-bottom: var(--space-2);">Le Guide des 100 Questions Essentielles</h4>
+              <p style="margin-bottom: var(--space-3);">Découvre les questions cruciales à poser à ton futur partenaire avant de t'engager. Ce guide exhaustif t'aide à évaluer la <strong class="highlight-primary">compatibilité spirituelle profonde</strong> et les valeurs fondamentales avec clarté et discernement.</p>
+              <div style="color: var(--success); font-weight: var(--weight-semibold);">Valeur: 47€ (Offert)</div>
+            </div>
+          </div>
+          
+          <div class="bonus-card reveal">
+            <div class="bonus-icon">🎁</div>
+            <div>
+              <div class="bonus-tag">Bonus #2</div>
+              <h4 style="color: var(--warning-dark); margin-bottom: var(--space-2);">Protocole Complet de Prise de Décision Spirituelle</h4>
+              <p style="margin-bottom: var(--space-3);">Un processus structuré inspiré de la <strong class="highlight-primary">tradition islamique</strong> pour t'aider à prendre des décisions éclairées avant de t'engager dans une relation. Ce protocole combine prière d'istikhara, intelligence émotionnelle et discernement pratique.</p>
+              <div style="color: var(--success); font-weight: var(--weight-semibold);">Valeur: 97€ (Offert)</div>
+            </div>
+          </div>
+          
+          <div class="bonus-card reveal">
+            <div class="bonus-icon">🎁</div>
+            <div>
+              <div class="bonus-tag">Bonus #3</div>
+              <h4 style="color: var(--warning-dark); margin-bottom: var(--space-2);">Accès à la "Book Base" Spirituelle</h4>
+              <p style="margin-bottom: var(--space-3);">Une bibliothèque numérique qui synthétise les <strong class="highlight-primary">enseignements essentiels</strong> des meilleurs livres sur l'amour, les relations et la spiritualité. Ces résumés enrichissants te font gagner des <strong>années</strong> de lecture.</p>
+              <div style="color: var(--success); font-weight: var(--weight-semibold);">Valeur: 47€ (Offert)</div>
+            </div>
+          </div>
+          
+          <div class="bonus-card reveal">
+            <div class="bonus-icon">🎁</div>
+            <div>
+              <div class="bonus-tag">Bonus #4</div>
+              <h4 style="color: var(--warning-dark); margin-bottom: var(--space-2);">Guide de Préparation "My Muqabala"</h4>
+              <p style="margin-bottom: var(--space-3);">Un guide complet pour te préparer efficacement aux rencontres, que ce soit via notre service ou d'autres <strong class="highlight-primary">opportunités qu'Allah</strong> pourrait placer sur ton chemin.</p>
+              <div style="color: var(--success); font-weight: var(--weight-semibold);">Valeur: 87€ (Offert)</div>
+            </div>
+          </div>
+          
+          <div class="bonus-card reveal">
+            <div class="bonus-icon">🎁</div>
+            <div>
+              <div class="bonus-tag">Bonus #5</div>
+              <h4 style="color: var(--warning-dark); margin-bottom: var(--space-2);">Mises à jour et enrichissements à vie</h4>
+              <p style="margin-bottom: var(--space-3);">Tu bénéficieras <strong>automatiquement et gratuitement</strong> de toutes les mises à jour futures du programme et des ressources additionnelles que nous développerons.</p>
+              <div style="color: var(--success); font-weight: var(--weight-semibold);">Valeur: 297€ (Offert)</div>
+            </div>
+          </div>
+          
+          <div class="bonus-card reveal">
+            <div class="bonus-icon">🎁</div>
+            <div>
+              <div class="bonus-tag">Bonus #6</div>
+              <h4 style="color: var(--warning-dark); margin-bottom: var(--space-2);">Kit d'urgence émotionnelle et spirituelle</h4>
+              <p style="margin-bottom: var(--space-3);">Un ensemble d'outils pratiques combinant techniques modernes et <strong class="highlight-primary">pratiques spirituelles traditionnelles</strong> pour gérer efficacement les moments de fragilité et renforcer ton autonomie affective.</p>
+              <div style="color: var(--success); font-weight: var(--weight-semibold);">Valeur: 67€ (Offert)</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center reveal" style="margin-top: var(--space-10);">
+          <div style="font-size: var(--text-xl); font-weight: var(--weight-bold); color: var(--success); margin-bottom: var(--space-8); background: linear-gradient(135deg, var(--success-bg), rgba(255, 255, 255, 0.8)); display: inline-block; padding: var(--space-4) var(--space-8); border-radius: var(--radius-xl); box-shadow: var(--shadow-md);">
+            Valeur totale des bonus: 642€ (Offerts avec ton inscription)
+          </div>
+          <br>
+          <a href="#inscription" class="btn btn--primary btn--large btn--pulse">
+            JE VEUX ACCÉDER À TOUS CES BONUS MAINTENANT
+          </a>
+        </div>
+      </section>
+
+      <!-- Tarification -->
+<section class="section reveal" id="tarifs">
+  <div class="section__header">
+    <h2 class="section__title">Ton investissement dans la transformation</h2>
+    <p class="section__subtitle">Choisis l'option qui résonne avec ton cheminement</p>
+  </div>
+  
+  <div class="pricing__grid">
+    <!-- Plan 3 paiements -->
+    <div class="pricing__card pricing__card--featured">
+      <div class="pricing__badge">{{FORMULE_RECOMMANDEE}}</div>
+      
+      <div class="pricing__header">
+        <span class="pricing__icon">⚡</span>
+        <h3 class="pricing__title">Plan Transformation n°1</h3>
+        <p class="pricing__desc">L'équilibre parfait entre <strong class="highlight-primary">accessibilité</strong> et engagement</p>
+      </div>
+      
+      <div class="pricing__price">
+        <div class="pricing__amount"><strong>{{MENSUALITE_3X}}</strong></div>
+        <div class="pricing__frequency"><strong>3</strong> paiements mensuels</div>
+        <span class="pricing__savings">Économie de <strong>{{ECONOMIE_3X}}</strong></span>
+      </div>
+      
+      <ul class="pricing__features">
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Accès immédiat</strong> à tous les 7 modules transformateurs</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Ressources bihebdomadaires</strong> pendant 6 mois</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">3 formulaires d'exploration</strong> et comptes-rendus personnalisés</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Canal privé</strong> d'inspiration continue</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Les 6 bonus exclusifs</strong> (valeur 642€)</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Garantie 30 jours</strong> satisfaite ou remboursée</span>
+        </li>
+      </ul>
+      
+      <a href="#inscription" class="btn btn--primary btn--full btn--pulse" id="inscription">
+        🌟 Je commence ma transformation maintenant
+      </a>
+    </div>
+    
+    <!-- Plan paiement unique -->
+    <div class="pricing__card">
+      <div class="pricing__header">
+        <span class="pricing__icon">💯</span>
+        <h3 class="pricing__title">Plan Transformation n°2</h3>
+        <p class="pricing__desc">Pour celles qui préfèrent un investissement unique</p>
+      </div>
+      
+      <div class="pricing__price">
+        <div class="pricing__amount">{{PRIX_UNIQUE}}</div>
+        <div class="pricing__frequency">Paiement unique</div>
+        <span class="pricing__savings">Économie maximale : {{ECONOMIE_UNIQUE}}</span>
+      </div>
+      
+      <ul class="pricing__features">
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Accès immédiat</strong> à tous les 7 modules transformateurs</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Ressources bihebdomadaires</strong> pendant 6 mois</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">3 formulaires d'exploration</strong> et comptes-rendus personnalisés</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Canal privé</strong> d'inspiration continue</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Les 6 bonus exclusifs</strong> (valeur 642€)</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Garantie 30 jours</strong> satisfaite ou remboursée</span>
+        </li>
+      </ul>
+      
+      <a href="#inscription" class="btn btn--secondary btn--full">
+        💪 Je réserve ma place maintenant
+      </a>
+    </div>
+    
+    <!-- Plan 6 paiements -->
+    <div class="pricing__card">
+      <div class="pricing__header">
+        <span class="pricing__icon">🌱</span>
+        <h3 class="pricing__title">Plan Transformation n°3</h3>
+        <p class="pricing__desc">Pour celles qui préfèrent des mensualités légères</p>
+      </div>
+      
+      <div class="pricing__price">
+        <div class="pricing__amount">{{MENSUALITE_6X}}</div>
+        <div class="pricing__frequency">6 paiements mensuels</div>
+        <span class="pricing__savings">Accès complet dès maintenant</span>
+      </div>
+      
+      <ul class="pricing__features">
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Accès immédiat</strong> à tous les 7 modules transformateurs</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Ressources bihebdomadaires</strong> pendant 6 mois</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">3 formulaires d'exploration</strong> et comptes-rendus personnalisés</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Canal privé</strong> d'inspiration continue</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Les 6 bonus exclusifs</strong> (valeur 642€)</span>
+        </li>
+        <li class="pricing__feature">
+          <span class="pricing__feature-icon">✓</span>
+          <span><strong class="highlight-primary">Garantie 30 jours</strong> satisfaite ou remboursée</span>
+        </li>
+      </ul>
+      
+      <a href="#inscription" class="btn btn--secondary btn--full">
+        🌸 Je commence mon parcours maintenant
+      </a>
+    </div>
+  </div>
+  
+  <!-- Garantie -->
+  <div class="guarantee-section reveal">
+    <div class="guarantee-content">
+      <div class="guarantee-icon">🛡️</div>
+      <div class="guarantee-text">
+        <h3>Garantie <strong>30 jours</strong> Satisfaction ou Remboursé</h3>
+        <p>Si après <strong>30 jours</strong> d'exploration sincère du programme, tu ne ressens pas les premières transformations positives dans ta vie <strong class="highlight-primary">spirituelle et relationnelle</strong>, contacte-nous simplement et tu seras <strong>intégralement remboursée</strong> dans les <strong>72 heures</strong>, sans aucune question ni justification.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+      <!-- Services complémentaires -->
+      <section class="section reveal">
+        <div class="section__header">
+          <h2 class="section__title">Nos deux services complémentaires</h2>
+          <p class="section__subtitle">Une approche holistique pour t'accompagner vers l'amour authentique</p>
+        </div>
+        
+        <div class="grid grid--2">
+          <div class="card" style="border-left: 4px solid var(--success);">
+            <div class="text-center" style="margin-bottom: var(--space-6);">
+              <span style="font-size: var(--text-3xl); display: inline-block; animation: float 4s ease-in-out infinite;">🌱</span>
+              <h3 style="margin-top: var(--space-3); color: var(--success);">Programme Love Transformation™</h3>
+            </div>
+            <p>
+              Ce programme de 6 mois t'accompagne dans ta transformation intérieure afin d'harmoniser ta foi et tes besoins affectifs.
+              Tu y trouveras des enseignements spirituels puissants mais aussi des outils concrets et des conseils pratiques pour créer de vraies opportunités de rencontre avec un partenaire sincère, engagé, et aligné avec tes valeurs.
+            </p>
+            <p style="font-weight: var(--weight-semibold); text-align: center; background: var(--success-bg); padding: var(--space-3); border-radius: var(--radius-md); color: var(--success); margin-top: var(--space-6);">
+              C'est l'invitation que je te présente aujourd'hui
+            </p>
+          </div>
+          
+          <div class="card">
+            <div class="text-center" style="margin-bottom: var(--space-6);">
+              <span style="font-size: var(--text-3xl); display: inline-block; animation: float 4s ease-in-out infinite;">💞</span>
+              <h3 style="margin-top: var(--space-3); color: var(--accent);">Service de Matchmaking</h3>
+            </div>
+            <p>
+              Un accompagnement dédié pour te connecter avec des hommes sérieux, engagés dans une démarche spirituelle authentique et orientés vers le mariage.
+              Lorsqu'une compatibilité profonde est identifiée, une rencontre encadrée est proposée dans un cadre respectueux et bienveillant.
+            </p>
+            <p style="font-weight: var(--weight-semibold); text-align: center; background: var(--gray-100); padding: var(--space-3); border-radius: var(--radius-md); color: var(--gray-600); margin-top: var(--space-6);">
+              Tu seras automatiquement sur notre liste d'attente prioritaire
+            </p>
+          </div>
+        </div>
+        
+        <div class="card" style="margin-top: var(--space-8); background: linear-gradient(135deg, var(--success-bg), rgba(255, 255, 255, 0.8)); border-left: 4px solid var(--success);">
+          <p style="margin-bottom: var(--space-4); font-weight: var(--weight-semibold); color: var(--success);">
+            Note spéciale pour toi :
+          </p>
+          <p style="margin-bottom: var(--space-4); line-height: var(--leading-relaxed);">
+            Love Transformation™ t'<strong>enrichit intérieurement</strong>, tandis que le service de matchmaking travaille sur l'aspect extérieur de ta quête. <strong>Important : suivre ce programme ne garantit pas une rencontre</strong>, mais te prépare à y être pleinement réceptive. Comme le rappelle le Noble Coran, nous devons faire les causes (al-asbāb) tout en nous remettant à Allah.
+          </p>
+          <p style="margin-bottom: 0; line-height: var(--leading-relaxed);">
+            Le Module 7 te donne toutes les stratégies pour créer tes propres opportunités de rencontres sans dépendre uniquement de l'agence. Notre liste d'attente est longue, mais pendant ce temps, Allah peut te prédestiner des rencontres par d'autres voies. Ce programme te donne les outils pour saisir ces opportunités avec <strong class="highlight-success">discernement spirituel éclairé</strong>, où qu'elles se présentent.
+          </p>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="section reveal">
+        <div class="section__header">
+          <h2 class="section__title">Questions fréquentes</h2>
+          <p class="section__subtitle">Tout ce que tu dois savoir avant de commencer ton parcours</p>
+        </div>
+        
+        <div style="max-width: 900px; margin: 0 auto;">
+          <div class="faq-item active">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              {{FAQ_QUESTION_1}}
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>{{FAQ_REPONSE_1}}</p>
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              {{FAQ_QUESTION_2}}
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>{{FAQ_REPONSE_2}}</p>
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              {{FAQ_QUESTION_3}}
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>{{FAQ_REPONSE_3}}</p>
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              {{FAQ_QUESTION_4}}
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>{{FAQ_REPONSE_4}}</p>
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              {{FAQ_QUESTION_5}}
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>{{FAQ_REPONSE_5}}</p>
+            </div>
+          </div>
+      
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              {{FAQ_OBJECTION_PRINCIPALE}}
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>{{FAQ_REPONSE_OBJECTION_PRINCIPALE}}</p>
+            </div>
+          </div>
+      
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              Comment se déroule le programme en pratique ?
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>Format <strong>hybride ultra-flexible</strong> :<br><br>
+              📹 <strong>Modules vidéo structurés</strong> (10-25 min) + fiches PDF pratiques<br>
+              💬 <strong class="highlight-primary">Canal WhatsApp privé</strong> pour motivation quotidienne<br>
+              📚 Bibliothèque virtuelle (ebooks, audios, outils)<br>
+              📝 <strong>Formulaires d'introspection personnalisés</strong><br><br>
+              Tout est hébergé sur Kajabi : <strong>100% online</strong>, accessible <strong>24h/24</strong>, compatible mobile. Tu avances à <strong>ton rythme</strong>, selon tes disponibilités.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              Quelle est la politique de remboursement ?
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>Tu bénéficies de 30 jours "Sérénité totale". Si malgré une participation sincère tu ne ressens pas de premières transformations, il te suffit d'écrire à contact@untherapeutemusulman.fr.<br><br>
+              Remboursement sous 72h — par confiance, pour l'amour d'Allah. Nous fonctionnons dans un esprit de communauté, pas de business froid.</p>
+            </div>
+          </div>
+      
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              Et si je rate un module ou un contenu en direct ?
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>Zéro stress ! Tous les contenus sont archivés à vie dans ton espace membre. Tu peux revoir n'importe quel enseignement autant de fois que nécessaire, quand ça t'arrange.<br><br>
+              La flexibilité est au cœur du programme — ta vie ne s'arrête pas pour suivre une formation !</p>
+            </div>
+          </div>
+      
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              Quel accompagnement vais-je recevoir ?
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>Tu n'es jamais seule dans cette démarche :<br><br>
+              💬 Canal WhatsApp privé pour motivation et inspiration quotidiennes<br>
+              📋 3 formulaires introspectifs détaillés + comptes-rendus personnalisés<br>
+              📚 Bibliothèque virtuelle complète (ressources audio, écrites, outils PDF)<br>
+              ✉️ Support mail sous 48h pour toutes tes questions<br>
+              🤲 Communauté bienveillante unie par l'amour d'Allah<br><br>
+              C'est un véritable écosystème de soutien, pas juste un programme qu'on te balance !</p>
+            </div>
+          </div>
+      
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              Le programme est-il adapté à ma situation spécifique ?
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>Absolument. Les enseignements sont universels et les outils introspectifs personnalisables. Que tu vives en France, au Maghreb, au Canada ou ailleurs — que tu aies 25 ou 45 ans — les principes spirituels et émotionnels restent les mêmes.<br><br>
+              Tu as un doute sur ta situation particulière ? Écris-nous sur WhatsApp, nous t'aiguillerons avec honnêteté et bienveillance.</p>
+            </div>
+          </div>
+      
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              Quand débute la prochaine session ?
+              <div class="faq-toggle"></div>
+            </div>
+            <div class="faq-answer">
+              <p>{{DATE_DEBUT_PROGRAMME}}<br><br>
+              ⚠️ Places limitées pour garantir un accompagnement de qualité — nous privilégions la transformation profonde sur la quantité.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center" style="margin-top: var(--space-10);">
+          <p style="color: var(--gray-600); margin-bottom: var(--space-4);">D'autres questions? Nous sommes là pour t'accompagner</p>
+          <a href="#inscription" class="btn btn--primary btn--large btn--pulse">Démarre ton parcours maintenant</a>
+        </div>
+      </section>
+
+      <!-- CTA finale -->
+      <section class="final-cta reveal">
+        <div class="cta-container">
+          <h2 class="cta-title">Prête à harmoniser ta foi et ton cœur?</h2>
+          <p class="cta-subtitle">Rejoins les centaines de femmes musulmanes qui ont transformé leur vie amoureuse tout en renforçant leur spiritualité</p>
+          
+          <div class="cta-highlights">
+            <div class="cta-highlight">
+              <div class="highlight-icon">⏱️</div>
+              <div class="highlight-text">
+                <strong>Offre limitée</strong>
+                <span>Seulement {{PLACES_DISPONIBLES}} places disponibles</span>
+              </div>
+            </div>
+            <div class="cta-highlight">
+              <div class="highlight-icon">🛡️</div>
+              <div class="highlight-text">
+                <strong>Sans aucun risque</strong>
+                <span>Garantie 30 jours satisfaction et sérénité</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="cta-action">
+            <a href="#inscription" class="btn btn--primary btn--large btn--pulse">
+              JE COMMENCE MA TRANSFORMATION MAINTENANT
+            </a>
+          </div>
+          
+          <div class="cta-footer">
+            <p>Des questions? <a href="https://wa.me/{{NUMERO_WHATSAPP}}" style="color: var(--white); font-weight: var(--weight-semibold); text-decoration: underline;">Contacte-moi directement sur WhatsApp</a></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer style="text-align: center; padding: var(--space-8) 0; color: var(--gray-600); font-size: var(--text-sm); border-top: 1px solid var(--gray-200); margin-top: var(--space-16);">
+        <p>© 2025 My Muqabala - Un Thérapeute Musulman. Tous droits réservés.</p>
+        <p style="margin-top: var(--space-3);">
+          <a href="#conditions" style="color: var(--gray-600); margin: 0 var(--space-3);">Conditions générales</a> | 
+          <a href="#confidentialite" style="color: var(--gray-600); margin: 0 var(--space-3);">Politique de confidentialité</a> | 
+          <a href="mailto:contact@untherapeutemusulman.fr" style="color: var(--gray-600); margin: 0 var(--space-3);">Besoin d'aide?</a>
+        </p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Navigation mobile sticky -->
+  <div class="mobile-nav">
+    <a href="#inscription" class="btn btn--primary btn--pulse">
+      🌟 Je m'inscris maintenant
+    </a>
+  </div>
+
+  <script>
+    // Module accordion system
+    window.toggleModule = function(header) {
+      const module = header.closest('.module');
+      const allModules = document.querySelectorAll('.module');
+      
+      // Toggle clicked module
+      module.classList.toggle('active');
+      const btn = header.querySelector('.module__toggle');
+      if (btn) btn.setAttribute('aria-expanded', module.classList.contains('active'));
+    };
+
+    // FAQ toggle system
+    window.toggleFaq = function(question) {
+      const faqItem = question.closest('.faq-item');
+      const isActive = faqItem.classList.contains('active');
+      
+      // Close all other FAQs
+      document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Toggle current FAQ
+      if (!isActive) {
+        faqItem.classList.add('active');
+      }
+    };
+
+    // Countdown timer
+    function updateCountdown() {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(23, 59, 59, 999);
+      
+      const now = new Date();
+      const remaining = tomorrow.getTime() - now.getTime();
+      
+      if (remaining < 0) {
+        document.getElementById('countdown-timer').innerHTML = "<p>L'offre spéciale est terminée!</p>";
+        return;
+      }
+      
+      const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+      
+      const daysEl = document.getElementById('countdown-days');
+      const hoursEl = document.getElementById('countdown-hours');
+      const minutesEl = document.getElementById('countdown-minutes');
+      const secondsEl = document.getElementById('countdown-seconds');
+      
+      if (daysEl) daysEl.innerText = String(days).padStart(2, '0');
+      if (hoursEl) hoursEl.innerText = String(hours).padStart(2, '0');
+      if (minutesEl) minutesEl.innerText = String(minutes).padStart(2, '0');
+      if (secondsEl) secondsEl.innerText = String(seconds).padStart(2, '0');
+    }
+    
+    // Start countdown
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // Reveal animations on scroll
+    document.addEventListener('DOMContentLoaded', function() {
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { 
+        threshold: 0.1,
+        rootMargin: '-50px'
+      });
+      
+      document.querySelectorAll('.reveal').forEach(el => {
+        revealObserver.observe(el);
+      });
+      
+      // Animate elements with delay
+      document.querySelectorAll('.animate-in').forEach((el, index) => {
+        setTimeout(() => {
+          el.style.opacity = '1';
+        }, index * 200);
+      });
+    });
+
+    // Smooth scroll for anchor links
+    document.addEventListener('click', function(e) {
+      const link = e.target.closest('a[href^="#"]');
+      if (link) {
+        e.preventDefault();
+        const targetId = link.getAttribute('href');
+        
+        if (targetId.length > 1) {
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            const headerOffset = 80;
+            const elementPosition = targetElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
