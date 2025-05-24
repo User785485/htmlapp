@@ -160,6 +160,52 @@ export class DocumentGenerator {
     
     const variables: Record<string, string> = { ...baseVariables };
     
+    // NOUVEAU: Extraire les variables du champ donnees_completes
+    // Ce champ contient un JSON stringifié avec toutes les variables du template Love Transformation
+    if (client.donnees_completes) {
+      try {
+        // Parser le JSON stringifié
+        let donnees;
+        try {
+          donnees = JSON.parse(client.donnees_completes);
+        } catch (e) {
+          // Si le parsing échoue, c'est peut-être parce que donnees_completes est déjà un objet
+          donnees = client.donnees_completes;
+        }
+        
+        // Si donnees_completes contient une propriété 'donnees_completes' (double imbrication)
+        if (typeof donnees === 'object' && donnees !== null && donnees.donnees_completes) {
+          try {
+            // Tenter de parser cette sous-propriété si c'est une chaîne JSON
+            if (typeof donnees.donnees_completes === 'string') {
+              const sousDonnees = JSON.parse(donnees.donnees_completes);
+              // Ajouter toutes les propriétés du sous-objet au dictionnaire de variables
+              Object.entries(sousDonnees).forEach(([key, value]) => {
+                variables[key.toUpperCase()] = String(value || '');
+              });
+            }
+          } catch (e) {
+            console.error('⚠️ Erreur lors du parsing du sous-objet donnees_completes:', e);
+          }
+        }
+
+        // Ajouter toutes les propriétés de l'objet principal au dictionnaire de variables
+        Object.entries(donnees).forEach(([key, value]) => {
+          // Ne pas inclure les objets ou tableaux, seulement les valeurs scalaires
+          if (typeof value !== 'object' || value === null) {
+            variables[key.toUpperCase()] = String(value || '');
+          }
+        });
+        
+        console.log('🔍 Variables extraites de donnees_completes:', Object.keys(variables).length);
+      } catch (error) {
+        console.error('❌ Erreur lors du parsing de donnees_completes:', error);
+        logger.error('DOCUMENT_GENERATOR', 'parse_donnees_completes_error', 'Erreur parsing JSON', {
+          error: error instanceof Error ? error.message : error,
+        });
+      }
+    }
+    
     // Méthode 1: Utiliser les préfixes selon le type de document
     const prefix = type === 'compte-rendu' ? 'cr_' : type === 'vente' ? 'vente_' : 'onb_';
     
